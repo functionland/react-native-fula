@@ -6,8 +6,8 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo managed workflow\n';
 
-const Fula = NativeModules.Fula
-  ? NativeModules.Fula
+const FulaModule = NativeModules.FulaModule
+  ? NativeModules.FulaModule
   : new Proxy(
       {},
       {
@@ -18,5 +18,5 @@ const Fula = NativeModules.Fula
     );
 
 export function multiply(a: number, b: number): Promise<number> {
-  return Fula.multiply(a, b);
+  return FulaModule.multiply(a, b);
 }

@@ -1,4 +1,4 @@
-package com.reactnativefula;
+package land.fx.fula;
 
 import androidx.annotation.NonNull;
 

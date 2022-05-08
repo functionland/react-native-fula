@@ -1,4 +1,4 @@
-package com.reactnativefula;
+package land.fx.fula;
 
 import androidx.annotation.NonNull;
 
@@ -10,7 +10,7 @@ import com.facebook.react.module.annotations.ReactModule;
 
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
-    public static final String NAME = "Fula";
+    public static final String NAME = "FulaModule";
 
     public FulaModule(ReactApplicationContext reactContext) {
         super(reactContext);
