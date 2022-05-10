@@ -16,7 +16,11 @@ public class FulaPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new FulaModule(reactContext));
+        try {
+            modules.add(new FulaModule(reactContext));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return modules;
     }
 

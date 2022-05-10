@@ -1,22 +1,2 @@
-import { NativeModules, Platform } from 'react-native';
-
-const LINKING_ERROR =
-  `The package 'react-native-fula' doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo managed workflow\n';
-
-const FulaModule = NativeModules.FulaModule
-  ? NativeModules.FulaModule
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
-
-export function multiply(a: number, b: number): Promise<number> {
-  return FulaModule.multiply(a, b);
-}
+export * as file from './protocols/file';
+export * as fula from './protocols/fula';
