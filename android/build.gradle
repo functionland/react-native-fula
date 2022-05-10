@@ -51,9 +51,13 @@ repositories {
     google()
     mavenCentral()
     jcenter()
+
+    // Add this repo to get go-full package
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation 'com.github.ghorbani-m:go-fula-release:0.0.1' // From jitpack.io
 }
