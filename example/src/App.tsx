@@ -9,7 +9,7 @@ import {
   useColorScheme,
   View,
   Button,
-  TextInput
+  TextInput,
 } from 'react-native';
 
 import DocumentPicker, {
@@ -18,11 +18,13 @@ import DocumentPicker, {
 } from 'react-native-document-picker';
 import { file, fula } from 'react-native-fula';
 
-import { Colors, Header } from 'react-native/Libraries/NewAppScreen';
+import { Header } from 'react-native/Libraries/NewAppScreen';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  const [boxAddr, setBoxAddr] = useState('/ip4/192.168.0.200/tcp/4002/p2p/12D3KooWCEFLs7C3NpYkp7tJztJ99zcBe3XknMdqG7mwuPqXiW1d');
+  const [boxAddr, setBoxAddr] = useState(
+    '/ip4/192.168.0.200/tcp/4002/p2p/12D3KooWCEFLs7C3NpYkp7tJztJ99zcBe3XknMdqG7mwuPqXiW1d'
+  );
   const [connectionStatus, setConnectionStatus] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [result, setResult] = React.useState<
@@ -32,19 +34,21 @@ const App = () => {
   const [filePath, setFilePath] = React.useState<string | undefined | null>();
 
   useEffect(() => {
-  });
-
-  useEffect(() => {
     console.log(JSON.stringify(result, null, 2));
   }, [result]);
 
   const connectToBox = async () => {
-    setConnecting(true)
-    const connectStatus = await fula.connect(boxAddr);
-    setConnecting(false)
-    setConnectionStatus(connectStatus);
-    console.log('connected:', connectStatus);
-  }
+    try {
+      setConnecting(true);
+      const connectStatus = await fula.connect(boxAddr);
+      setConnecting(false);
+      setConnectionStatus(connectStatus);
+      console.log('connected:', connectStatus);
+    } catch (error) {
+      setConnecting(false);
+      console.log('connected:', false);
+    }
+  };
   const handleError = (err: unknown) => {
     if (DocumentPicker.isCancel(err)) {
       console.warn('cancelled');
@@ -62,15 +66,25 @@ const App = () => {
     <SafeAreaView>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView>
-        <Header/>
+        <Header />
         <View style={styles.container}>
           <View style={styles.section}>
             <Text>Box Address:</Text>
-            <TextInput value={boxAddr} style={{ borderWidth: 1, borderColor: "gray", marginVertical: 5 }} />
+            <TextInput
+              onChange={(e) => setBoxAddr(e.target.value)}
+              value={boxAddr}
+              style={styles.input}
+            />
             <Button
-              title={connecting ? "Connecting..." :connectionStatus?"Connected":"STEP 1: Connect to Box"}
+              title={
+                connecting
+                  ? 'Connecting...'
+                  : connectionStatus
+                  ? 'Connected'
+                  : 'STEP 1: Connect to Box'
+              }
               onPress={connectToBox}
-              color={connectionStatus ? "green" : "gray"}
+              color={connectionStatus ? 'green' : 'gray'}
             />
           </View>
           <View style={styles.section}>
@@ -88,7 +102,7 @@ const App = () => {
                 }
               }}
             />
-            {result?.name?<Text>{result.name}</Text>:null}
+            {result?.name ? <Text>{result.name}</Text> : null}
           </View>
           <View style={styles.section}>
             <Button
@@ -106,7 +120,7 @@ const App = () => {
                 }
               }}
             />
-            {cid?<Text>File CID: {cid}</Text>:null}
+            {cid ? <Text>File CID: {cid}</Text> : null}
           </View>
           <View style={styles.section}>
             <Button
@@ -126,10 +140,9 @@ const App = () => {
           </View>
 
           <View style={styles.section}>
-            {filePath && <Image source={{ uri: `${decodeURI(filePath)}` }}></Image>}
+            {filePath && <Image source={{ uri: `${decodeURI(filePath)}` }} />}
             {filePath && <Text>{decodeURI(filePath)}</Text>}
           </View>
-
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -155,12 +168,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "white",
-    padding: 10
+    backgroundColor: 'white',
+    padding: 10,
   },
   section: {
-    marginTop: 20
-  }
+    marginTop: 20,
+  },
+  input: { borderWidth: 1, borderColor: 'gray', marginVertical: 5 },
 });
 
 export default App;
