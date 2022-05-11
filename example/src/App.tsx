@@ -106,6 +106,7 @@ const App = () => {
                 }
               }}
             />
+            {cid?<Text>File CID: {cid}</Text>:null}
           </View>
           <View style={styles.section}>
             <Button
