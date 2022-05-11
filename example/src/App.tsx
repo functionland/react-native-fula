@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,6 +9,7 @@ import {
   useColorScheme,
   View,
   Button,
+  TextInput
 } from 'react-native';
 
 import DocumentPicker, {
@@ -21,16 +22,9 @@ import { Colors, Header } from 'react-native/Libraries/NewAppScreen';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
-
-  useEffect(() => {
-    (async () => {
-      const connectStatus = await fula.connect(
-        '/ip4/192.168.1.10/tcp/4002/p2p/12D3KooWDVgPHx45ZsnNPyeQooqY8VNesSR2KiX2mJwzEK5hpjpb'
-      );
-      console.log('connected:', connectStatus);
-    })();
-  });
-
+  const [boxAddr, setBoxAddr] = useState('/ip4/192.168.0.200/tcp/4002/p2p/12D3KooWCEFLs7C3NpYkp7tJztJ99zcBe3XknMdqG7mwuPqXiW1d');
+  const [connectionStatus, setConnectionStatus] = useState(false);
+  const [connecting, setConnecting] = useState(false);
   const [result, setResult] = React.useState<
     DocumentPickerResponse | undefined | null
   >();
@@ -38,9 +32,19 @@ const App = () => {
   const [filePath, setFilePath] = React.useState<string | undefined | null>();
 
   useEffect(() => {
+  });
+
+  useEffect(() => {
     console.log(JSON.stringify(result, null, 2));
   }, [result]);
 
+  const connectToBox = async () => {
+    setConnecting(true)
+    const connectStatus = await fula.connect(boxAddr);
+    setConnecting(false)
+    setConnectionStatus(connectStatus);
+    console.log('connected:', connectStatus);
+  }
   const handleError = (err: unknown) => {
     if (DocumentPicker.isCancel(err)) {
       console.warn('cancelled');
@@ -54,68 +58,77 @@ const App = () => {
     }
   };
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}
-      >
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}
-        >
-          <Button
-            title="open picker for single file selection"
-            onPress={async () => {
-              try {
-                const pickerResult = await DocumentPicker.pickSingle({
-                  presentationStyle: 'fullScreen',
-                  copyTo: 'documentDirectory',
-                });
-                setResult(pickerResult);
-              } catch (e) {
-                handleError(e);
-              }
-            }}
-          />
-          <Button
-            title="send"
-            onPress={async () => {
-              try {
-                if (result) {
-                  const _filePath = result.fileCopyUri?.split('file:')[1];
-                  const _cid = await file.send(_filePath);
-                  console.log('file saved with CID: ', _cid);
-                  setCid(_cid);
+      <ScrollView>
+        <Header/>
+        <View style={styles.container}>
+          <View style={styles.section}>
+            <Text>Box Address:</Text>
+            <TextInput value={boxAddr} style={{ borderWidth: 1, borderColor: "gray", marginVertical: 5 }} />
+            <Button
+              title={connecting ? "Connecting..." :connectionStatus?"Connected":"STEP 1: Connect to Box"}
+              onPress={connectToBox}
+              color={connectionStatus ? "green" : "gray"}
+            />
+          </View>
+          <View style={styles.section}>
+            <Button
+              title="STEP 2: Select a file"
+              onPress={async () => {
+                try {
+                  const pickerResult = await DocumentPicker.pickSingle({
+                    presentationStyle: 'fullScreen',
+                    copyTo: 'documentDirectory',
+                  });
+                  setResult(pickerResult);
+                } catch (e) {
+                  handleError(e);
                 }
-              } catch (e) {
-                handleError(e);
-              }
-            }}
-          />
-          <Button
-            title="get"
-            onPress={async () => {
-              try {
-                if (result) {
-                  const _filepath = await file.receive(cid);
-                  console.log(_filepath);
-                  setFilePath(_filepath);
+              }}
+            />
+            {result?.name?<Text>{result.name}</Text>:null}
+          </View>
+          <View style={styles.section}>
+            <Button
+              title="STEP 3: Send the file to Box"
+              onPress={async () => {
+                try {
+                  if (result) {
+                    const _filePath = result.fileCopyUri?.split('file:')[1];
+                    const _cid = await file.send(decodeURI(_filePath));
+                    console.log('file saved with CID: ', _cid);
+                    setCid(_cid);
+                  }
+                } catch (e) {
+                  handleError(e);
                 }
-              } catch (e) {
-                handleError(e);
-              }
-            }}
-          />
-          {filePath && <Image source={{ uri: `${filePath}` }}></Image>}
-          {filePath && <Text>{filePath}</Text>}
+              }}
+            />
+          </View>
+          <View style={styles.section}>
+            <Button
+              title="STEP 4: Get the file from Box"
+              onPress={async () => {
+                try {
+                  if (result) {
+                    const _filepath = await file.receive(cid);
+                    console.log(_filepath);
+                    setFilePath(_filepath);
+                  }
+                } catch (e) {
+                  handleError(e);
+                }
+              }}
+            />
+          </View>
+
+          <View style={styles.section}>
+            {filePath && <Image source={{ uri: `${decodeURI(filePath)}` }}></Image>}
+            {filePath && <Text>{decodeURI(filePath)}</Text>}
+          </View>
+
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -139,6 +152,14 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
+  container: {
+    flex: 1,
+    backgroundColor: "white",
+    padding: 10
+  },
+  section: {
+    marginTop: 20
+  }
 });
 
 export default App;
