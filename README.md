@@ -11,11 +11,19 @@ npm install react-native-fula
 ## Usage
 
 ```js
-import { multiply } from "react-native-fula";
+import { file, fula } from 'react-native-fula';
 
 // ...
 
-const result = await multiply(3, 7);
+//Connect to the box
+const status = await fula.connect("[Your Box address]");
+
+//Store file to the box
+const cid = await file.send(decodeURI("[File path]"));
+
+//Get file path form the box
+const filepath = await file.receive(cid);
+
 ```
 
 ## Contributing
