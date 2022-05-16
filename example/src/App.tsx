@@ -16,14 +16,14 @@ import DocumentPicker, {
   DocumentPickerResponse,
   isInProgress,
 } from 'react-native-document-picker';
-import { file, fula } from 'react-native-fula';
+import { file, fula, graph } from 'react-native-fula';
 
 import { Header } from 'react-native/Libraries/NewAppScreen';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [boxAddr, setBoxAddr] = useState(
-    '/ip4/192.168.0.200/tcp/4002/p2p/12D3KooWCEFLs7C3NpYkp7tJztJ99zcBe3XknMdqG7mwuPqXiW1d'
+    '/ip4/192.168.0.5/tcp/4002/p2p/12D3KooWRDBvNPv7zPrXoo7KwhpMxgS3Qga4tKKjtbexQnGSvdni'
   );
   const [connectionStatus, setConnectionStatus] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -32,6 +32,24 @@ const App = () => {
   >();
   const [cid, setCid] = React.useState<string | undefined | null>();
   const [filePath, setFilePath] = React.useState<string | undefined | null>();
+  const [gqlQuery, setGqlQuery] = React.useState<string>(`
+  mutation addTodo($values:JSON){
+    create(input:{
+    collection:"todo",
+    values: $values 
+    }){
+    id
+    text
+    isComplete
+    }
+  } 
+  `);
+  const [gqlValues, setGqlValues] = React.useState<string>(`
+  {
+    "values": []
+  }
+  `);
+  const [gqlRes, setGqlRes] = React.useState<string>('');
 
   useEffect(() => {
     console.log(JSON.stringify(result, null, 2));
@@ -142,6 +160,39 @@ const App = () => {
           <View style={styles.section}>
             {filePath && <Image source={{ uri: `${decodeURI(filePath)}` }} />}
             {filePath && <Text>{decodeURI(filePath)}</Text>}
+          </View>
+
+          <View style={styles.section}>
+            <Text>GraphQL query:</Text>
+            <TextInput
+              onChangeText={(value) => setGqlQuery(value)}
+              value={gqlQuery} 
+              style={styles.input}
+              multiline={true}
+            />
+            <Text>Variable values:</Text>
+            <TextInput
+              onChangeText={(value) => setGqlValues(value)}
+              value={gqlValues}
+              style={styles.input}
+              multiline={true}
+            />
+            <Button
+              title="STEP 5: Run graphQL operations"
+              onPress={async () => {
+                try {
+                  const res = await graph.graphql(
+                    gqlQuery,
+                    JSON.parse(gqlValues)
+                  );
+                  setGqlRes(res);
+                  console.log(res);
+                } catch (e) {
+                  handleError(e);
+                }
+              }}
+            />
+            <Text>{JSON.stringify(gqlRes)}</Text>
           </View>
         </View>
       </ScrollView>

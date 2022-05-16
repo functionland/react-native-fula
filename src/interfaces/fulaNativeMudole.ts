@@ -4,6 +4,7 @@ interface FulaNativeModule {
   connect: (boxAddr: string) => Promise<boolean>;
   send: (filePath: string) => Promise<any>;
   receive: (fileId: string) => Promise<any>;
+  graphQL: (query: string, variableValues: string) => Promise<any>;
 }
 
 const LINKING_ERROR =

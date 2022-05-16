@@ -59,5 +59,5 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation 'com.github.ghorbani-m:go-fula-release:0.0.1' // From jitpack.io
+    implementation 'com.github.functionland:go-fula:v0.2.0' // From jitpack.io
 }
