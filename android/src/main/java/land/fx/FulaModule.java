@@ -16,19 +16,21 @@ import com.facebook.react.bridge.Promise;
 import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Base64;
 
-import fula.Fula;
-import fula.Fula_;
+import mobile.Fula;
+import mobile.Mobile;
+
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
     public static final String NAME = "FulaModule";
-    Fula_ fula;
+    Fula fula;
     String appDirs;
 
     public FulaModule(ReactApplicationContext reactContext) throws Exception{
         super(reactContext);
         appDirs = reactContext.getFilesDir().toString();
-        fula = Fula.newFula(appDirs);
+        fula = Mobile.newFula(appDirs);
     }
 
     @Override
@@ -70,5 +72,16 @@ public class FulaModule extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void graphQL(String query, String variableValues, Promise promise) {
+        try{
+            String res = fula.graphQL(query, variableValues);
+            promise.resolve(res);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
 
 }
