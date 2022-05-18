@@ -1036,7 +1036,7 @@
     pirates "^4.0.5"
     source-map-support "^0.5.16"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.11.2", "@babel/runtime@^7.8.4":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.11.2", "@babel/runtime@^7.8.4", "@babel/runtime@~7.17.2":
   version "7.17.9"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.17.9.tgz#d19fbf802d01a8cb6cf053a64e472d42c434ba72"
   integrity sha512-lSiBBvodq29uShpWGNbgFdKYNiFDo5/HIYsaCEY9ff4sb10x9jizo2+pRrSyF4jKZCXqgzuqBOQKbUm90gQwJg==
@@ -1239,6 +1239,14 @@
     js-yaml "^3.13.1"
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
+
+"@functionland/graph-protocol@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@functionland/graph-protocol/-/graph-protocol-0.2.2.tgz#6620fb389aa030d5f23bdf4747e14965527a1538"
+  integrity sha512-ege7ou9RoU6YfEfrDe304eCjHCD5dVoItJEdkKMTqbyqA4kYPwt6rVZCpUNWLCnPnlIhJjPRzhRPjwxwPnortA==
+  dependencies:
+    "@babel/runtime" "~7.17.2"
+    "@protobuf-ts/runtime" "~2.2.2"
 
 "@hapi/address@2.x.x":
   version "2.1.4"
@@ -1690,6 +1698,11 @@
   integrity sha512-s1zLBjWhdEI2zwaoSgyOFoKSl109CUcVBCc7biPJ3aAf6LGLU6szDvi31JPU7bxfla2lqfhjbbg/5DdFNxOwHw==
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
+
+"@protobuf-ts/runtime@~2.2.2":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@protobuf-ts/runtime/-/runtime-2.2.4.tgz#820b2f4db8c98f31517a9404be9569999fcc1d9c"
+  integrity sha512-v6A67t27p56qG2j3Dtag7Lkj6F8VotXtlwCUs9YiL/Sv+Vxp0uGOwSNuBI798YnEozt5NTbmkWszp84j5cSNdQ==
 
 "@react-native-community/cli-debugger-ui@^4.13.1":
   version "4.13.1"
@@ -4303,6 +4316,11 @@ fast-levenshtein@^2.0.6, fast-levenshtein@~2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
+
+fastestsmallesttextencoderdecoder@^1.0.22:
+  version "1.0.22"
+  resolved "https://registry.yarnpkg.com/fastestsmallesttextencoderdecoder/-/fastestsmallesttextencoderdecoder-1.0.22.tgz#59b47e7b965f45258629cc6c127bf783281c5e93"
+  integrity sha512-Pb8d48e+oIuY4MaM64Cd7OW1gt4nxCHs7/ddPPZ/Ic3sg8yVGM7O9wDvZ7us6ScaUupzM+pfBolwtYhN1IxBIw==
 
 fastq@^1.6.0:
   version "1.13.0"

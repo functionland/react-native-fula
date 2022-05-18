@@ -144,5 +144,9 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "@functionland/graph-protocol": "^0.2.2",
+    "fastestsmallesttextencoderdecoder": "^1.0.22"
   }
 }
