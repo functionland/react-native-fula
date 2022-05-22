@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.WritableNativeArray;
 
 
 import java.io.File;
@@ -76,8 +77,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void graphQL(String query, String variableValues, Promise promise) {
         try{
-            String res = fula.graphQL(query, variableValues);
-            promise.resolve(res);
+            byte[] res = fula.graphQL(query, variableValues);
+            WritableNativeArray arr = new WritableNativeArray();
+            for(byte b : res){
+                arr.pushInt(b);
+            }
+            promise.resolve(arr);
         }catch (Exception e){
             promise.reject(e);
         }
