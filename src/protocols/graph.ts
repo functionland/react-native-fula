@@ -1,4 +1,4 @@
-import Fula from '../interfaces/fulaNativeMudole';
+import Fula from '../interfaces/fulaNativeModule';
 import { Result } from '@functionland/graph-protocol';
 import 'fastestsmallesttextencoderdecoder';
 

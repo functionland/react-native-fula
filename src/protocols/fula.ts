@@ -1,10 +1,10 @@
-import Fula from '../interfaces/fulaNativeMudole';
+import Fula from '../interfaces/fulaNativeModule';
 
 /**
- * Connect to the box through the box address
+ * Add Box to peer store
  * @param boxAddr
  * @returns
  */
-export const connect = (boxAddr: string): Promise<boolean> => {
-  return Fula.connect(boxAddr);
+export const addBox = (boxAddr: string): Promise<boolean> => {
+  return Fula.addBox(boxAddr);
 };

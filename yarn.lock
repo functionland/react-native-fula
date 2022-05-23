@@ -1240,6 +1240,15 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@functionland/file-protocol@^0.3.6":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@functionland/file-protocol/-/file-protocol-0.3.6.tgz#655254599b248182052ad53e3840dece8eb84435"
+  integrity sha512-dt36pB4igjX0wD8VAYPvOhGB7kj8mVQAPfPNxNr6CDB4URRXLbrvzja0UpbOG5+gdzhFrDuG25S9tH3F7GhoWA==
+  dependencies:
+    "@babel/runtime" "~7.17.2"
+    "@protobuf-ts/runtime" "~2.2.2"
+    aes-js "^3.1.2"
+
 "@functionland/graph-protocol@^0.2.2":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@functionland/graph-protocol/-/graph-protocol-0.2.2.tgz#6620fb389aa030d5f23bdf4747e14965527a1538"
@@ -2193,6 +2202,11 @@ add-stream@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/add-stream/-/add-stream-1.0.0.tgz#6a7990437ca736d5e1288db92bd3266d5f5cb2aa"
   integrity sha1-anmQQ3ynNtXhKI25K9MmbV9csqo=
+
+aes-js@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/aes-js/-/aes-js-3.1.2.tgz#db9aabde85d5caabbfc0d4f2a4446960f627146a"
+  integrity sha512-e5pEa2kBnBOgR4Y/p20pskXI74UEz7de8ZGVo58asOtvSVG5YAbJeELPZxOmt+Bnz3rX753YKhfIn4X4l1PPRQ==
 
 agent-base@6, agent-base@^6.0.0, agent-base@^6.0.2:
   version "6.0.2"

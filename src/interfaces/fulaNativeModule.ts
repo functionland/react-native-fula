@@ -1,9 +1,11 @@
+import type { SchemaProtocol } from '@functionland/file-protocol';
 import { NativeModules, Platform } from 'react-native';
 
 interface FulaNativeModule {
-  connect: (boxAddr: string) => Promise<boolean>;
+  addBox: (boxAddr: string) => Promise<boolean>;
   send: (filePath: string) => Promise<any>;
-  receive: (fileId: string) => Promise<any>;
+  receiveFileInfo: (fileId: string) => Promise<SchemaProtocol.Meta>;
+  receiveFile: (fileId: string, fileName: string,include64: boolean) => Promise<any>;
   graphQL: (query: string, variableValues: string) => Promise<any>;
 }
 

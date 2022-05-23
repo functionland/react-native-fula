@@ -23,7 +23,7 @@ import { Header } from 'react-native/Libraries/NewAppScreen';
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [boxAddr, setBoxAddr] = useState(
-    '/ip4/192.168.0.5/tcp/4002/p2p/12D3KooWRDBvNPv7zPrXoo7KwhpMxgS3Qga4tKKjtbexQnGSvdni'
+    '/ip4/192.168.1.10/tcp/4002/p2p/12D3KooWDVgPHx45ZsnNPyeQooqY8VNesSR2KiX2mJwzEK5hpjpb'
   );
   const [connectionStatus, setConnectionStatus] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -32,6 +32,7 @@ const App = () => {
   >();
   const [cid, setCid] = React.useState<string | undefined | null>();
   const [filePath, setFilePath] = React.useState<string | undefined | null>();
+  const [bs64, setBS64] = React.useState<string | undefined | null>();
   const [gqlQuery, setGqlQuery] = React.useState<string>(`
   mutation addTodo($values:JSON){
     create(input:{
@@ -58,7 +59,7 @@ const App = () => {
   const connectToBox = async () => {
     try {
       setConnecting(true);
-      const connectStatus = await fula.connect(boxAddr);
+      const connectStatus = await fula.addBox(boxAddr);
       setConnecting(false);
       setConnectionStatus(connectStatus);
       console.log('connected:', connectStatus);
@@ -146,9 +147,10 @@ const App = () => {
               onPress={async () => {
                 try {
                   if (result) {
-                    const _filepath = await file.receive(cid);
-                    console.log(_filepath);
+                    const {uri:_filepath,base64:_bs64} = await file.receive(cid,false);
+                    console.log(_bs64);
                     setFilePath(_filepath);
+                    setBS64(_bs64)
                   }
                 } catch (e) {
                   handleError(e);
@@ -158,7 +160,7 @@ const App = () => {
           </View>
 
           <View style={styles.section}>
-            {filePath && <Image source={{ uri: `${decodeURI(filePath)}` }} />}
+            {filePath && <Image resizeMode="cover" style={styles.imageShow} source={{ uri: `${decodeURI(filePath)}` }} />}
             {filePath && <Text>{decodeURI(filePath)}</Text>}
           </View>
 
@@ -201,6 +203,11 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
+  imageShow: {
+    width: 200,
+    height: 200,
+    padding: 5
+  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
