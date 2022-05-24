@@ -1,6 +1,6 @@
 {
   "name": "react-native-fula",
-  "version": "0.2.0",
+  "version": "0.2.0-alpha1",
   "description": "This package is a bridge to use the Fula libp2p protocols in the react-native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -13,6 +13,7 @@
     "android",
     "ios",
     "cpp",
+    "!example/",
     "react-native-fula.podspec",
     "!lib/typescript/example",
     "!android/build",
@@ -44,7 +45,7 @@
   },
   "homepage": "https://github.com/ghorbani-m/react-native-fula#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
     "@functionland/graph-protocol": "^0.2.2",
