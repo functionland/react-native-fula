@@ -23,7 +23,7 @@ import { Header } from 'react-native/Libraries/NewAppScreen';
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [boxAddr, setBoxAddr] = useState(
-    '/ip4/192.168.1.10/tcp/4002/p2p/12D3KooWDVgPHx45ZsnNPyeQooqY8VNesSR2KiX2mJwzEK5hpjpb'
+    '/ip4/127.0.0.1/tcp/4003/ws/p2p/12D3KooWGrkcHUBzAAuYhMRxBreCgofKKDhLgR84FbawknJZHwK1'
   );
   const [connectionStatus, setConnectionStatus] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -65,7 +65,7 @@ const App = () => {
       console.log('connected:', connectStatus);
     } catch (error) {
       setConnecting(false);
-      console.log('connected:', false);
+      console.warn('connected:', error);
     }
   };
   const handleError = (err: unknown) => {
@@ -77,7 +77,10 @@ const App = () => {
         'multiple pickers were opened, only the last will be considered'
       );
     } else {
-      throw err;
+      console.log(err)
+      console.warn(
+        err
+      );
     }
   };
 
