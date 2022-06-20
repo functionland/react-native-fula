@@ -23,14 +23,14 @@ import { Header } from 'react-native/Libraries/NewAppScreen';
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [boxAddr, setBoxAddr] = useState(
-    '/ip4/127.0.0.1/tcp/4003/ws/p2p/12D3KooWGrkcHUBzAAuYhMRxBreCgofKKDhLgR84FbawknJZHwK1'
+    '/ip4/192.168.1.10/tcp/4002/p2p/12D3KooWGrkcHUBzAAuYhMRxBreCgofKKDhLgR84FbawknJZHwK1'
   );
   const [connectionStatus, setConnectionStatus] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [result, setResult] = React.useState<
     DocumentPickerResponse | undefined | null
   >();
-  const [cid, setCid] = React.useState<string | undefined | null>();
+  const [fileRef, setFileRef] = React.useState<file.FileRef | undefined | null>();
   const [filePath, setFilePath] = React.useState<string | undefined | null>();
   const [bs64, setBS64] = React.useState<string | undefined | null>();
   const [gqlQuery, setGqlQuery] = React.useState<string>(`
@@ -133,16 +133,16 @@ const App = () => {
                 try {
                   if (result) {
                     const _filePath = result.fileCopyUri?.split('file:')[1];
-                    const _cid = await file.send(decodeURI(_filePath));
-                    console.log('file saved with CID: ', _cid);
-                    setCid(_cid);
+                    const fileRef = await file.encryptSend(decodeURI(_filePath));
+                    console.log('file saved with CID: ', fileRef.id);
+                    setFileRef(fileRef);
                   }
                 } catch (e) {
                   handleError(e);
                 }
               }}
             />
-            {cid ? <Text>File CID: {cid}</Text> : null}
+            {fileRef ? <Text>File CID: {fileRef.id}</Text> : null}
           </View>
           <View style={styles.section}>
             <Button
@@ -150,8 +150,8 @@ const App = () => {
               onPress={async () => {
                 try {
                   if (result) {
-                    const {uri:_filepath,base64:_bs64} = await file.receive(cid,false);
-                    console.log(_bs64);
+                    const {uri:_filepath,base64:_bs64} = await file.receiveDecrypt(fileRef,false);
+                    // console.log(_bs64);
                     setFilePath(_filepath);
                     setBS64(_bs64)
                   }
@@ -164,6 +164,7 @@ const App = () => {
 
           <View style={styles.section}>
             {filePath && <Image resizeMode="cover" style={styles.imageShow} source={{ uri: `${decodeURI(filePath)}` }} />}
+            {/* {filePath && <Text>{bs64}</Text>} */}
             {filePath && <Text>{decodeURI(filePath)}</Text>}
           </View>
 

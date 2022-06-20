@@ -48,8 +48,9 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@functionland/graph-protocol": "^0.2.2",
     "@functionland/file-protocol": "^0.3.6",
+    "@functionland/graph-protocol": "^0.2.2",
+    "buffer": "^6.0.3",
     "fastestsmallesttextencoderdecoder": "^1.0.22"
   },
   "devDependencies": {
