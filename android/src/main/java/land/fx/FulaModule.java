@@ -65,107 +65,120 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void send(String path, Promise promise) {
-        try{
+      ThreadUtils.runOnExecutor(() -> {
+          try{
             String cid = fula.send(path);
             promise.resolve(cid);
-        }
-        catch(Exception e){
+          }
+          catch(Exception e){
             promise.reject(e);
-        }
+          }
+        });
     }
 
     @ReactMethod
     public void encryptSend(String path, Promise promise) {
-        try{
+        ThreadUtils.runOnExecutor(() -> {
+          try{
             String res = fula.encryptSend(path);
             Log.d(NAME,res);
             promise.resolve(res);
-        }
-        catch(Exception e){
+          }
+          catch(Exception e){
             promise.reject(e);
-        }
+          }
+        });
     }
 
     @ReactMethod
     public void addBox(String boxId, Promise promise) {
-        Log.d("fulaModule", appDir);
-        try{
+        ThreadUtils.runOnExecutor(() -> {
+          try{
             fula.addBox(boxId);
             promise.resolve(true);
-        }
-        catch(Exception e){
+          }
+          catch(Exception e){
             promise.reject(e);
-        }
+          }
+        });
     }
 
     @ReactMethod
     public void receiveFileInfo(String fileId, Promise promise){
-        try{
+        ThreadUtils.runOnExecutor(() -> {
+          try{
             byte[] res = fula.receiveFileInfo(fileId);
             WritableNativeArray arr = new WritableNativeArray();
             for(byte b : res){
-                arr.pushInt(b);
+              arr.pushInt(b);
             }
             promise.resolve(arr);
-        }catch (Exception e){
+          }catch (Exception e){
             promise.reject(e);
-        }
+          }
+        });
     }
 
     @ReactMethod
     public void receiveFile(String fileId, String fileName, boolean includeBS64,Promise promise) {
-        try{
+        ThreadUtils.runOnExecutor(() -> {
+          try{
             String filePath = storeDirPath + fileName;
             fula.receiveFile(fileId, filePath);
             Uri uri = Uri.fromFile(new File(filePath));
             Log.d(NAME,"File Downloaded");
             WritableMap map;
             if(includeBS64){
-                String bs64 = getBase64StringFromFile(filePath);
-                Log.d(NAME,"File Transform to bs64");
-                map = makeResponseMap(uri.toString(), bs64);
+              String bs64 = getBase64StringFromFile(filePath);
+              Log.d(NAME,"File Transform to bs64");
+              map = makeResponseMap(uri.toString(), bs64);
             }else{
-                map = makeResponseMap(uri.toString(), "");
+              map = makeResponseMap(uri.toString(), "");
             }
             promise.resolve(map);
-        }catch (Exception e){
+          }catch (Exception e){
             promise.reject(e);
-        }
+          }
+        });
     }
 
     @ReactMethod
     public void receiveDecryptFile(String fileRef, String fileName, boolean includeBS64,Promise promise) {
-        try{
+        ThreadUtils.runOnExecutor(() -> {
+          try{
             String filePath = storeDirPath + fileName;
             fula.receiveDecryptFile(fileRef, filePath);
             Uri uri = Uri.fromFile(new File(filePath));
             Log.d(NAME,"File Downloaded");
             WritableMap map;
             if(includeBS64){
-                String bs64 = getBase64StringFromFile(filePath);
-                Log.d(NAME,"File Transform to bs64");
-                map = makeResponseMap(uri.toString(), bs64);
+              String bs64 = getBase64StringFromFile(filePath);
+              Log.d(NAME,"File Transform to bs64");
+              map = makeResponseMap(uri.toString(), bs64);
             }else{
-                map = makeResponseMap(uri.toString(), "");
+              map = makeResponseMap(uri.toString(), "");
             }
             promise.resolve(map);
-        }catch (Exception e){
+          }catch (Exception e){
             promise.reject(e);
-        }
+          }
+        });
     }
 
     @ReactMethod
     public void graphQL(String query, String variableValues, Promise promise) {
-        try{
+        ThreadUtils.runOnExecutor(() -> {
+          try{
             byte[] res = fula.graphQL(query, variableValues);
             WritableNativeArray arr = new WritableNativeArray();
             for(byte b : res){
-                arr.pushInt(b);
+              arr.pushInt(b);
             }
             promise.resolve(arr);
-        }catch (Exception e){
+          }catch (Exception e){
             promise.reject(e);
-        }
+          }
+        });
     }
 
     private static WritableMap makeResponseMap(String uri, String base64) {
