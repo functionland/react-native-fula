@@ -50,9 +50,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
             success = storeDir.mkdirs();
         }
         if(success){
-            Log.d(NAME,"Store folder created");
+            Log.d(NAME,"store folder created");
         }else{
-            Log.d(NAME,"Can not create folder");
+            Log.d(NAME,"can not create folder");
         }
         this.fula = Mobile.newFula();
     }
@@ -126,11 +126,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
             String filePath = storeDirPath + fileName;
             fula.receiveFile(fileId, filePath);
             Uri uri = Uri.fromFile(new File(filePath));
-            Log.d(NAME,"File Downloaded");
+            Log.d(NAME,"file downloaded");
             WritableMap map;
             if(includeBS64){
               String bs64 = getBase64StringFromFile(filePath);
-              Log.d(NAME,"File Transform to bs64");
+              Log.d(NAME,"file transform to bs64");
               map = makeResponseMap(uri.toString(), bs64);
             }else{
               map = makeResponseMap(uri.toString(), "");
@@ -149,11 +149,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
             String filePath = storeDirPath + fileName;
             fula.receiveDecryptFile(fileRef, filePath);
             Uri uri = Uri.fromFile(new File(filePath));
-            Log.d(NAME,"File Downloaded");
+            Log.d(NAME,"file downloaded");
             WritableMap map;
             if(includeBS64){
               String bs64 = getBase64StringFromFile(filePath);
-              Log.d(NAME,"File Transform to bs64");
+              Log.d(NAME,"file transform to bs64");
               map = makeResponseMap(uri.toString(), bs64);
             }else{
               map = makeResponseMap(uri.toString(), "");
