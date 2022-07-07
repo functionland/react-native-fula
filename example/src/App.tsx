@@ -23,7 +23,7 @@ import { Header } from 'react-native/Libraries/NewAppScreen';
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [boxAddr, setBoxAddr] = useState(
-    '/ip4/192.168.1.10/tcp/4002/p2p/12D3KooWGrkcHUBzAAuYhMRxBreCgofKKDhLgR84FbawknJZHwK1'
+    '/ip4/54.91.64.211/tcp/4002/p2p/12D3KooWEYPfYC8B89xQMLA1fz4VB5J6EUS6J1SPiFko6QUihoyQ'
   );
   const [connectionStatus, setConnectionStatus] = useState(false);
   const [connecting, setConnecting] = useState(false);
