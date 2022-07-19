@@ -1,6 +1,6 @@
 {
   "name": "react-native-fula",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "This package is a bridge to use the Fula libp2p protocols in the react-native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
