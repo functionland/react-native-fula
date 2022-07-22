@@ -1,6 +1,6 @@
-#import "Fula.h"
+#import "FulaModule.h"
 
-@implementation Fula
+@implementation FulaModule
 
 RCT_EXPORT_MODULE()
 
