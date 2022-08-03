@@ -52,9 +52,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
             success = storeDir.mkdirs();
         }
         if(success){
-            Log.d(NAME,"store folder created");
+            Log.d(NAME,"Fula store folder created");
         }else{
-            Log.d(NAME,"can not create folder");
+            Log.d(NAME,"Unable to create fula store folder!");
         }
         this.fula = Mobile.newFula(fulaRepo);
     }
@@ -67,15 +67,16 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void send(String path, Promise promise) {
-    ThreadUtils.runOnExecutor(() -> {
-          try{
-            String cid = fula.send(path);
-            promise.resolve(cid);
-          }
-          catch(Exception e){
-            promise.reject(e);
-          }
-      });
+      ThreadUtils.runOnExecutor(() -> {
+            try{
+              String cid = fula.send(path);
+              promise.resolve(cid);
+            }
+            catch(Exception e){
+              promise.reject(e);
+              Log.d("send",e.getMessage());
+            }
+        });
     }
 
     @ReactMethod
@@ -83,11 +84,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
       ThreadUtils.runOnExecutor(() -> {
           try{
             String res = fula.encryptSend(path);
-            Log.d(NAME,res);
             promise.resolve(res);
           }
           catch(Exception e){
             promise.reject(e);
+            Log.d("encryptSend",e.getMessage());
           }
        });
     }
@@ -101,6 +102,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
           }
           catch(Exception e){
             promise.reject(e);
+            Log.d("addBox",e.getMessage());
           }
       });
     }
@@ -109,63 +111,42 @@ public class FulaModule extends ReactContextBaseJavaModule {
     public void receiveFileInfo(String fileId, Promise promise){
         ThreadUtils.runOnExecutor(() -> {
           try{
-            byte[] res = fula.receiveFileInfo(fileId);
-            WritableNativeArray arr = new WritableNativeArray();
-            for(byte b : res){
-              arr.pushInt(b);
-            }
-            promise.resolve(arr);
+            String result = fula.receiveFileInfo(fileId);
+            promise.resolve(result);
           }catch (Exception e){
             promise.reject(e);
+            Log.d("receiveFileInfo",e.getMessage());
           }
         });
     }
 
     @ReactMethod
-    public void receiveFile(String fileId, String fileName, boolean includeBS64,Promise promise) {
+    public void receiveFile(String fileId, String fileName, Promise promise) {
        ThreadUtils.runOnExecutor(() -> {
           try{
             String filePath = storeDirPath + fileName;
             fula.receiveFile(fileId, filePath);
-            Uri uri = Uri.fromFile(new File(filePath));
-            Log.d(NAME,"file downloaded");
-            WritableMap map;
-            if(includeBS64){
-              String bs64 = getBase64StringFromFile(filePath);
-              Log.d(NAME,"file transform to bs64");
-              map = makeResponseMap(uri.toString(), bs64);
-            }else{
-              map = makeResponseMap(uri.toString(), "");
-            }
-            promise.resolve(map);
+            promise.resolve(filePath);
           }catch (Exception e){
             promise.reject(e);
+            Log.d("receiveFile",e.getMessage());
           }
        });
     }
 
     @ReactMethod
-    public void receiveDecryptFile(String fileRef, String fileName, boolean includeBS64,Promise promise) {
+    public void receiveDecryptFile(String fileRef, String fileName,Promise promise) {
         ThreadUtils.runOnExecutor(() -> {
           try{
             String filePath = storeDirPath + fileName;
             fula.receiveDecryptFile(fileRef, filePath);
-            Uri uri = Uri.fromFile(new File(filePath));
-            Log.d(NAME,"file downloaded");
-            WritableMap map;
-            if(includeBS64){
-              String bs64 = getBase64StringFromFile(filePath);
-              Log.d(NAME,"file transform to bs64");
-              map = makeResponseMap(uri.toString(), bs64);
-            }else{
-              map = makeResponseMap(uri.toString(), "");
-            }
-            promise.resolve(map);
+            promise.resolve(filePath);
           }catch (Exception e){
             promise.reject(e);
+            Log.d("receiveDecryptFile",e.getMessage());
           }
           });
-        
+
     }
 
     private static WritableMap makeResponseMap(String uri, String base64) {
