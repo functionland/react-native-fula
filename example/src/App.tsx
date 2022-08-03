@@ -23,7 +23,7 @@ import { Header } from 'react-native/Libraries/NewAppScreen';
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [boxAddr, setBoxAddr] = useState(
-    '/p2p/12D3KooWJVDdxaWYxSEC3M8oK57swu1jc36YYMZihbLmiQjQ2B26'
+    '/ip4/192.168.0.200/tcp/4001/p2p/12D3KooWLj6Y6S8pT9h5BKGu6mBPzoo64ymD7umnrpHvNgVsYdvn'
   );
   const [connectionStatus, setConnectionStatus] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -150,10 +150,10 @@ const App = () => {
               onPress={async () => {
                 try {
                   if (result) {
-                    const {uri:_filepath,base64:_bs64} = await file.receiveDecrypt(fileRef,false);
-                    // console.log(_bs64);
-                    setFilePath(_filepath);
-                    setBS64(_bs64)
+                    const [_filepath,meta] = await file.receiveDecrypt(fileRef);
+                    console.log(_filepath,meta);
+                    setFilePath("file://"+_filepath);
+                    //setBS64(_bs64)
                   }
                 } catch (e) {
                   handleError(e);
@@ -168,38 +168,6 @@ const App = () => {
             {filePath && <Text>{decodeURI(filePath)}</Text>}
           </View>
 
-          <View style={styles.section}>
-            <Text>GraphQL query:</Text>
-            <TextInput
-              onChangeText={(value) => setGqlQuery(value)}
-              value={gqlQuery} 
-              style={styles.input}
-              multiline={true}
-            />
-            <Text>Variable values:</Text>
-            <TextInput
-              onChangeText={(value) => setGqlValues(value)}
-              value={gqlValues}
-              style={styles.input}
-              multiline={true}
-            />
-            <Button
-              title="STEP 5: Run graphQL operations"
-              onPress={async () => {
-                try {
-                  const res = await graph.graphql(
-                    gqlQuery,
-                    JSON.parse(gqlValues)
-                  );
-                  setGqlRes(res);
-                  console.log(res);
-                } catch (e) {
-                  handleError(e);
-                }
-              }}
-            />
-            <Text>{JSON.stringify(gqlRes)}</Text>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
