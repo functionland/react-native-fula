@@ -39,11 +39,13 @@ public class FulaModule extends ReactContextBaseJavaModule {
     Fula fula;
     String appDir;
     String storeDirPath;
+    String fulaRepo;
 
     public FulaModule(ReactApplicationContext reactContext) throws Exception{
         super(reactContext);
         appDir = reactContext.getFilesDir().toString();
         storeDirPath = appDir + "/fula/received/";
+        fulaRepo = appDir + "/fula";
         File storeDir = new File(storeDirPath);
         boolean success = true;
         if (!storeDir.exists()) {
@@ -54,7 +56,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         }else{
             Log.d(NAME,"can not create folder");
         }
-        this.fula = Mobile.newFula();
+        this.fula = Mobile.newFula(fulaRepo);
     }
 
     @Override
@@ -65,7 +67,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void send(String path, Promise promise) {
-      ThreadUtils.runOnExecutor(() -> {
+    ThreadUtils.runOnExecutor(() -> {
           try{
             String cid = fula.send(path);
             promise.resolve(cid);
@@ -73,12 +75,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
           catch(Exception e){
             promise.reject(e);
           }
-        });
+      });
     }
 
     @ReactMethod
     public void encryptSend(String path, Promise promise) {
-        ThreadUtils.runOnExecutor(() -> {
+      ThreadUtils.runOnExecutor(() -> {
           try{
             String res = fula.encryptSend(path);
             Log.d(NAME,res);
@@ -87,7 +89,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
           catch(Exception e){
             promise.reject(e);
           }
-        });
+       });
     }
 
     @ReactMethod
@@ -100,7 +102,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
           catch(Exception e){
             promise.reject(e);
           }
-        });
+      });
     }
 
     @ReactMethod
@@ -121,7 +123,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void receiveFile(String fileId, String fileName, boolean includeBS64,Promise promise) {
-        ThreadUtils.runOnExecutor(() -> {
+       ThreadUtils.runOnExecutor(() -> {
           try{
             String filePath = storeDirPath + fileName;
             fula.receiveFile(fileId, filePath);
@@ -139,7 +141,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
           }catch (Exception e){
             promise.reject(e);
           }
-        });
+       });
     }
 
     @ReactMethod
@@ -162,23 +164,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
           }catch (Exception e){
             promise.reject(e);
           }
-        });
-    }
-
-    @ReactMethod
-    public void graphQL(String query, String variableValues, Promise promise) {
-        ThreadUtils.runOnExecutor(() -> {
-          try{
-            byte[] res = fula.graphQL(query, variableValues);
-            WritableNativeArray arr = new WritableNativeArray();
-            for(byte b : res){
-              arr.pushInt(b);
-            }
-            promise.resolve(arr);
-          }catch (Exception e){
-            promise.reject(e);
-          }
-        });
+          });
+        
     }
 
     private static WritableMap makeResponseMap(String uri, String base64) {
