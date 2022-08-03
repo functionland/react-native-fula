@@ -21,7 +21,7 @@
 /* Begin PBXFileReference section */
 		11C0B56928882C93007D9057 /* FulaModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FulaModule.h; sourceTree = "<group>"; };
 		11C0B56A28882C93007D9057 /* FulaModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FulaModule.m; sourceTree = "<group>"; };
-		134814201AA4EA6300B7C361 /* libFula.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFula.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		134814201AA4EA6300B7C361 /* libFulaModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFulaModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,7 +38,7 @@
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				134814201AA4EA6300B7C361 /* libFula.a */,
+				134814201AA4EA6300B7C361 /* libFulaModule.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -55,9 +55,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		58B511DA1A9E6C8500147676 /* Fula */ = {
+		58B511DA1A9E6C8500147676 /* FulaModule */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Fula" */;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "FulaModule" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
@@ -67,9 +67,9 @@
 			);
 			dependencies = (
 			);
-			name = Fula;
+			name = FulaModule;
 			productName = RCTDataManager;
-			productReference = 134814201AA4EA6300B7C361 /* libFula.a */;
+			productReference = 134814201AA4EA6300B7C361 /* libFulaModule.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -86,7 +86,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Fula" */;
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "FulaModule" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				58B511DA1A9E6C8500147676 /* Fula */,
+				58B511DA1A9E6C8500147676 /* FulaModule */,
 			);
 		};
 /* End PBXProject section */
@@ -219,7 +219,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Fula;
+				PRODUCT_NAME = FulaModule;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -235,7 +235,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Fula;
+				PRODUCT_NAME = FulaModule;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -243,7 +243,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Fula" */ = {
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "FulaModule" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511ED1A9E6C8500147676 /* Debug */,
@@ -252,7 +252,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Fula" */ = {
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "FulaModule" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,

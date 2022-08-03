@@ -14,6 +14,6 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/ghorbani-m/react-native-fula.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm}"
-
   s.dependency "React-Core"
+  s.dependency 'Mobile','~> 0.0.3'
 end
