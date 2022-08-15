@@ -16,7 +16,7 @@ import DocumentPicker, {
   DocumentPickerResponse,
   isInProgress,
 } from 'react-native-document-picker';
-import { file, fula, graph } from 'react-native-fula';
+import { file, fula, Types } from 'react-native-fula';
 
 import { Header } from 'react-native/Libraries/NewAppScreen';
 
@@ -30,27 +30,10 @@ const App = () => {
   const [result, setResult] = React.useState<
     DocumentPickerResponse | undefined | null
   >();
-  const [fileRef, setFileRef] = React.useState<file.FileRef | undefined | null>();
+  const [fileRef, setFileRef] = React.useState<
+    Types.FileRef | undefined | null
+  >();
   const [filePath, setFilePath] = React.useState<string | undefined | null>();
-  const [bs64, setBS64] = React.useState<string | undefined | null>();
-  const [gqlQuery, setGqlQuery] = React.useState<string>(`
-  mutation addTodo($values:JSON){
-    create(input:{
-    collection:"todo",
-    values: $values 
-    }){
-    id
-    text
-    isComplete
-    }
-  } 
-  `);
-  const [gqlValues, setGqlValues] = React.useState<string>(`
-  {
-    "values": []
-  }
-  `);
-  const [gqlRes, setGqlRes] = React.useState<string>('');
 
   useEffect(() => {
     console.log(JSON.stringify(result, null, 2));
@@ -77,10 +60,8 @@ const App = () => {
         'multiple pickers were opened, only the last will be considered'
       );
     } else {
-      console.log(err)
-      console.warn(
-        err
-      );
+      console.log(err);
+      console.warn(err);
     }
   };
 
@@ -133,9 +114,11 @@ const App = () => {
                 try {
                   if (result) {
                     const _filePath = result.fileCopyUri?.split('file:')[1];
-                    const fileRef = await file.encryptSend(decodeURI(_filePath));
-                    console.log('file saved with CID: ', fileRef.id);
-                    setFileRef(fileRef);
+                    const _fileRef = await file.encryptSend(
+                      decodeURI(_filePath)
+                    );
+                    console.log('file saved with CID: ', _fileRef.id);
+                    setFileRef(_fileRef);
                   }
                 } catch (e) {
                   handleError(e);
@@ -150,9 +133,11 @@ const App = () => {
               onPress={async () => {
                 try {
                   if (result) {
-                    const [_filepath,meta] = await file.receiveDecrypt(fileRef);
-                    console.log(_filepath,meta);
-                    setFilePath("file://"+_filepath);
+                    const [_filepath, meta] = await file.receiveDecrypt(
+                      fileRef
+                    );
+                    console.log(_filepath, meta);
+                    setFilePath('file://' + _filepath);
                     //setBS64(_bs64)
                   }
                 } catch (e) {
@@ -163,11 +148,16 @@ const App = () => {
           </View>
 
           <View style={styles.section}>
-            {filePath && <Image resizeMode="cover" style={styles.imageShow} source={{ uri: `${decodeURI(filePath)}` }} />}
+            {filePath && (
+              <Image
+                resizeMode="cover"
+                style={styles.imageShow}
+                source={{ uri: `${decodeURI(filePath)}` }}
+              />
+            )}
             {/* {filePath && <Text>{bs64}</Text>} */}
             {filePath && <Text>{decodeURI(filePath)}</Text>}
           </View>
-
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -178,7 +168,7 @@ const styles = StyleSheet.create({
   imageShow: {
     width: 200,
     height: 200,
-    padding: 5
+    padding: 5,
   },
   sectionContainer: {
     marginTop: 32,

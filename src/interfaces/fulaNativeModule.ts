@@ -7,7 +7,7 @@ interface FulaNativeModule {
   receiveFileInfo: (fileId: string) => Promise<FileMeta>;
   receiveFile: (fileId: string, fileName: string) => Promise<string>;
   receiveDecryptFile: (fileRef: string, fileName: string) => Promise<string>;
-  encryptSend: (filePath:string) => Promise<string>
+  encryptSend: (filePath: string) => Promise<string>;
   graphQL: (query: string, variableValues: string) => Promise<any>;
 }
 
