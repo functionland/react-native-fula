@@ -17,12 +17,11 @@ export const graphql = (
       const values = JSON.stringify(variableValues);
       const buf = await Fula.graphQL(query, values);
       const res = Result.fromBinary(Uint8Array.from(buf));
-      
+
       if (res.dataOrError.oneofKind === 'error') {
         reject(Result.toJson(res));
-        return
-      }
-      else {
+        return;
+      } else {
         resolve(Result.toJson(res));
       }
     } catch (e) {

@@ -1,13 +1,12 @@
 import { NativeModules, Platform } from 'react-native';
-import type { FileMeta } from '.';
 
 interface FulaNativeModule {
   addBox: (boxAddr: string) => Promise<boolean>;
   send: (filePath: string) => Promise<string>;
-  receiveFileInfo: (fileId: string) => Promise<FileMeta>;
+  receiveFileInfo: (fileId: string) => Promise<string>;
   receiveFile: (fileId: string, fileName: string) => Promise<string>;
   receiveDecryptFile: (fileRef: string, fileName: string) => Promise<string>;
-  encryptSend: (filePath:string) => Promise<string>
+  encryptSend: (filePath: string) => Promise<string>;
   graphQL: (query: string, variableValues: string) => Promise<any>;
 }
 
