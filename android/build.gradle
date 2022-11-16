@@ -59,6 +59,6 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation 'com.github.functionland:fula-android:v0.6.5' // From jitpack.io
+    implementation 'com.github.functionland:fula-android:v0.6.6' // From jitpack.io
     // implementation files('mobile.aar')
 }
