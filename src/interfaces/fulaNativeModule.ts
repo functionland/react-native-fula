@@ -1,13 +1,12 @@
 import { NativeModules, Platform } from 'react-native';
 
 interface FulaNativeModule {
-  addBox: (boxAddr: string) => Promise<boolean>;
-  send: (filePath: string) => Promise<string>;
-  receiveFileInfo: (fileId: string) => Promise<string>;
-  receiveFile: (fileId: string, fileName: string) => Promise<string>;
-  receiveDecryptFile: (fileRef: string, fileName: string) => Promise<string>;
-  encryptSend: (filePath: string) => Promise<string>;
-  graphQL: (query: string, variableValues: string) => Promise<any>;
+  get: (key: string) => Promise<string>;
+  has: (key: string) => Promise<boolean>;
+  pull: (addr: string, key: string) => Promise<string>;
+  push: (addr: string, key: string) => Promise<string>;
+  put: (key: string, value: string) => Promise<string>;
+  shutdown: () => Promise<void>;
 }
 
 const LINKING_ERROR =

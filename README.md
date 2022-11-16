@@ -1,6 +1,6 @@
 # react-native-fula
 
-This package is a bridge to use the Fula libp2p protocols in the react-native
+This package is a bridge to use the Fula protocols in the react-native
 
 ## Installation
 

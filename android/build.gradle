@@ -52,13 +52,13 @@ repositories {
     mavenCentral()
     jcenter()
 
-    // Add this repo to get go-full package
+    // Add this repo to get go-fula package
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation 'com.github.functionland:fula-android:0.5.1' // From jitpack.io
+    implementation 'com.github.functionland:fula-android:0.6.1' // From jitpack.io
     // implementation files('mobile.aar')
 }

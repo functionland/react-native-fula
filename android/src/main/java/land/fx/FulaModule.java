@@ -31,32 +31,16 @@ import java.io.InputStream;
 
 import mobile.Fula;
 import mobile.Mobile;
-import mobile.FileRef;
+import mobile.ConfigRef;
 
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
     public static final String NAME = "FulaModule";
     Fula fula;
-    String appDir;
-    String storeDirPath;
-    String fulaRepo;
 
-    public FulaModule(ReactApplicationContext reactContext) throws Exception{
-        super(reactContext);
-        appDir = reactContext.getFilesDir().toString();
-        storeDirPath = appDir + "/fula/received/";
-        fulaRepo = appDir + "/fula";
-        File storeDir = new File(storeDirPath);
-        boolean success = true;
-        if (!storeDir.exists()) {
-            success = storeDir.mkdirs();
-        }
-        if(success){
-            Log.d(NAME,"Fula store folder created");
-        }else{
-            Log.d(NAME,"Unable to create fula store folder!");
-        }
-        this.fula = Mobile.newFula(fulaRepo);
+    public FulaModule(ConfigRef configRef) throws Exception{
+        super(configRef);
+        this.fula = Mobile.newClient(configRef);
     }
 
     @Override
@@ -66,84 +50,82 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void send(String path, Promise promise) {
+    public void get(byte[] key, Promise promise) {
       ThreadUtils.runOnExecutor(() -> {
             try{
-              String cid = fula.send(path);
-              promise.resolve(cid);
+              byte[] value = fula.get(key);
+              promise.resolve(value);
             }
             catch(Exception e){
               promise.reject(e);
-              Log.d("send",e.getMessage());
+              Log.d("get",e.getMessage());
             }
         });
     }
 
     @ReactMethod
-    public void encryptSend(String path, Promise promise) {
+    public void has(byte[] key, Promise promise) {
       ThreadUtils.runOnExecutor(() -> {
           try{
-            String res = fula.encryptSend(path);
+            boolean res = fula.has(key);
             promise.resolve(res);
           }
           catch(Exception e){
             promise.reject(e);
-            Log.d("encryptSend",e.getMessage());
+            Log.d("has",e.getMessage());
           }
        });
     }
 
     @ReactMethod
-    public void addBox(String boxId, Promise promise) {
+    public void pull(String addr, byte[] key, Promise promise) {
         ThreadUtils.runOnExecutor(() -> {
           try{
-            fula.addBox(boxId);
+            fula.pull(addr, key);
             promise.resolve(true);
           }
           catch(Exception e){
             promise.reject(e);
-            Log.d("addBox",e.getMessage());
+            Log.d("pull",e.getMessage());
           }
       });
     }
 
     @ReactMethod
-    public void receiveFileInfo(String fileId, Promise promise){
+    public void push(String addr, byte[] key, Promise promise){
         ThreadUtils.runOnExecutor(() -> {
           try{
-            String result = fula.receiveFileInfo(fileId);
-            promise.resolve(result);
+            fula.push(addr, key);
+            promise.resolve(true);
           }catch (Exception e){
             promise.reject(e);
-            Log.d("receiveFileInfo",e.getMessage());
+            Log.d("push",e.getMessage());
           }
         });
     }
 
     @ReactMethod
-    public void receiveFile(String fileId, String fileName, Promise promise) {
+    public void put(String key, byte[] value, Promise promise) {
        ThreadUtils.runOnExecutor(() -> {
           try{
-            String filePath = storeDirPath + fileName;
-            fula.receiveFile(fileId, filePath);
-            promise.resolve(filePath);
+            fula.put(key, value);
+            promise.resolve(true);
           }catch (Exception e){
             promise.reject(e);
-            Log.d("receiveFile",e.getMessage());
+            Log.d("put",e.getMessage());
           }
        });
     }
 
     @ReactMethod
-    public void receiveDecryptFile(String fileRef, String fileName,Promise promise) {
+    public void shutdown(Promise promise) {
         ThreadUtils.runOnExecutor(() -> {
           try{
-            String filePath = storeDirPath + fileName;
-            fula.receiveDecryptFile(fileRef, filePath);
-            promise.resolve(filePath);
+            fula.shutdown();
+            promise.resolve(true);
           }catch (Exception e){
             promise.reject(e);
-            Log.d("receiveDecryptFile",e.getMessage());
+            Log.d("shutdown",e.getMessage());
           }
           });
 
