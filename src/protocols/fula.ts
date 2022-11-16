@@ -1,4 +1,15 @@
 import Fula from '../interfaces/fulaNativeModule';
+import type { Config } from '../interfaces';
+
+/**
+ * Get gets the value corresponding to the given key from the local datastore.
+// The key must be a valid ipld.Link.
+ * @param config
+ * @returns boolean
+ */
+export const init = (config: Config): Promise<boolean> => {
+  return Fula.init(config);
+};
 
 /**
  * Get gets the value corresponding to the given key from the local datastore.

@@ -1,6 +1,8 @@
 import { NativeModules, Platform } from 'react-native';
+import type { Config } from '../interfaces';
 
 interface FulaNativeModule {
+  init: (config: Config) => Promise<boolean>;
   get: (key: string) => Promise<string>;
   has: (key: string) => Promise<boolean>;
   pull: (addr: string, key: string) => Promise<string>;

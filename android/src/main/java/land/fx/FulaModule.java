@@ -38,9 +38,24 @@ import fulamobile.Config;
 public class FulaModule extends ReactContextBaseJavaModule {
     public static final String NAME = "FulaModule";
     Client fula;
+    Config config;
+    String appDir;
+    String fulaStorePath;
 
-    public FulaModule(Config config) throws Exception{
-        this.fula = Fulamobile.newClient(config);
+    public FulaModule(ReactApplicationContext reactContext) throws Exception{
+        super(reactContext);
+        appDir = reactContext.getFilesDir().toString();
+        fulaStorePath = appDir + "/fula";
+        File storeDir = new File(fulaStorePath);
+        boolean success = true;
+        if (!storeDir.exists()) {
+            success = storeDir.mkdirs();
+        }
+        if(success){
+            Log.d(NAME,"Fula store folder created");
+        }else{
+            Log.d(NAME,"Unable to create fula store folder!");
+        }
     }
 
     @Override
@@ -48,6 +63,23 @@ public class FulaModule extends ReactContextBaseJavaModule {
     public String getName() {
         return NAME;
     }
+
+  @ReactMethod
+  public void init(Config config, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      try{
+        if(config.storePath != null && !config.storePath.trim().isEmpty()) {
+          config.storePath = fulaStorePath;
+        }
+        this.fula = Fulamobile.newClient(config);
+        promise.resolve(true);
+      }
+      catch(Exception e){
+        promise.reject(e);
+        Log.d("init",e.getMessage());
+      }
+    });
+  }
 
     @ReactMethod
     public void get(byte[] key, Promise promise) {
@@ -105,7 +137,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void put(String key, byte[] value, Promise promise) {
+    public void put(byte[] key, byte[] value, Promise promise) {
        ThreadUtils.runOnExecutor(() -> {
           try{
             fula.put(key, value);

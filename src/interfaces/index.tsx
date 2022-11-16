@@ -1,4 +1,4 @@
-export interface ConfigRef {
+export interface Config {
   identity: string[];
   storePath: string;
 }
