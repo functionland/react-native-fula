@@ -1,4 +1,4 @@
 export interface Config {
-  identity: string[];
+  identity: Uint8Array[];
   storePath: string;
 }
