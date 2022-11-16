@@ -31,6 +31,7 @@ import java.io.InputStream;
 
 import fulamobile.Fulamobile;
 import fulamobile.Client;
+import fulamobile.Config;
 
 
 @ReactModule(name = FulaModule.NAME)
@@ -38,8 +39,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
     public static final String NAME = "FulaModule";
     Client fula;
 
-    public FulaModule(ConfigRef configRef) throws Exception{
-        this.fula = Fulamobile.NewClient(configRef);
+    public FulaModule(Config config) throws Exception{
+        this.fula = Fulamobile.newClient(config);
     }
 
     @Override
