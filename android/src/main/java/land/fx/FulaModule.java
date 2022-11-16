@@ -29,18 +29,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import fulamobile.Fula;
-import fulamobile.Mobile;
-import fulamobile.ConfigRef;
+import fulamobile.Fulamobile;
+import fulamobile.Client;
+
 
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
     public static final String NAME = "FulaModule";
-    Fula fula;
+    Client fula;
 
     public FulaModule(ConfigRef configRef) throws Exception{
-        super(configRef);
-        this.fula = Mobile.newClient(configRef);
+        this.fula = Fulamobile.NewClient(configRef);
     }
 
     @Override
