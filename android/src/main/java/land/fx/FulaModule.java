@@ -29,9 +29,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import mobile.Fula;
-import mobile.Mobile;
-import mobile.ConfigRef;
+import fulamobile.Fula;
+import fulamobile.Mobile;
+import fulamobile.ConfigRef;
 
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
