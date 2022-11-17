@@ -7,8 +7,11 @@ import type { Config } from '../interfaces';
  * @param config
  * @returns boolean
  */
-export const init = (config: Config): Promise<boolean> => {
-  return Fula.init(config);
+export const initJNI = (
+  identity: string | null,
+  storePath: string | null
+): Promise<boolean> => {
+  return Fula.initJNI(identity, storePath);
 };
 
 /**
@@ -61,8 +64,8 @@ export const push = (addr: string, key: Uint8Array): Promise<string> => {
  * @param key, value
  * @returns null or string
  */
-export const put = (key: Uint8Array, value: Uint8Array): Promise<string> => {
-  return Fula.put(key, value);
+export const putJNI = (key: string, value: string): Promise<string> => {
+  return Fula.putJNI(key, value);
 };
 
 /**

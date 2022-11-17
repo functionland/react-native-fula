@@ -24,12 +24,12 @@ const App = () => {
   React.useEffect(() => {
     try {
       const config: Types.Config = {
-        identity: null,
+        identity: '',
         storePath: '',
       };
       const initFula = async () => {
         try {
-          let f = await fula.init(config);
+          let f = await fula.initJNI('', '');
           console.log('initialization result', f);
 
           setInitComplete(f);
@@ -77,12 +77,12 @@ const App = () => {
             try {
               if (initComplete) {
                 console.log('initialization is completed');
-                const bytes = new TextEncoder('utf8').encode(value);
+                const bytes = new Uint8Array(10);
 
                 const hash = await multihashing(bytes, 'sha2-256');
                 const cid = new CID(1, 'dag-pb', hash);
                 console.log(cid.toString());
-                const res = await fula.put(cid.bytes, bytes);
+                const res = await fula.putJNI(cid.toString(), value);
                 console.log(res);
                 //setBS64(_bs64)
               }

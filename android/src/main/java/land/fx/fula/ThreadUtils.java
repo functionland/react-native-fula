@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 
 final class ThreadUtils {
     /**
-     * Thread which will be used to call all Libp2p APIs. They
+     * Thread which will be used to call all APIs. They
      * they don't run on the calling thread anyway, we are deferring the calls
      * to this thread to avoid (potentially) blocking the calling thread.
      */
