@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   Image,
@@ -26,8 +23,6 @@ import {
   shutdown,
   Types,
 } from 'react-native-fula';
-
-import { Header } from 'react-native/Libraries/NewAppScreen';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -61,10 +56,6 @@ const App = () => {
   };
 
   return (
-    <SafeAreaView>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView>
-        <Header />
         <View style={styles.container}>
           <View style={styles.section}>
             <Text>Key:</Text>
@@ -99,8 +90,6 @@ const App = () => {
             />
           </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
   );
 };
 
