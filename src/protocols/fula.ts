@@ -20,8 +20,8 @@ export const initJNI = (
  * @param key
  * @returns value
  */
-export const get = (key: Uint8Array): Promise<Uint8Array> => {
-  return Fula.get(key);
+export const getJNI = (key: string): Promise<string> => {
+  return Fula.getJNI(key);
 };
 
 /**

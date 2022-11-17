@@ -77,14 +77,13 @@ const App = () => {
             try {
               if (initComplete) {
                 console.log('initialization is completed');
-                const bytes = new Uint8Array(10);
-
-                const hash = await multihashing(bytes, 'sha2-256');
-                const cid = new CID(1, 'dag-pb', hash);
-                console.log(cid.toString());
-                const res = await fula.putJNI(cid.toString(), value);
+                const cid = 'bafybeig6xv5nwphfmvcnektpnojts33jqcuam7bmye2pb54adnrtccjlsu';
+                console.log(cid);
+                const res = await fula.putJNI(cid, value);
                 console.log(res);
                 console.log('here');
+                const res2 = await fula.getJNI(cid);
+                console.log(res2);
                 //setBS64(_bs64)
               } else {
                 console.log('wait for init to complete');

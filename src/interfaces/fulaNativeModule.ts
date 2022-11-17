@@ -6,7 +6,7 @@ interface FulaNativeModule {
     identity: string | null,
     storePath: string | null
   ) => Promise<boolean>;
-  get: (key: Uint8Array) => Promise<Uint8Array>;
+  getJNI: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
   pull: (addr: string, key: Uint8Array) => Promise<string>;
   push: (addr: string, key: Uint8Array) => Promise<string>;
