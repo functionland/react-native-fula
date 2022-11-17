@@ -21,6 +21,9 @@ const config: Types.Config = {
     storePath: '', //A path on the system for storage, or leave empty to use default in [app directory]/fula
   };
 
+//Initialize the fula client, which creates the libp2p connection
+await fula.init(config);
+
 //Store file to the box
 const res = await fula.put(cid, value);
 
