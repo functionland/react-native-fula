@@ -1,45 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   Text,
-  Image,
-  useColorScheme,
   View,
   Button,
   TextInput,
+  ActionSheetIOS,
 } from 'react-native';
 
-import DocumentPicker, {
-  DocumentPickerResponse,
-  isInProgress,
-} from 'react-native-document-picker';
-import {
-  fula,
-  get,
-  pull,
-  put,
-  push,
-  has,
-  shutdown,
-  Types,
-} from 'react-native-fula';
+import DocumentPicker, { isInProgress } from 'react-native-document-picker';
+import { fula, Types } from 'react-native-fula';
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const [result, setResult] = React.useState<
-    DocumentPickerResponse | undefined | null
-  >();
-  const [fileRef, setFileRef] = React.useState<
-    Types.FileRef | undefined | null
-  >();
-  const [filePath, setFilePath] = React.useState<string | undefined | null>();
+  const CID = require('cids');
+  const multihashing = require('multihashing-async');
+
   const [key, setKey] = React.useState<string>('');
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
 
-  useEffect(() => {
-    console.log(JSON.stringify(result, null, 2));
-  }, [result]);
+  const [initComplete, setInitComplete] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    try {
+      const config: Types.Config = {
+        identity: null,
+        storePath: '',
+      };
+      const initFula = async () => {
+        try {
+          let f = await fula.init(config);
+          console.log('initialization result', f);
+
+          setInitComplete(f);
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      try {
+        initFula();
+      } catch (e) {
+        console.log(e);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   const handleError = (err: unknown) => {
     if (DocumentPicker.isCancel(err)) {
@@ -56,40 +62,38 @@ const App = () => {
   };
 
   return (
-        <View style={styles.container}>
-          <View style={styles.section}>
-            <Text>Key:</Text>
-            <TextInput
-              onChangeText={(t) => setKey(t)}
-              value={key}
-              style={styles.input}
-            />
+    <View style={styles.container}>
+      <View style={styles.section}>
+        <Text>Value:</Text>
+        <TextInput
+          onChangeText={(t) => setValue(t)}
+          value={value}
+          style={styles.input}
+        />
 
-            <Text>Value:</Text>
-            <TextInput
-              onChangeText={(t) => setValue(t)}
-              value={value}
-              style={styles.input}
-            />
+        <Button
+          title={inprogress ? 'Putting...' : 'Put'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                console.log('initialization is completed');
+                const bytes = new TextEncoder('utf8').encode(value);
 
-
-            <Button
-              title={inprogress ? 'Putting...' : 'Put'}
-              onPress={async () => {
-                try {
-                  if (result) {
-                    const res = await fula.put(key, value);
-                    console.log(res);
-                    //setBS64(_bs64)
-                  }
-                } catch (e) {
-                  handleError(e);
-                }
-              }}
-              color={inprogress ? 'green' : 'gray'}
-            />
-          </View>
-        </View>
+                const hash = await multihashing(bytes, 'sha2-256');
+                const cid = new CID(1, 'dag-pb', hash);
+                console.log(cid.toString());
+                const res = await fula.put(cid.bytes, bytes);
+                console.log(res);
+                //setBS64(_bs64)
+              }
+            } catch (e) {
+              handleError(e);
+            }
+          }}
+          color={inprogress ? 'green' : 'gray'}
+        />
+      </View>
+    </View>
   );
 };
 

@@ -3,11 +3,11 @@ import type { Config } from '../interfaces';
 
 interface FulaNativeModule {
   init: (config: Config) => Promise<boolean>;
-  get: (key: Uint8Array[]) => Promise<Uint8Array[]>;
-  has: (key: Uint8Array[]) => Promise<boolean>;
-  pull: (addr: string, key: Uint8Array[]) => Promise<string>;
-  push: (addr: string, key: Uint8Array[]) => Promise<string>;
-  put: (key: Uint8Array[], value: Uint8Array[]) => Promise<string>;
+  get: (key: Uint8Array) => Promise<Uint8Array>;
+  has: (key: Uint8Array) => Promise<boolean>;
+  pull: (addr: string, key: Uint8Array) => Promise<string>;
+  push: (addr: string, key: Uint8Array) => Promise<string>;
+  put: (key: Uint8Array, value: Uint8Array) => Promise<string>;
   shutdown: () => Promise<void>;
 }
 

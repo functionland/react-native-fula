@@ -48,7 +48,8 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-
+    "cids": "^1.1.9",
+    "multihashing-async": "^2.1.4"
   },
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.16.7",

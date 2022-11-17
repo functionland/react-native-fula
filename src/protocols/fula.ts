@@ -17,7 +17,7 @@ export const init = (config: Config): Promise<boolean> => {
  * @param key
  * @returns value
  */
-export const get = (key: Uint8Array[]): Promise<Uint8Array[]> => {
+export const get = (key: Uint8Array): Promise<Uint8Array> => {
   return Fula.get(key);
 };
 
@@ -27,7 +27,7 @@ export const get = (key: Uint8Array[]): Promise<Uint8Array[]> => {
  * @param key
  * @returns boolean
  */
-export const has = (key: Uint8Array[]): Promise<boolean> => {
+export const has = (key: Uint8Array): Promise<boolean> => {
   return Fula.has(key);
 };
 
@@ -38,7 +38,7 @@ export const has = (key: Uint8Array[]): Promise<boolean> => {
  * @param addr, key
  * @returns null or error
  */
-export const pull = (addr: string, key: Uint8Array[]): Promise<string> => {
+export const pull = (addr: string, key: Uint8Array): Promise<string> => {
   return Fula.pull(addr, key);
 };
 
@@ -50,7 +50,7 @@ export const pull = (addr: string, key: Uint8Array[]): Promise<string> => {
  * @param addr, key
  * @returns null or error
  */
-export const push = (addr: string, key: Uint8Array[]): Promise<string> => {
+export const push = (addr: string, key: Uint8Array): Promise<string> => {
   return Fula.push(addr, key);
 };
 
@@ -61,10 +61,7 @@ export const push = (addr: string, key: Uint8Array[]): Promise<string> => {
  * @param key, value
  * @returns null or string
  */
-export const put = (
-  key: Uint8Array[],
-  value: Uint8Array[]
-): Promise<string> => {
+export const put = (key: Uint8Array, value: Uint8Array): Promise<string> => {
   return Fula.put(key, value);
 };
 
