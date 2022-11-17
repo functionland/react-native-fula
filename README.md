@@ -11,18 +11,21 @@ npm install react-native-fula
 ## Usage
 
 ```js
-import { file, fula } from 'react-native-fula';
+import { fula, Types } from 'react-native-fula';
 
 // ...
 
-//Connect to the box
-const status = await fula.connect("[Your Box address]");
+// Set the config
+const config: Types.Config = {
+    identity: [], //a keypair that represents the libp2p peerId, or leave empty to create one by the library 
+    storePath: '', //A path on the system for storage, or leave empty to use default in [app directory]/fula
+  };
 
 //Store file to the box
-const cid = await file.send(decodeURI("[File path]"));
+const res = await fula.put(cid, value);
 
 //Get file path form the box
-const filepath = await file.receive(cid);
+const fetchedValue = await fula.get(cid);
 
 ```
 
