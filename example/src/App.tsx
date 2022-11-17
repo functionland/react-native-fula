@@ -84,7 +84,10 @@ const App = () => {
                 console.log(cid.toString());
                 const res = await fula.putJNI(cid.toString(), value);
                 console.log(res);
+                console.log('here');
                 //setBS64(_bs64)
+              } else {
+                console.log('wait for init to complete');
               }
             } catch (e) {
               handleError(e);
