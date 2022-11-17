@@ -1,9 +1,12 @@
+package land.fx.fula;
+
+import android.util.Log;
 import fulamobile.Client;
 
 public class BlockStore {
   private Client fula;
 
-  public BlockStore(Client fula) throws Exception{
+  public BlockStore(Client fula) {
     this.fula = fula;
 
   }
