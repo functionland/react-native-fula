@@ -37,21 +37,18 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/ghorbani-m/react-native-fula",
-  "author": "Mahdi Ghorbani <mahdi.ghorbani@gmail.com> (https://github.com/ghorbani-m)",
+  "repository": "https://github.com/functionland/react-native-fula",
+  "author": "Ehsan Shariati <ehsan6sha@gmail.com> (https://github.com/ehsan6sha)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ghorbani-m/react-native-fula/issues"
+    "url": "https://github.com/functionland/react-native-fula/issues"
   },
-  "homepage": "https://github.com/ghorbani-m/react-native-fula#readme",
+  "homepage": "https://github.com/functionland/react-native-fula#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@functionland/file-protocol": "^0.3.6",
-    "@functionland/graph-protocol": "^0.2.2",
-    "buffer": "^6.0.3",
-    "fastestsmallesttextencoderdecoder": "^1.0.22"
+
   },
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.16.7",
