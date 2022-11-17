@@ -13,8 +13,8 @@ import com.facebook.react.module.annotations.ReactModule;
 import java.io.File;
 
 import fulamobile.Client;
-import fulamobile.Config;
 import fulamobile.Fulamobile;
+import fulamobile.Config;
 
 
 @ReactModule(name = FulaModule.NAME)
@@ -47,14 +47,20 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
 
   @ReactMethod
-  public void init(Config config, Promise promise) {
+  public void init(ConfigRef config, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       try{
-        String storePath = config.getStorePath();
+        Config config_ext = new Config();
+        String storePath = config.storePath;
         if(storePath != null && !storePath.trim().isEmpty()) {
-          config.setStorePath(fulaStorePath);
+          config_ext.setStorePath(fulaStorePath);
         }
-        this.fula = Fulamobile.newClient(config);
+
+        byte[] identity = config.identity;
+        if (identity != null) {
+          config_ext.setIdentity(identity);
+        }
+        this.fula = Fulamobile.newClient(config_ext);
         promise.resolve(true);
       }
       catch(Exception e){
