@@ -1,13 +1,16 @@
 import { NativeModules, Platform } from 'react-native';
-import type { Config } from '../interfaces';
+//import type { Config } from '../interfaces';
 
 interface FulaNativeModule {
-  init: (config: Config) => Promise<boolean>;
-  get: (key: Uint8Array[]) => Promise<Uint8Array[]>;
-  has: (key: Uint8Array[]) => Promise<boolean>;
-  pull: (addr: string, key: Uint8Array[]) => Promise<string>;
-  push: (addr: string, key: Uint8Array[]) => Promise<string>;
-  put: (key: Uint8Array[], value: Uint8Array[]) => Promise<string>;
+  initJNI: (
+    identity: string | null,
+    storePath: string | null
+  ) => Promise<boolean>;
+  getJNI: (key: string) => Promise<string>;
+  has: (key: Uint8Array) => Promise<boolean>;
+  pull: (addr: string, key: Uint8Array) => Promise<string>;
+  push: (addr: string, key: Uint8Array) => Promise<string>;
+  putJNI: (key: string, value: string) => Promise<string>;
   shutdown: () => Promise<void>;
 }
 

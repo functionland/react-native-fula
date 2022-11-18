@@ -1,95 +1,79 @@
-import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  Image,
-  useColorScheme,
-  View,
-  Button,
-  TextInput,
-} from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
-import DocumentPicker, {
-  DocumentPickerResponse,
-  isInProgress,
-} from 'react-native-document-picker';
-import {
-  fula,
-  get,
-  pull,
-  put,
-  push,
-  has,
-  shutdown,
-  Types,
-} from 'react-native-fula';
+import { fula, Types } from 'react-native-fula';
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const [result, setResult] = React.useState<
-    DocumentPickerResponse | undefined | null
-  >();
-  const [fileRef, setFileRef] = React.useState<
-    Types.FileRef | undefined | null
-  >();
-  const [filePath, setFilePath] = React.useState<string | undefined | null>();
   const [key, setKey] = React.useState<string>('');
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
 
-  useEffect(() => {
-    console.log(JSON.stringify(result, null, 2));
-  }, [result]);
+  const [initComplete, setInitComplete] = React.useState<boolean>(false);
 
-  const handleError = (err: unknown) => {
-    if (DocumentPicker.isCancel(err)) {
-      console.warn('cancelled');
-      // User cancelled the picker, exit any dialogs or menus and move on
-    } else if (isInProgress(err)) {
-      console.warn(
-        'multiple pickers were opened, only the last will be considered'
-      );
-    } else {
-      console.log(err);
-      console.warn(err);
+  React.useEffect(() => {
+    try {
+      const config: Types.Config = {
+        identity: '',
+        storePath: '',
+      };
+      const initFula = async () => {
+        try {
+          let f = await fula.initJNI('', '');
+          console.log('initialization result', f);
+
+          setInitComplete(f);
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      try {
+        initFula();
+      } catch (e) {
+        console.log(e);
+      }
+    } catch (e) {
+      console.log(e);
     }
-  };
+  }, []);
 
   return (
-        <View style={styles.container}>
-          <View style={styles.section}>
-            <Text>Key:</Text>
-            <TextInput
-              onChangeText={(t) => setKey(t)}
-              value={key}
-              style={styles.input}
-            />
+    <View style={styles.container}>
+      <View style={styles.section}>
+        <Text>Put & Get</Text>
 
-            <Text>Value:</Text>
-            <TextInput
-              onChangeText={(t) => setValue(t)}
-              value={value}
-              style={styles.input}
-            />
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test'}
+          onPress={async () => {
+            try {
+              const jsonvalue = { hello: 'world' };
+              const ciduint8 = [
+                1, 112, 18, 32, 195, 196, 115, 62, 200, 175, 253, 6, 207, 158,
+                159, 245, 15, 252, 107, 205, 46, 200, 90, 97, 112, 0, 75, 183,
+                9, 102, 156, 49, 222, 148, 57, 26,
+              ];
+              const cid =
+                'bagaaierasords4njcts6vs7qvdjfcvgnume4hqohf65zsfguprqphs3icwea';
+              if (initComplete) {
 
-
-            <Button
-              title={inprogress ? 'Putting...' : 'Put'}
-              onPress={async () => {
-                try {
-                  if (result) {
-                    const res = await fula.put(key, value);
-                    console.log(res);
-                    //setBS64(_bs64)
-                  }
-                } catch (e) {
-                  handleError(e);
-                }
-              }}
-              color={inprogress ? 'green' : 'gray'}
-            />
-          </View>
-        </View>
+                console.log('initialization is completed. putting key/value');
+                const res = await fula.putJNI(
+                  ciduint8.toString(),
+                  JSON.stringify(jsonvalue)
+                );
+                console.log(res);
+                console.log('Now fetching key...');
+                const res2 = await fula.getJNI(ciduint8.toString());
+                console.log(JSON.parse(res2));
+                //setBS64(_bs64)
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'gray'}
+        />
+      </View>
+    </View>
   );
 };
 

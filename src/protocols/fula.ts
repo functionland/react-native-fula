@@ -1,5 +1,5 @@
 import Fula from '../interfaces/fulaNativeModule';
-import type { Config } from '../interfaces';
+//import type { Config } from '../interfaces';
 
 /**
  * Get gets the value corresponding to the given key from the local datastore.
@@ -7,8 +7,11 @@ import type { Config } from '../interfaces';
  * @param config
  * @returns boolean
  */
-export const init = (config: Config): Promise<boolean> => {
-  return Fula.init(config);
+export const initJNI = (
+  identity: string | null,
+  storePath: string | null
+): Promise<boolean> => {
+  return Fula.initJNI(identity, storePath);
 };
 
 /**
@@ -17,8 +20,8 @@ export const init = (config: Config): Promise<boolean> => {
  * @param key
  * @returns value
  */
-export const get = (key: Uint8Array[]): Promise<Uint8Array[]> => {
-  return Fula.get(key);
+export const getJNI = (key: string): Promise<string> => {
+  return Fula.getJNI(key);
 };
 
 /**
@@ -27,7 +30,7 @@ export const get = (key: Uint8Array[]): Promise<Uint8Array[]> => {
  * @param key
  * @returns boolean
  */
-export const has = (key: Uint8Array[]): Promise<boolean> => {
+export const has = (key: Uint8Array): Promise<boolean> => {
   return Fula.has(key);
 };
 
@@ -38,7 +41,7 @@ export const has = (key: Uint8Array[]): Promise<boolean> => {
  * @param addr, key
  * @returns null or error
  */
-export const pull = (addr: string, key: Uint8Array[]): Promise<string> => {
+export const pull = (addr: string, key: Uint8Array): Promise<string> => {
   return Fula.pull(addr, key);
 };
 
@@ -50,7 +53,7 @@ export const pull = (addr: string, key: Uint8Array[]): Promise<string> => {
  * @param addr, key
  * @returns null or error
  */
-export const push = (addr: string, key: Uint8Array[]): Promise<string> => {
+export const push = (addr: string, key: Uint8Array): Promise<string> => {
   return Fula.push(addr, key);
 };
 
@@ -61,11 +64,8 @@ export const push = (addr: string, key: Uint8Array[]): Promise<string> => {
  * @param key, value
  * @returns null or string
  */
-export const put = (
-  key: Uint8Array[],
-  value: Uint8Array[]
-): Promise<string> => {
-  return Fula.put(key, value);
+export const putJNI = (key: string, value: string): Promise<string> => {
+  return Fula.putJNI(key, value);
 };
 
 /**

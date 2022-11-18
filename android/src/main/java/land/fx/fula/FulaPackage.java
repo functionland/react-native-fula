@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fulamobile.Config;
-
 public class FulaPackage implements ReactPackage {
   @NonNull
   @Override

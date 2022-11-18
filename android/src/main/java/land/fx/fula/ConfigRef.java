@@ -1,8 +1,7 @@
 package land.fx.fula;
 
-import java.util.Arrays;
-
-public class ConfigRef {
+public final class ConfigRef {
     public byte[] identity;
-    public String storePath;
+    public java.lang.String storePath;
 }
+
