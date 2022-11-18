@@ -1,5 +1,5 @@
 import { NativeModules, Platform } from 'react-native';
-import type { Config } from '../interfaces';
+//import type { Config } from '../interfaces';
 
 interface FulaNativeModule {
   initJNI: (

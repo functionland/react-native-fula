@@ -1,5 +1,5 @@
 import Fula from '../interfaces/fulaNativeModule';
-import type { Config } from '../interfaces';
+//import type { Config } from '../interfaces';
 
 /**
  * Get gets the value corresponding to the given key from the local datastore.

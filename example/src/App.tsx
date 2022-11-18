@@ -1,20 +1,9 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  TextInput,
-  ActionSheetIOS,
-} from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
-import DocumentPicker, { isInProgress } from 'react-native-document-picker';
 import { fula, Types } from 'react-native-fula';
 
 const App = () => {
-  const CID = require('cids');
-  const multihashing = require('multihashing-async');
-
   const [key, setKey] = React.useState<string>('');
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
@@ -47,50 +36,39 @@ const App = () => {
     }
   }, []);
 
-  const handleError = (err: unknown) => {
-    if (DocumentPicker.isCancel(err)) {
-      console.warn('cancelled');
-      // User cancelled the picker, exit any dialogs or menus and move on
-    } else if (isInProgress(err)) {
-      console.warn(
-        'multiple pickers were opened, only the last will be considered'
-      );
-    } else {
-      console.log(err);
-      console.warn(err);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.section}>
-        <Text>Value:</Text>
-        <TextInput
-          onChangeText={(t) => setValue(t)}
-          value={value}
-          style={styles.input}
-        />
+        <Text>Put & Get</Text>
 
         <Button
-          title={inprogress ? 'Putting...' : 'Put'}
+          title={inprogress ? 'Putting & Getting...' : 'Test'}
           onPress={async () => {
             try {
+              const jsonvalue = { hello: 'world' };
+              const ciduint8 = [
+                1, 112, 18, 32, 195, 196, 115, 62, 200, 175, 253, 6, 207, 158,
+                159, 245, 15, 252, 107, 205, 46, 200, 90, 97, 112, 0, 75, 183,
+                9, 102, 156, 49, 222, 148, 57, 26,
+              ];
+              const cid =
+                'bagaaierasords4njcts6vs7qvdjfcvgnume4hqohf65zsfguprqphs3icwea';
               if (initComplete) {
-                console.log('initialization is completed');
-                const cid = 'bafybeig6xv5nwphfmvcnektpnojts33jqcuam7bmye2pb54adnrtccjlsu';
-                console.log(cid);
-                const res = await fula.putJNI(cid, value);
+
+                console.log('initialization is completed. putting key/value');
+                const res = await fula.putJNI(
+                  ciduint8.toString(),
+                  JSON.stringify(jsonvalue)
+                );
                 console.log(res);
-                console.log('here');
-                const res2 = await fula.getJNI(cid);
-                console.log(res2);
+                console.log('Now fetching key...');
+                const res2 = await fula.getJNI(ciduint8.toString());
+                console.log(JSON.parse(res2));
                 //setBS64(_bs64)
               } else {
                 console.log('wait for init to complete');
               }
-            } catch (e) {
-              handleError(e);
-            }
+            } catch (e) {}
           }}
           color={inprogress ? 'green' : 'gray'}
         />

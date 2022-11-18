@@ -9,9 +9,8 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "react": "^18.1.0",
-    "react-native": "^0.68.2",
-    "react-native-document-picker": "^8.1.0"
+    "react": "^17.0.2",
+    "react-native": "^0.68.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
