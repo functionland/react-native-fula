@@ -19,10 +19,10 @@ import { fula, Types } from 'react-native-fula';
 await fula.initJNI('', ''); //identity,storePath
 
 //Store file to the box
-const res = await fula.put(ciduint8.toString(), valueString);
+const res = await fula.putJNI(ciduint8.toString(), valueString);
 
 //Get file path form the box
-const fetchedValue = await fula.get(ciduint8.toString());
+const fetchedValue = await fula.getJNI(ciduint8.toString());
 
 ```
 
