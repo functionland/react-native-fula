@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { HDKEY, DID, EncryptJWT, DecryptJWT } from '@functionland/fula-sec';
 
 import { fula, Types } from 'react-native-fula';
 
@@ -9,6 +10,25 @@ const App = () => {
   const [inprogress, setInprogress] = React.useState<boolean>(false);
 
   const [initComplete, setInitComplete] = React.useState<boolean>(false);
+
+  let password = Math.random().toString(36).slice(2);  //User`s password
+    let signedKey = '9d7020006cf0696334ead54fffb859a8253e5a44860c211d23c7b6bf842d0c63535a5efd266a647cabdc4392df9a4ce28db7dc393318068d93bf33a32adb81ae'; // signedKey from metamask
+
+     /* 1 - Add user`s password */
+    const ed = new HDKEY(password);
+    const chainCode = ed.chainCode;
+    console.log("chain code", chainCode);
+
+    const keyPair = ed.createEDKeyPair(signedKey);
+     /* keyPair: {
+      publicKey,
+      secretKey    
+    } for creating DID and Encrypt/Decrypt */
+
+    console.log('secretkey: ', keyPair.secretKey); //send to go-fula for peerId
+
+    const did = new DID(keyPair.secretKey);
+    console.log('get did: ', did.did());
 
   React.useEffect(() => {
     try {
@@ -44,6 +64,7 @@ const App = () => {
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Test'}
           onPress={async () => {
+            console.log("Pressed");
             try {
               const jsonvalue = { hello: 'world' };
               const ciduint8 = [
@@ -70,7 +91,7 @@ const App = () => {
               }
             } catch (e) {}
           }}
-          color={inprogress ? 'green' : 'gray'}
+          color={inprogress ? 'green' : 'blue'}
         />
       </View>
     </View>
