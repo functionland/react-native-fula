@@ -1,7 +1,7 @@
 {
   "name": "react-native-fula",
-  "version": "0.3.0",
-  "description": "This package is a bridge to use the Fula libp2p protocols in the react-native",
+  "version": "0.4.0",
+  "description": "This package is a bridge to use the Fula libp2p protocols in the react-native which is using wnfs",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",

@@ -1,6 +1,6 @@
 # react-native-fula
 
-This package is a bridge to use the Fula protocols in the react-native
+This package is a bridge to use the Fula protocols in the react-native. It uses WNFS to create the merkle dag from files and folders and transfer teh DAG using Graphsync to the nodes.
 
 ## Installation
 
@@ -11,18 +11,18 @@ npm install react-native-fula
 ## Usage
 
 ```js
-import { fula, Types } from 'react-native-fula';
+import { fula } from 'react-native-fula';
 
 // ...
 
 //Initialize the fula client, which creates the libp2p connection
-await fula.initJNI('', ''); //identity,storePath
+[peerId, cid, private_ref] = await fula.init('', ''); //private key of user's did which will be used to encrypt and store private key of generated peerId for this app, storePath which you can leave empty
 
-//Store file to the box
-const res = await fula.putJNI(ciduint8.toString(), valueString);
+//Creates a Folder
+const cid = await fula.mkdir(valueString);
 
-//Get file path form the box
-const fetchedValue = await fula.getJNI(ciduint8.toString());
+//Write a file to the pth
+const cid = await fula.writeFile(valueString, ciduint8.toString());
 
 ```
 

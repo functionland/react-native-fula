@@ -1,5 +1,4 @@
 import Fula from '../interfaces/fulaNativeModule';
-//import type { Config } from '../interfaces';
 
 /**
  * Get gets the value corresponding to the given key from the local datastore.
@@ -7,11 +6,11 @@ import Fula from '../interfaces/fulaNativeModule';
  * @param config
  * @returns boolean
  */
-export const initJNI = (
-  identity: string | null,
+export const init = (
+  identity: string | null, //privateKey of did identity
   storePath: string | null
-): Promise<boolean> => {
-  return Fula.initJNI(identity, storePath);
+): Promise<[string]> => {
+  return Fula.init(identity, storePath);
 };
 
 /**
@@ -20,8 +19,8 @@ export const initJNI = (
  * @param key
  * @returns value
  */
-export const getJNI = (key: string): Promise<string> => {
-  return Fula.getJNI(key);
+export const get = (key: string): Promise<string> => {
+  return Fula.get(key);
 };
 
 /**
@@ -64,8 +63,45 @@ export const push = (addr: string, key: Uint8Array): Promise<string> => {
  * @param key, value
  * @returns null or string
  */
-export const putJNI = (key: string, value: string): Promise<string> => {
-  return Fula.putJNI(key, value);
+export const put = (key: string, value: string): Promise<string> => {
+  return Fula.put(key, value);
+};
+
+/**
+ * mkdir creates a directory at the given path.
+ * @param path
+ * @returns string: new cid of the root
+ */
+export const mkdir = (path: string): Promise<string> => {
+  return Fula.mkdir(path);
+};
+
+/**
+ * writeFile writes content at a given path
+ * @param path
+ * @returns string: new cid of the root
+ */
+export const writeFile = (path: string, content: string): Promise<string> => {
+  return Fula.writeFile(path, content);
+};
+
+/**
+ * ls lists the name of files and folders at a given path
+ * @param path
+ * @returns string: list of items 
+ * TODO: Findout how is the string and convert to array
+ */
+ export const ls = (path: string): Promise<string> => {
+  return Fula.ls(path);
+};
+
+/**
+ * readFile reads content of a given path
+ * @param path
+ * @returns string: cotent
+ */
+ export const readFile = (path: string): Promise<string> => {
+  return Fula.readFile(path);
 };
 
 /**
