@@ -8,9 +8,11 @@ import Fula from '../interfaces/fulaNativeModule';
  */
 export const init = (
   identity: string | null, //privateKey of did identity
-  storePath: string | null
+  storePath: string | null,
+  bloxAddr: string,
 ): Promise<[string]> => {
-  return Fula.init(identity, storePath);
+  console.log('init in react-native started',identity, storePath, bloxAddr);
+  return Fula.init(identity, storePath, bloxAddr);
 };
 
 /**
@@ -34,26 +36,14 @@ export const has = (key: Uint8Array): Promise<boolean> => {
 };
 
 /**
- * Pull downloads the data corresponding to the given key from the given addr.
-// The key must be a valid ipld.Link, and the addr must be a valid multiaddr that includes peer ID.
-// See peer.AddrInfoFromString.
- * @param addr, key
- * @returns null or error
- */
-export const pull = (addr: string, key: Uint8Array): Promise<string> => {
-  return Fula.pull(addr, key);
-};
-
-/**
- * Push requests the given addr to download the given key from this node.
-// The key must be a valid ipld.Link, and the addr must be a valid multiaddr that includes peer ID.
-// The value corresponding to the given key must be stored in the local datastore prior to calling
+ * Push requests the given addr to download the root cid from this node.
+// The addr must be a valid multiaddr that includes peer ID.
 // this function.
- * @param addr, key
+ * @param addr
  * @returns null or error
  */
-export const push = (addr: string, key: Uint8Array): Promise<string> => {
-  return Fula.push(addr, key);
+export const push = (): Promise<string> => {
+  return Fula.push();
 };
 
 /**
@@ -63,8 +53,8 @@ export const push = (addr: string, key: Uint8Array): Promise<string> => {
  * @param key, value
  * @returns null or string
  */
-export const put = (key: string, value: string): Promise<string> => {
-  return Fula.put(key, value);
+export const put = (value: string, codec: string): Promise<string> => {
+  return Fula.put(value, codec);
 };
 
 /**
@@ -81,8 +71,8 @@ export const mkdir = (path: string): Promise<string> => {
  * @param path
  * @returns string: new cid of the root
  */
-export const writeFile = (path: string, content: string): Promise<string> => {
-  return Fula.writeFile(path, content);
+export const writeFileLocal = (path: string, content: string): Promise<string> => {
+  return Fula.writeFileLocal(path, content);
 };
 
 /**

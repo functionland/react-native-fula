@@ -1,39 +1,33 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
-import { fula, Types } from 'react-native-fula';
+import { fula } from 'react-native-fula';
 
 const App = () => {
   const [key, setKey] = React.useState<string>('');
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
 
-  const [initComplete, setInitComplete] = React.useState<boolean>(false);
+  const [initComplete, setInitComplete] = React.useState<[string]|[]>([]);
 
   React.useEffect(() => {
-    try {
-      const config: Types.Config = {
-        identity: '',
-        storePath: '',
-      };
-      const initFula = async () => {
+      const initFula = () => {
         try {
-          let f = await fula.initJNI('', '');
+          let f = fula.init('', '', '/ip4/59.23.13.76/tcp/46640/p2p/QmRS9H18XHFrbmGKxi2TEBFz5ZzurkU9cbAwMsRzXcjr5X');
           console.log('initialization result', f);
-
-          setInitComplete(f);
+          return f;
         } catch (e) {
           console.log(e);
+          return Promise.reject(e);
         }
       };
-      try {
-        initFula();
-      } catch (e) {
-        console.log(e);
-      }
-    } catch (e) {
-      console.log(e);
-    }
+
+      initFula().then((res)=>{
+        setInitComplete(res);
+        console.log("OK",res);
+      }).catch((e)=>{
+        console.log("error", e);
+      });
   }, []);
 
   return (
@@ -45,24 +39,25 @@ const App = () => {
           title={inprogress ? 'Putting & Getting...' : 'Test'}
           onPress={async () => {
             try {
-              const jsonvalue = { hello: 'world' };
+              /*const jsonvalue = { hello: 'world' };
+              const cid =
+                'bagaaierasords4njcts6vs7qvdjfcvgnume4hqohf65zsfguprqphs3icwea';*/
               const ciduint8 = [
                 1, 112, 18, 32, 195, 196, 115, 62, 200, 175, 253, 6, 207, 158,
                 159, 245, 15, 252, 107, 205, 46, 200, 90, 97, 112, 0, 75, 183,
                 9, 102, 156, 49, 222, 148, 57, 26,
               ];
-              const cid =
-                'bagaaierasords4njcts6vs7qvdjfcvgnume4hqohf65zsfguprqphs3icwea';
+              
               if (initComplete) {
 
                 console.log('initialization is completed. putting key/value');
-                const res = await fula.putJNI(
+                const res = await fula.put(
                   ciduint8.toString(),
-                  JSON.stringify(jsonvalue)
+                  ""
                 );
                 console.log(res);
                 console.log('Now fetching key...');
-                const res2 = await fula.getJNI(ciduint8.toString());
+                const res2 = await fula.get(ciduint8.toString());
                 console.log(JSON.parse(res2));
                 //setBS64(_bs64)
               } else {

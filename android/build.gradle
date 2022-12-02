@@ -21,7 +21,7 @@ def safeExtGet(prop, fallback) {
 android {
     compileSdkVersion safeExtGet('Fula_compileSdkVersion', 31)
     defaultConfig {
-        minSdkVersion safeExtGet('Fula_minSdkVersion', 21)
+        minSdkVersion safeExtGet('Fula_minSdkVersion', 26)
         targetSdkVersion safeExtGet('Fula_targetSdkVersion', 31)
         versionCode 1
         versionName "1.0"
@@ -59,7 +59,7 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation 'com.github.functionland:fula-build-aar:v0.6.7' // From jitpack.io
-    implementation 'com.github.functionland:wnfs-build-aar:v1.1.0' // From jitpack.io
+    implementation 'com.github.functionland:fula-build-aar:v0.6.8' // From jitpack.io
+    implementation 'com.github.functionland:wnfs-build-aar:v1.2.2' // From jitpack.io
     // implementation files('mobile.aar')
 }

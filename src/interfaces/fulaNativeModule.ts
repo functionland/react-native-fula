@@ -3,14 +3,15 @@ import { NativeModules, Platform } from 'react-native';
 interface FulaNativeModule {
   init: (
     identity: string | null, //Private key of did identity
-    storePath: string | null //You can leave empty
+    storePath: string | null, //You can leave empty
+    bloxAddr: string //Blox multiadddr needs to be manually entered now
   ) => Promise<[string]>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
-  pull: (addr: string, key: Uint8Array) => Promise<string>;
-  push: (addr: string, key: Uint8Array) => Promise<string>;
+  push: () => Promise<string>;
+  put: (content: string, codec: string) => Promise<string>;
   mkdir: (path: string) => Promise<string>;
-  writeFile: (path: string, content: string) => Promise<string>;
+  writeFileLocal: (path: string, content: string) => Promise<string>;
   ls: (path: string) => Promise<string>;
   readFile: (path: string) => Promise<string>;
 
