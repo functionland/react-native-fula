@@ -44,13 +44,15 @@ android {
 
 repositories {
     mavenLocal()
+    google()
+    jcenter()
+    mavenCentral()
     maven {
         // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
         url("$rootDir/../node_modules/react-native/android")
     }
-    google()
-    mavenCentral()
-    jcenter()
+   
+   
 
     // Add this repo to get go-fula package
     maven { url 'https://jitpack.io' }
