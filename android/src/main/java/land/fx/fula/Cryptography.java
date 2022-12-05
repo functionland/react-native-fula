@@ -40,8 +40,7 @@ public class Cryptography {
 
   public static SecretKey generateKey(byte[] key)
     throws NoSuchAlgorithmException, InvalidKeySpecException {
-      String salt = key.toString();
-    PBEKeySpec pbeKeySpec = new PBEKeySpec(key.toString().toCharArray(), salt.getBytes(), 1000,128);
+    PBEKeySpec pbeKeySpec = new PBEKeySpec(StaticHelper.bytesToBase64(key).toCharArray(), key, 1000, 128);
     SecretKey pbeKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(pbeKeySpec);
     return new SecretKeySpec(pbeKey.getEncoded(), "AES");
   }
