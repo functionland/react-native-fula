@@ -15,25 +15,56 @@ import org.jetbrains.annotations.Contract;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Base64;
 
 import javax.crypto.SecretKey;
 
-import fulamobile.Client;
 import fulamobile.Config;
 import fulamobile.Fulamobile;
+
 import land.fx.wnfslib.LibKt;
 
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
   public static final String NAME = "FulaModule";
-  Client fula;
+  fulamobile.Client fula;
+  Client client;
   String appDir;
   String fulaStorePath;
   String privateForest;
   land.fx.wnfslib.Config rootConfig;
   SharedPreferenceHelper sharedPref;
   static String PRIVATE_KEY_STORE_ID = "PRIVATE_KEY";
+
+  public class Client implements land.fx.wnfslib.Client {
+
+    private fulamobile.Client internalClient;
+
+    Client(fulamobile.Client clientInput) {
+      internalClient = clientInput;
+    }
+
+    @NonNull
+    @Override
+    public byte[] get(@NonNull byte[] cid) {
+      try {
+        internalClient.get(cid);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public byte[] put(@NonNull byte[] data, long codec) {
+      try {
+        return client.put(data, codec);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return null;
+    }
+  }
 
   public FulaModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -156,12 +187,13 @@ public class FulaModule extends ReactContextBaseJavaModule {
       config_ext.setBloxAddr(bloxAddr);
       Log.d("ReactNative", "bloxAddr is set: " + config_ext.getBloxAddr());
       this.fula = Fulamobile.newClient(config_ext);
+      this.client = new Client(this.fula);
       Log.d("ReactNative", "fula initialized: " + this.fula.id());
       if (this.rootConfig == null) {
         Log.d("ReactNative", "creating rootConfig");
-        this.privateForest = LibKt.createPrivateForest(this.fula);
+        this.privateForest = LibKt.createPrivateForest(this.client);
         Log.d("ReactNative", "privateForest is created: " + this.privateForest);
-        this.rootConfig = LibKt.createRootDir(this.fula, this.privateForest);
+        this.rootConfig = LibKt.createRootDir(this.client, this.privateForest);
         Log.d("ReactNative", "rootConfig is created: " + this.rootConfig.getCid());
       } else {
         Log.d("ReactNative", "rootConfig existed: " + this.rootConfig.getCid());
@@ -184,7 +216,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "mkdir: path = " + path);
       try {
-        land.fx.wnfslib.Config config = LibKt.mkdir(this.fula, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        land.fx.wnfslib.Config config = LibKt.mkdir(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         this.rootConfig = config;
         promise.resolve(config.getCid());
       } catch (Exception e) {
@@ -195,13 +227,35 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void writeFileLocal(String path, String contentString, Promise promise) {
+  public void writeFile(String fulaTargetFilename, String localFilename, Promise promise) {
+    /*
+    // reads content of the file form localFilename (should include full absolute path to local file with read permission
+    // writes content to the specified location by fulaTargetFilename in Fula filesystem
+    // fulaTargetFilename: a string including full path and filename of target file on Fula (e.g. root/pictures/cat.jpg)
+    // localFilename: a string containing full path and filename of local file on hte device (e.g /usr/bin/cat.jpg)
+    // Returns: new cid of the root after this file is placed in the tree
+     */
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "writeFile to : path = " + fulaTargetFilename + ", from: " + localFilename);
+      try {
+        land.fx.wnfslib.Config config = LibKt.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
+        this.rootConfig = config;
+        promise.resolve(config.getCid());
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void writeFileContent(String path, String contentString, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "writeFile: contentString = " + contentString);
       Log.d("ReactNative", "writeFile: path = " + path);
       try {
         byte[] content = convertStringToByte(contentString);
-        land.fx.wnfslib.Config config = LibKt.writeFile(this.fula, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path, content);
+        land.fx.wnfslib.Config config = LibKt.writeFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path, content);
         this.rootConfig = config;
         promise.resolve(config.getCid());
       } catch (Exception e) {
@@ -216,7 +270,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "ls: path = " + path);
       try {
-        String res = LibKt.ls(this.fula, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        String res = LibKt.ls(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         promise.resolve(res);
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -230,7 +284,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "ls: path = " + path);
       try {
-        byte[] res = LibKt.readFile(this.fula, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        byte[] res = LibKt.readFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         String resString = toString(res);
         promise.resolve(resString);
       } catch (Exception e) {

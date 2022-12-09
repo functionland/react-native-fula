@@ -11,7 +11,8 @@ interface FulaNativeModule {
   push: () => Promise<string>;
   put: (content: string, codec: string) => Promise<string>;
   mkdir: (path: string) => Promise<string>;
-  writeFileLocal: (path: string, content: string) => Promise<string>;
+  writeFileContent: (path: string, content: string) => Promise<string>;
+  writeFile: (fulaTargetFilename: string, localFilename: string) => Promise<string>;
   ls: (path: string) => Promise<string>;
   readFile: (path: string) => Promise<string>;
 
