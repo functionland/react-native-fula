@@ -5,7 +5,7 @@ interface FulaNativeModule {
     identity: string | null, //Private key of did identity
     storePath: string | null, //You can leave empty
     bloxAddr: string //Blox multiadddr needs to be manually entered now
-  ) => Promise<[string]>;
+  ) => Promise<[string, string, string]>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
   push: () => Promise<string>;
