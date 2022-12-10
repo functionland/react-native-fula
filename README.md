@@ -1,6 +1,6 @@
 # react-native-fula
 
-This package is a bridge to use the Fula protocols in the react-native. It uses WNFS to create the merkle dag from files and folders and transfer teh DAG using Graphsync to the nodes.
+This package is a bridge to use the Fula protocols in the react-native. It uses WNFS to create the Merkle dag from files and folders and transfer the DAG using Graphsync to the nodes. 
 
 ## Installation
 
@@ -19,7 +19,7 @@ import { fula } from 'react-native-fula'; // Until the library becomes stable, w
 [
     peerId, //returns peerId of the created libp2p instance in form of a string of bytes
     cid, //return the root cid of the WNFS merkle DAG in form of a string
-    private_ref //return the keys needed to decode hte encrypted WNFS tree in fomr of a string of object
+    private_ref //return the keys needed to decode hte encrypted WNFS tree in form of a string of object
 ] 
 = 
 await fula.init( 
@@ -34,7 +34,7 @@ await fula.init(
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
 = 
 await fula.mkdir(
-    path: string // This is the Fula path to create a folder and always starts with "root/" and shoud not start or end with a slash e.g "root/pictures"
+    path: string // This is the Fula path to create a folder and always starts with "root/" and should not start or end with a slash e.g "root/pictures"
 );
 ```
 
@@ -46,7 +46,7 @@ await fula.writeFile(
     fulaTargetFilename: string, //path to the file on the tree. It should include the filename and extension and start from the "root/". e.g. "root/pictures/cat.jpg"
     localFilename: string //path to the local file. e.g the file that needs to be uploaded
 );
-//// TODO: This needs to be improved by ysing stream to not overload the memory for large files
+//// TODO: This needs to be improved by using stream to not overload the memory for large files
 ```
 
 ```js
@@ -55,9 +55,9 @@ const localFilePath //returns the path to the local file and includes the filena
 = 
 await fula.readFile(
     fulaTargetFilename: string, //path to the file on the tree. It should include the filename and extension and start from the "root/". e.g. "root/pictures/cat.jpg"
-    localFilename: string //path to the local file. It hsould include the filename and extension. e.g. "/temp/cat.jpg"
+    localFilename: string //path to the local file. It should include the filename and extension. e.g. "/temp/cat.jpg"
 );
-//// TODO: This needs to be improved by ysing stream to not overload the memory for large files
+//// TODO: This needs to be improved by using stream to not overload the memory for large files
 ```
 
 ```js
@@ -79,6 +79,15 @@ await fula.rm(
 );
 
 ```
+
+## Roadmap
+
+Please note the following might not be done in order:
+
+- [x] Initial version with all functions included
+- [ ] Improve ls, read, and write functions to use a stream
+- [ ] Connect to Blockchain codes using APIs
+- [ ] Connect to backend
 
 ## Contributing
 
