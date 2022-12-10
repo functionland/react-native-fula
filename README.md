@@ -86,7 +86,7 @@ Please note the following might not be done in order:
 
 - [x] Initial version with all functions included
 - [ ] Add WNFS tree encryption key generation from an input (deterministically)
-- [ ] Improve ls, read, and write functions to use a stream
+- [ ] Improve ls, read, and write functions to use a stream. ( :100: v1.0.0 Release here )
 - [ ] Connect to Blockchain codes using APIs
 - [ ] Connect to backend
 
