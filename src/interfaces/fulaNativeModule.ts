@@ -4,7 +4,8 @@ interface FulaNativeModule {
   init: (
     identity: string | null, //Private key of did identity
     storePath: string | null, //You can leave empty
-    bloxAddr: string //Blox multiadddr needs to be manually entered now
+    bloxAddr: string, //Blox multiadddr needs to be manually entered now
+    exchange: string //set to 'noope' for testing
   ) => Promise<[string, string, string]>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
