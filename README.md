@@ -13,8 +13,9 @@ npm install react-native-fula
 ```js
 import { fula } from 'react-native-fula';
 
-// ...
+```
 
+```js
 //Initialize the fula client, which creates the libp2p connection. Note that input is not an object e.g. init('','','')
 [
     peerId, //returns peerId of the created libp2p instance in form of a string of bytes
@@ -28,6 +29,9 @@ await fula.init(
     bloxAddr: string, //leave empty for testing without a backend node
 );
 
+```
+
+```js
 //Creates a Folder
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
 = 
@@ -35,6 +39,9 @@ await fula.mkdir(
     path: string // This is the Fula path to create a folder and always starts with "root/" and shoud not start or end with a slash e.g "root/pictures"
 );
 
+```
+
+```js
 //Write a local file on the device to the Fula tree (upload)
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
 = 
@@ -43,6 +50,9 @@ await fula.writeFile(
     localFilename: string //path to the local file. e.g the file that needs to be uploaded
 );
 
+```
+
+```js
 //reads a file on fula tree to a local file on the device (download)
 const localFilePath //returns the path to the local file and includes the filename
 = 
@@ -51,6 +61,9 @@ await fula.readFile(
     localFilename: string //path to the local file. It hsould include the filename and extension. e.g. "/temp/cat.jpg"
 );
 
+```
+
+```js
 //shows all files and folders under the specified path on Fula
 const fileList //returns all the files and folders in a string separated by \n
 = 
@@ -58,6 +71,9 @@ await fula.ls(
     path: string, //path to the folder on the tree. It always starts from the "root". e.g. "root" or "root/pictures"
 );
 
+```
+
+```js
 //removes all files and folders at the specified path on Fula
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
 = 
