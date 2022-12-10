@@ -26,6 +26,7 @@ await fula.init(
     identity: string, //bytes of the privateKey of did identity in string format
     storePath: string, // leave empty to use the default temp one
     bloxAddr: string, //leave empty for testing without a backend node
+    exchange: 'noop'|'' //add noop for testing without a backend
 );
 ```
 
