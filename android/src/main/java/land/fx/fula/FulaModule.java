@@ -280,9 +280,30 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void readFile(String path, Promise promise) {
+  public void readFile(String fulaTargetFilename, String localFilename, Promise promise) {
+    /*
+    // reads content of the file form localFilename (should include full absolute path to local file with read permission
+    // writes content to the specified location by fulaTargetFilename in Fula filesystem
+    // fulaTargetFilename: a string including full path and filename of target file on Fula (e.g. root/pictures/cat.jpg)
+    // localFilename: a string containing full path and filename of local file on hte device (e.g /usr/bin/cat.jpg)
+    // Returns: new cid of the root after this file is placed in the tree
+     */
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "ls: path = " + path);
+      Log.d("ReactNative", "readFile: fulaTargetFilename = " + fulaTargetFilename);
+      try {
+        String path = LibKt.readFileToPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
+        promise.resolve(path);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void readFileContent(String path, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "readFileContent: path = " + path);
       try {
         byte[] res = LibKt.readFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         String resString = toString(res);
