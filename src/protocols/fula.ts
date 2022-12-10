@@ -6,13 +6,15 @@ import Fula from '../interfaces/fulaNativeModule';
  * @param config
  * @returns boolean
  */
+
 export const init = (
-  identity: string | null, //privateKey of did identity
-  storePath: string | null,
+  identity: string, //privateKey of did identity
+  storePath: string,
   bloxAddr: string,
+  exchange: string
 ): Promise<[string, string, string]> => {
-  console.log('init in react-native started',identity, storePath, bloxAddr);
-  return Fula.init(identity, storePath, bloxAddr);
+  console.log('init in react-native started',identity, storePath, bloxAddr, exchange);
+  return Fula.init(identity, storePath, bloxAddr, exchange);
 };
 
 /**

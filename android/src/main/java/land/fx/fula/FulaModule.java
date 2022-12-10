@@ -129,14 +129,14 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void init(String identityString, String storePath, String bloxAddr, Promise promise) {
+  public void init(String identityString, String storePath, String bloxAddr, String exchange, Promise promise) {
     Log.d("ReactNative", "init started");
     ThreadUtils.runOnExecutor(() -> {
       try {
         Log.d("ReactNative", "init storePath= " + storePath);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "init identity= " + identityString);
-        String[] obj = initInternal(identity, storePath, bloxAddr);
+        String[] obj = initInternal(identity, storePath, bloxAddr, exchange);
         Log.d("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
         promise.resolve(obj);
       } catch (Exception e) {
@@ -171,7 +171,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @NonNull
-  private String[] initInternal(byte[] identity, String storePath, String bloxAddr) throws Exception {
+  private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange) throws Exception {
     try {
       Config config_ext = new Config();
       if (storePath == null || storePath.trim().isEmpty()) {
@@ -186,6 +186,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "peerIdentity is set: " + toString(config_ext.getIdentity()));
       config_ext.setBloxAddr(bloxAddr);
       Log.d("ReactNative", "bloxAddr is set: " + config_ext.getBloxAddr());
+      config_ext.setExchange(exchange);
       this.fula = Fulamobile.newClient(config_ext);
       this.client = new Client(this.fula);
       Log.d("ReactNative", "fula initialized: " + this.fula.id());

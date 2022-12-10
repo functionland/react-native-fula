@@ -23,7 +23,8 @@ const App = () => {
         let f = await fula.init(
           privateKey.toString(),
           '',
-          '/ip4/59.23.13.76/tcp/46640/p2p/QmRS9H18XHFrbmGKxi2TEBFz5ZzurkU9cbAwMsRzXcjr5X'
+          '/ip4/59.23.13.76/tcp/46640/p2p/QmRS9H18XHFrbmGKxi2TEBFz5ZzurkU9cbAwMsRzXcjr5X',
+          'noop'
         );
         console.log('initialization result', f);
         return f;
