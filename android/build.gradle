@@ -51,8 +51,8 @@ repositories {
         // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
         url("$rootDir/../node_modules/react-native/android")
     }
-   
-   
+
+
 
     // Add this repo to get go-fula package
     maven { url 'https://jitpack.io' }
@@ -61,7 +61,7 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation 'com.github.functionland:fula-build-aar:v0.6.8' // From jitpack.io
-    implementation 'com.github.functionland:wnfs-build-aar:v1.2.2' // From jitpack.io
+    implementation 'com.github.functionland:fula-build-aar:v0.7.3' // From jitpack.io
+    implementation 'com.github.functionland:wnfs-build-aar:v1.2.4' // From jitpack.io
     // implementation files('mobile.aar')
 }

@@ -8,25 +8,38 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
 
-  const [initComplete, setInitComplete] = React.useState<[string]|[]>([]);
+  const [initComplete, setInitComplete] = React.useState<[string] | []>([]);
 
   React.useEffect(() => {
-      const initFula = () => {
-        try {
-          let f = fula.init('', '', '/ip4/59.23.13.76/tcp/46640/p2p/QmRS9H18XHFrbmGKxi2TEBFz5ZzurkU9cbAwMsRzXcjr5X');
-          console.log('initialization result', f);
-          return f;
-        } catch (e) {
-          console.log(e);
-          return Promise.reject(e);
-        }
-      };
+    const initFula = async () => {
+      try {
+        const privateKey = [
+          183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27,
+          27, 17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204,
+          142, 241, 94, 225, 7, 153, 168, 239, 94, 7, 187, 123, 158, 149, 149,
+          227, 170, 32, 54, 203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6,
+          91, 87, 152,
+        ];
+        let f = await fula.init(
+          privateKey.toString(),
+          '',
+          '/ip4/59.23.13.76/tcp/46640/p2p/QmRS9H18XHFrbmGKxi2TEBFz5ZzurkU9cbAwMsRzXcjr5X'
+        );
+        console.log('initialization result', f);
+        return f;
+      } catch (e) {
+        console.log(e);
+        return Promise.reject(e);
+      }
+    };
 
-      initFula().then((res)=>{
+    initFula()
+      .then((res) => {
         setInitComplete(res);
-        console.log("OK",res);
-      }).catch((e)=>{
-        console.log("error", e);
+        console.log('OK', res);
+      })
+      .catch((e) => {
+        console.log('error', e);
       });
   }, []);
 
@@ -47,14 +60,10 @@ const App = () => {
                 159, 245, 15, 252, 107, 205, 46, 200, 90, 97, 112, 0, 75, 183,
                 9, 102, 156, 49, 222, 148, 57, 26,
               ];
-              
-              if (initComplete) {
 
+              if (initComplete) {
                 console.log('initialization is completed. putting key/value');
-                const res = await fula.put(
-                  ciduint8.toString(),
-                  ""
-                );
+                const res = await fula.put(ciduint8.toString(), '');
                 console.log(res);
                 console.log('Now fetching key...');
                 const res2 = await fula.get(ciduint8.toString());

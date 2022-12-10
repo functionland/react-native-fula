@@ -5,15 +5,18 @@ interface FulaNativeModule {
     identity: string | null, //Private key of did identity
     storePath: string | null, //You can leave empty
     bloxAddr: string //Blox multiadddr needs to be manually entered now
-  ) => Promise<[string]>;
+  ) => Promise<[string, string, string]>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
   push: () => Promise<string>;
   put: (content: string, codec: string) => Promise<string>;
   mkdir: (path: string) => Promise<string>;
-  writeFileLocal: (path: string, content: string) => Promise<string>;
+  writeFileContent: (path: string, content: string) => Promise<string>;
+  writeFile: (fulaTargetFilename: string, localFilename: string) => Promise<string>;
   ls: (path: string) => Promise<string>;
-  readFile: (path: string) => Promise<string>;
+  rm: (path: string) => Promise<string>;
+  readFile: (fulaTargetFilename: string, localFilename: string) => Promise<string>;
+  readFileContent: (path: string) => Promise<string>;
 
   shutdown: () => Promise<void>;
 }
