@@ -15,7 +15,7 @@ import { fula } from 'react-native-fula'; // Until the library becomes stable, w
 ```
 
 ```js
-//Initialize the fula client, which creates the libp2p connection. Note that input is not an object e.g. init('','','')
+//Initialize the fula client, which creates the libp2p connection. Note that input is not an object e.g. init('','','','noop')
 [
     peerId, //returns peerId of the created libp2p instance in form of a string of bytes
     cid, //return the root cid of the WNFS merkle DAG in form of a string
