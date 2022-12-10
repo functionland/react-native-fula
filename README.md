@@ -85,6 +85,7 @@ await fula.rm(
 Please note the following might not be done in order:
 
 - [x] Initial version with all functions included
+- [ ] Add deterministically WNFS tree encryption key generation from an input
 - [ ] Improve ls, read, and write functions to use a stream
 - [ ] Connect to Blockchain codes using APIs
 - [ ] Connect to backend
