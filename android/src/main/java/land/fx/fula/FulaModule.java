@@ -280,6 +280,21 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void rm(String path, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "rm: path = " + path);
+      try {
+        land.fx.wnfslib.Config config = LibKt.rm(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        this.rootConfig = config;
+        promise.resolve(config.getCid());
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
   public void readFile(String fulaTargetFilename, String localFilename, Promise promise) {
     /*
     // reads content of the file form localFilename (should include full absolute path to local file with read permission

@@ -96,6 +96,15 @@ export const writeFile = (fulaTargetFilename: string, localFilename: string): Pr
   return Fula.ls(path);
 };
 
+/**
+ * rm removes all files and folders at a given path
+ * @param path
+ * @returns string: new cid of the root
+ */
+export const rm = (path: string): Promise<string> => {
+  return Fula.rm(path);
+};
+
 /*
     // reads content of the file form localFilename (should include full absolute path to local file with read permission
     // writes content to the specified location by fulaTargetFilename in Fula filesystem
