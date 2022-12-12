@@ -37,7 +37,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   public class Client implements land.fx.wnfslib.Datastore {
 
-    private fulamobile.Client internalClient;
+    private final fulamobile.Client internalClient;
 
     Client(fulamobile.Client clientInput) {
       internalClient = clientInput;
@@ -51,7 +51,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      return null;
+      return cid;
     }
 
     @NonNull
@@ -62,7 +62,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      return null;
+      return data;
     }
   }
 
@@ -378,7 +378,6 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @NonNull
   private boolean hasInternal(byte[] key) throws Exception {
     try {
       boolean res = this.fula.has(key);
@@ -389,7 +388,6 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @NonNull
   private void pullInternal(byte[] key) throws Exception {
     try {
       this.fula.pull(key);
@@ -413,7 +411,6 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @NonNull
   private void pushInternal(byte[] key) throws Exception {
     try {
       if (this.fula.has(key)) {
