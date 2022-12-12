@@ -21,7 +21,7 @@ import javax.crypto.SecretKey;
 import fulamobile.Config;
 import fulamobile.Fulamobile;
 
-import land.fx.wnfslib.LibKt;
+import land.fx.wnfslib.Fs;
 
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
@@ -35,7 +35,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   SharedPreferenceHelper sharedPref;
   static String PRIVATE_KEY_STORE_ID = "PRIVATE_KEY";
 
-  public class Client implements land.fx.wnfslib.Client {
+  public class Client implements land.fx.wnfslib.Datastore {
 
     private fulamobile.Client internalClient;
 
@@ -85,7 +85,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   @Override
   @NonNull
-  public String getName() {
+  public java.lang.String getName() {
     return NAME;
   }
 
@@ -192,9 +192,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "fula initialized: " + this.fula.id());
       if (this.rootConfig == null) {
         Log.d("ReactNative", "creating rootConfig");
-        this.privateForest = LibKt.createPrivateForest(this.client);
+
+        this.privateForest = Fs.createPrivateForest(this.client);
         Log.d("ReactNative", "privateForest is created: " + this.privateForest);
-        this.rootConfig = LibKt.createRootDir(this.client, this.privateForest);
+        this.rootConfig = Fs.createRootDir(this.client, this.privateForest);
         Log.d("ReactNative", "rootConfig is created: " + this.rootConfig.getCid());
       } else {
         Log.d("ReactNative", "rootConfig existed: " + this.rootConfig.getCid());
@@ -217,7 +218,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "mkdir: path = " + path);
       try {
-        land.fx.wnfslib.Config config = LibKt.mkdir(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        land.fx.wnfslib.Config config = Fs.mkdir(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         this.rootConfig = config;
         promise.resolve(config.getCid());
       } catch (Exception e) {
@@ -239,7 +240,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "writeFile to : path = " + fulaTargetFilename + ", from: " + localFilename);
       try {
-        land.fx.wnfslib.Config config = LibKt.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
+        land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
         this.rootConfig = config;
         promise.resolve(config.getCid());
       } catch (Exception e) {
@@ -256,7 +257,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "writeFile: path = " + path);
       try {
         byte[] content = convertStringToByte(contentString);
-        land.fx.wnfslib.Config config = LibKt.writeFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path, content);
+        land.fx.wnfslib.Config config = Fs.writeFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path, content);
         this.rootConfig = config;
         promise.resolve(config.getCid());
       } catch (Exception e) {
@@ -271,7 +272,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "ls: path = " + path);
       try {
-        String res = LibKt.ls(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        String res = Fs.ls(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         promise.resolve(res);
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -285,7 +286,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "rm: path = " + path);
       try {
-        land.fx.wnfslib.Config config = LibKt.rm(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        land.fx.wnfslib.Config config = Fs.rm(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         this.rootConfig = config;
         promise.resolve(config.getCid());
       } catch (Exception e) {
@@ -307,7 +308,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "readFile: fulaTargetFilename = " + fulaTargetFilename);
       try {
-        String path = LibKt.readFileToPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
+        String path = Fs.readFileToPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
         promise.resolve(path);
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -321,7 +322,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "readFileContent: path = " + path);
       try {
-        byte[] res = LibKt.readFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        byte[] res = Fs.readFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         String resString = toString(res);
         promise.resolve(resString);
       } catch (Exception e) {
