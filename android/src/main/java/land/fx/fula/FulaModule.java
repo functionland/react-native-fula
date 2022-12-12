@@ -25,6 +25,14 @@ import land.fx.wnfslib.Fs;
 
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
+
+
+  @Override
+  public void initialize() {
+    System.loadLibrary("wnfslib");
+  }
+
+
   public static final String NAME = "FulaModule";
   fulamobile.Client fula;
   Client client;
@@ -47,10 +55,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
     @Override
     public byte[] get(@NonNull byte[] cid) {
       try {
-        internalClient.get(cid);
+        Log.d("ReactNative", Arrays.toString(cid));
+        return internalClient.get(cid);
       } catch (Exception e) {
         e.printStackTrace();
       }
+      Log.d("ReactNative","Error get");
       return cid;
     }
 
@@ -58,10 +68,13 @@ public class FulaModule extends ReactContextBaseJavaModule {
     @Override
     public byte[] put(@NonNull byte[] data, long codec) {
       try {
+        //Log.d("ReactNative", "data="+ Arrays.toString(data) +" ;codec="+codec);
         return client.put(data, codec);
       } catch (Exception e) {
+        Log.d("ReactNative", "put Error="+e.getMessage());
         e.printStackTrace();
       }
+      Log.d("ReactNative","Error put");
       return data;
     }
   }
