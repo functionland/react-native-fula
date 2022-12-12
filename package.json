@@ -47,9 +47,6 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
-  "dependencies": {
-
-  },
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.16.7",
     "@commitlint/config-conventional": "^11.0.0",
@@ -148,5 +145,6 @@
         }
       ]
     ]
-  }
+  },
+  "packageManager": "yarn@3.3.0"
 }
