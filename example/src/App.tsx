@@ -8,7 +8,7 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
 
-  const [initComplete, setInitComplete] = React.useState<[string] | []>([]);
+  const [initComplete, setInitComplete] = React.useState<{peerId: string, rootCid: string, private_ref:string} | {}>({});
 
   React.useEffect(() => {
     const initFula = async () => {
@@ -20,14 +20,13 @@ const App = () => {
           227, 170, 32, 54, 203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6,
           91, 87, 152,
         ];
-        let f = await fula.init(
+        return fula.init(
           privateKey.toString(),
           '',
           '',
-          'noop'
+          'noop',
+		  Promise
         );
-        console.log('initialization result', f);
-        return f;
       } catch (e) {
         console.log(e);
         return Promise.reject(e);
@@ -35,9 +34,9 @@ const App = () => {
     };
 
     initFula()
-      .then((res) => {
+      .then((res) => {        
+        console.log("OK",res);
         setInitComplete(res);
-        console.log('OK', res);
       })
       .catch((e) => {
         console.log('error', e);

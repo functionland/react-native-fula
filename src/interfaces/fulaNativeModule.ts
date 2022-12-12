@@ -2,11 +2,11 @@ import { NativeModules, Platform } from 'react-native';
 
 interface FulaNativeModule {
   init: (
-    identity: string | null, //Private key of did identity
-    storePath: string | null, //You can leave empty
+    identity: string, //Private key of did identity
+    storePath: string, //You can leave empty
     bloxAddr: string, //Blox multiadddr needs to be manually entered now
     exchange: string //set to 'noope' for testing
-  ) => Promise<[string, string, string]>;
+  ) => Promise<{peerId: string, rootCid: string, private_ref:string}>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
   push: () => Promise<string>;
