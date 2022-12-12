@@ -8,6 +8,8 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 import org.jetbrains.annotations.Contract;
@@ -25,6 +27,15 @@ import land.fx.wnfslib.Fs;
 
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
+
+
+  @Override
+  public void initialize() {
+    System.loadLibrary("wnfslib");
+    System.loadLibrary("gojni");
+  }
+
+
   public static final String NAME = "FulaModule";
   fulamobile.Client fula;
   Client client;
@@ -40,17 +51,19 @@ public class FulaModule extends ReactContextBaseJavaModule {
     private final fulamobile.Client internalClient;
 
     Client(fulamobile.Client clientInput) {
-      internalClient = clientInput;
+      this.internalClient = clientInput;
     }
 
     @NonNull
     @Override
     public byte[] get(@NonNull byte[] cid) {
       try {
-        internalClient.get(cid);
+        Log.d("ReactNative", Arrays.toString(cid));
+        return this.internalClient.get(cid);
       } catch (Exception e) {
         e.printStackTrace();
       }
+      Log.d("ReactNative","Error get");
       return cid;
     }
 
@@ -58,10 +71,13 @@ public class FulaModule extends ReactContextBaseJavaModule {
     @Override
     public byte[] put(@NonNull byte[] data, long codec) {
       try {
-        return client.put(data, codec);
+        //Log.d("ReactNative", "data="+ Arrays.toString(data) +" ;codec="+codec);
+        return this.internalClient.put(data, codec);
       } catch (Exception e) {
+        Log.d("ReactNative", "put Error="+e.getMessage());
         e.printStackTrace();
       }
+      Log.d("ReactNative","Error put");
       return data;
     }
   }
@@ -133,15 +149,19 @@ public class FulaModule extends ReactContextBaseJavaModule {
     Log.d("ReactNative", "init started");
     ThreadUtils.runOnExecutor(() -> {
       try {
+        WritableMap resultData = new WritableNativeMap();
         Log.d("ReactNative", "init storePath= " + storePath);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "init identity= " + identityString);
         String[] obj = initInternal(identity, storePath, bloxAddr, exchange);
-        Log.d("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
-        promise.resolve(obj);
+        Log.d("ReactNative", "init object created: [ " + obj[0].toString() + ", " + obj[1].toString() + ", " + obj[2].toString() + " ]");
+        resultData.putString("peerId", obj[0]);
+        resultData.putString("rootCid", obj[1]);
+        resultData.putString("private_ref", obj[2]);
+        promise.resolve(resultData);
       } catch (Exception e) {
-        Log.d("ReactNative", "init failed with Error: " + e.getMessage());
-        promise.reject(e);
+        Log.d("ReactNative", "init failed with Error: " + e.getMessage().toString());
+        promise.reject("Error", e.getMessage().toString());
       }
     });
   }
@@ -192,6 +212,15 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "fula initialized: " + this.fula.id());
       if (this.rootConfig == null) {
         Log.d("ReactNative", "creating rootConfig");
+
+        /*byte[] testbyte = convertStringToByte("-104,40,24,-93,24,100,24,114,24,111,24,111,24,116,24,-126,24,-126,0,0,24,-128,24,103,24,118,24,101,24,114,24,115,24,105,24,111,24,110,24,101,24,48,24,46,24,49,24,46,24,48,24,105,24,115,24,116,24,114,24,117,24,99,24,116,24,117,24,114,24,101,24,100,24,104,24,97,24,109,24,116");
+        long testcodec = 85;
+        byte[] testputcid = this.client.put(testbyte, testcodec);
+      Log.d("ReactNative", "client.put test done"+ Arrays.toString(testputcid));
+        byte[] testfetchedcid = convertStringToByte("1,113,18,32,-6,-63,-128,79,-102,-89,57,77,-8,67,-98,8,-81,40,-87,123,122,29,-52,-124,-60,-53,100,105,125,123,-5,-99,41,106,-124,-64");
+        byte[] testfetchedbytes = this.client.get(testfetchedcid);
+        Log.d("ReactNative", "client.get test done"+ Arrays.toString(testfetchedbytes));
+*/
 
         this.privateForest = Fs.createPrivateForest(this.client);
         Log.d("ReactNative", "privateForest is created: " + this.privateForest);

@@ -12,7 +12,7 @@ export const init = (
   storePath: string,
   bloxAddr: string,
   exchange: string
-): Promise<[string, string, string]> => {
+): Promise<{peerId: string, rootCid: string, private_ref:string}> => {
   console.log('init in react-native started',identity, storePath, bloxAddr, exchange);
   return Fula.init(identity, storePath, bloxAddr, exchange);
 };
