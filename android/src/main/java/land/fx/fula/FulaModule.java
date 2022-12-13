@@ -191,6 +191,16 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @NonNull
+  private void loadForestInternal(String privateRef, String cid) throws Exception {
+    try {
+      this.privateForest = Fs.createPrivateForest(this.client);
+    } catch (Exception e) {
+      Log.d("ReactNative", "loadForestInternal failed with Error: " + e.getMessage());
+      throw (e);
+    }
+  }
+
+  @NonNull
   private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange) throws Exception {
     try {
       Config config_ext = new Config();
@@ -210,21 +220,41 @@ public class FulaModule extends ReactContextBaseJavaModule {
       this.fula = Fulamobile.newClient(config_ext);
       this.client = new Client(this.fula);
       Log.d("ReactNative", "fula initialized: " + this.fula.id());
+
       if (this.rootConfig == null) {
+
+        //Load from keystore
+        String cid = sharedPref.getValue("cid_encrypted");
+        String private_ref = sharedPref.getValue("private_ref_encrypted");
+        SecretKey secretKey = Cryptography.generateKey(identity);
+        if(cid != null && !cid.isEmpty() && cid != "" && private_ref != null && !private_ref.isEmpty() && private_ref != "") {
+          String cid_decrypted = Cryptography.decryptMsg(cid, secretKey);
+          String private_ref_decrypted = Cryptography.decryptMsg(private_ref, secretKey);
+          this.rootConfig = new land.fx.wnfslib.Config(cid_decrypted, private_ref_decrypted);
+        }else{
+          this.privateForest = Fs.createPrivateForest(this.client);
+          Log.d("ReactNative", "privateForest is created: " + this.privateForest);
+          this.rootConfig = Fs.createRootDir(this.client, this.privateForest);
+          String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), secretKey);
+          String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), secretKey);
+          sharedPref.add("cid_encrypted", cid_encrypted);
+          sharedPref.add("private_ref_encrypted", private_ref_encrypted);
+        }
+
+
         Log.d("ReactNative", "creating rootConfig");
 
-        /*byte[] testbyte = convertStringToByte("-104,40,24,-93,24,100,24,114,24,111,24,111,24,116,24,-126,24,-126,0,0,24,-128,24,103,24,118,24,101,24,114,24,115,24,105,24,111,24,110,24,101,24,48,24,46,24,49,24,46,24,48,24,105,24,115,24,116,24,114,24,117,24,99,24,116,24,117,24,114,24,101,24,100,24,104,24,97,24,109,24,116");
+        /*
+        byte[] testbyte = convertStringToByte("-104,40,24,-93,24,100,24,114,24,111,24,111,24,116,24,-126,24,-126,0,0,24,-128,24,103,24,118,24,101,24,114,24,115,24,105,24,111,24,110,24,101,24,48,24,46,24,49,24,46,24,48,24,105,24,115,24,116,24,114,24,117,24,99,24,116,24,117,24,114,24,101,24,100,24,104,24,97,24,109,24,116");
         long testcodec = 85;
         byte[] testputcid = this.client.put(testbyte, testcodec);
-      Log.d("ReactNative", "client.put test done"+ Arrays.toString(testputcid));
+        Log.d("ReactNative", "client.put test done"+ Arrays.toString(testputcid));
         byte[] testfetchedcid = convertStringToByte("1,113,18,32,-6,-63,-128,79,-102,-89,57,77,-8,67,-98,8,-81,40,-87,123,122,29,-52,-124,-60,-53,100,105,125,123,-5,-99,41,106,-124,-64");
         byte[] testfetchedbytes = this.client.get(testfetchedcid);
         Log.d("ReactNative", "client.get test done"+ Arrays.toString(testfetchedbytes));
-*/
+        */
 
-        this.privateForest = Fs.createPrivateForest(this.client);
-        Log.d("ReactNative", "privateForest is created: " + this.privateForest);
-        this.rootConfig = Fs.createRootDir(this.client, this.privateForest);
+
         Log.d("ReactNative", "rootConfig is created: " + this.rootConfig.getCid());
       } else {
         Log.d("ReactNative", "rootConfig existed: " + this.rootConfig.getCid());
