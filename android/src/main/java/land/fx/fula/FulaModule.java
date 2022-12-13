@@ -46,7 +46,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   SharedPreferenceHelper sharedPref;
   static String PRIVATE_KEY_STORE_ID = "PRIVATE_KEY";
 
-  public class Client implements land.fx.wnfslib.Datastore {
+  public static class Client implements land.fx.wnfslib.Datastore {
 
     private final fulamobile.Client internalClient;
 
@@ -154,14 +154,14 @@ public class FulaModule extends ReactContextBaseJavaModule {
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "init identity= " + identityString);
         String[] obj = initInternal(identity, storePath, bloxAddr, exchange);
-        Log.d("ReactNative", "init object created: [ " + obj[0].toString() + ", " + obj[1].toString() + ", " + obj[2].toString() + " ]");
+        Log.d("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
         resultData.putString("peerId", obj[0]);
         resultData.putString("rootCid", obj[1]);
         resultData.putString("private_ref", obj[2]);
         promise.resolve(resultData);
       } catch (Exception e) {
-        Log.d("ReactNative", "init failed with Error: " + e.getMessage().toString());
-        promise.reject("Error", e.getMessage().toString());
+        Log.d("ReactNative", "init failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
       }
     });
   }
@@ -190,7 +190,6 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @NonNull
   private void loadForestInternal(String privateRef, String cid) throws Exception {
     try {
       this.privateForest = Fs.createPrivateForest(this.client);
@@ -198,6 +197,16 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "loadForestInternal failed with Error: " + e.getMessage());
       throw (e);
     }
+  }
+
+  private void createNewRootConfig(FulaModule.Client iClient, SecretKey secretKey, String identity_encrypted) throws Exception {
+    this.privateForest = Fs.createPrivateForest(iClient);
+    Log.d("ReactNative", "privateForest is created: " + this.privateForest);
+    this.rootConfig = Fs.createRootDir(iClient, this.privateForest);
+    String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), secretKey);
+    String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), secretKey);
+    sharedPref.add("cid_encrypted_"+ identity_encrypted, cid_encrypted);
+    sharedPref.add("private_ref_encrypted_"+ identity_encrypted, private_ref_encrypted);
   }
 
   @NonNull
@@ -224,21 +233,22 @@ public class FulaModule extends ReactContextBaseJavaModule {
       if (this.rootConfig == null) {
 
         //Load from keystore
-        String cid = sharedPref.getValue("cid_encrypted");
-        String private_ref = sharedPref.getValue("private_ref_encrypted");
         SecretKey secretKey = Cryptography.generateKey(identity);
-        if(cid != null && !cid.isEmpty() && cid != "" && private_ref != null && !private_ref.isEmpty() && private_ref != "") {
+        String identity_encrypted =Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
+        String cid = sharedPref.getValue("cid_encrypted_"+ identity_encrypted);
+        String private_ref = sharedPref.getValue("private_ref_encrypted_"+identity_encrypted);
+
+        if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
           String cid_decrypted = Cryptography.decryptMsg(cid, secretKey);
           String private_ref_decrypted = Cryptography.decryptMsg(private_ref, secretKey);
-          this.rootConfig = new land.fx.wnfslib.Config(cid_decrypted, private_ref_decrypted);
+          if(cid_decrypted != null && !cid_decrypted.isEmpty() && private_ref_decrypted!=null && !private_ref_decrypted.isEmpty()) {
+            this.rootConfig = new land.fx.wnfslib.Config(cid_decrypted, private_ref_decrypted);
+          }else{
+            createNewRootConfig(this.client, secretKey, identity_encrypted);
+          }
         }else{
-          this.privateForest = Fs.createPrivateForest(this.client);
-          Log.d("ReactNative", "privateForest is created: " + this.privateForest);
-          this.rootConfig = Fs.createRootDir(this.client, this.privateForest);
-          String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), secretKey);
-          String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), secretKey);
-          sharedPref.add("cid_encrypted", cid_encrypted);
-          sharedPref.add("private_ref_encrypted", private_ref_encrypted);
+          //Create new root and store cid and private_ref
+          createNewRootConfig(this.client, secretKey, identity_encrypted);
         }
 
 
