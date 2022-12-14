@@ -145,7 +145,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void init(String identityString, String storePath, String bloxAddr, String exchange, Promise promise) {
+  public void init(String identityString, String storePath, String bloxAddr, String exchange, String rootConfig, Promise promise) {
     Log.d("ReactNative", "init started");
     ThreadUtils.runOnExecutor(() -> {
       try {
@@ -153,7 +153,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "init storePath= " + storePath);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "init identity= " + identityString);
-        String[] obj = initInternal(identity, storePath, bloxAddr, exchange);
+        String[] obj = initInternal(identity, storePath, bloxAddr, exchange, rootConfig);
         Log.d("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
         resultData.putString("peerId", obj[0]);
         resultData.putString("rootCid", obj[1]);
@@ -199,18 +199,23 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private void createNewRootConfig(FulaModule.Client iClient, SecretKey secretKey, String identity_encrypted) throws Exception {
+  private void createNewRootConfig(FulaModule.Client iClient, SecretKey secretKey, String identity_encrypted, byte[] identity) throws Exception {
     this.privateForest = Fs.createPrivateForest(iClient);
     Log.d("ReactNative", "privateForest is created: " + this.privateForest);
-    this.rootConfig = Fs.createRootDir(iClient, this.privateForest);
+    this.rootConfig = Fs.createRootDir(iClient, this.privateForest, identity);
     String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), secretKey);
     String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), secretKey);
     sharedPref.add("cid_encrypted_"+ identity_encrypted, cid_encrypted);
     sharedPref.add("private_ref_encrypted_"+ identity_encrypted, private_ref_encrypted);
   }
 
+  private String getPrivateRef(FulaModule.Client iClient, byte[] wnfsKey, String rootCid) throws Exception {
+    String privateRef = Fs.getPrivateRef(iClient, wnfsKey, rootCid);
+    return privateRef;
+  }
+
   @NonNull
-  private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange) throws Exception {
+  private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, String rootCid) throws Exception {
     try {
       Config config_ext = new Config();
       if (storePath == null || storePath.trim().isEmpty()) {
@@ -238,17 +243,29 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String cid = sharedPref.getValue("cid_encrypted_"+ identity_encrypted);
         String private_ref = sharedPref.getValue("private_ref_encrypted_"+identity_encrypted);
 
-        if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
+        if((cid != null && cid.isEmpty()) || (rootCid !=null && rootCid.isEmpty()) ){
+          if(rootCid !=null && rootCid.isEmpty()){
+            cid = rootCid;
+          }
+          if(private_ref == null || private_ref.isEmpty()){
+            private_ref = getPrivateRef(this.client, identity, cid);
+          }
+          this.rootConfig = new land.fx.wnfslib.Config(cid, private_ref);
+          String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), secretKey);
+          String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), secretKey);
+          sharedPref.add("cid_encrypted_"+ identity_encrypted, cid_encrypted);
+          sharedPref.add("private_ref_encrypted_"+ identity_encrypted, private_ref_encrypted);
+        }else if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
           String cid_decrypted = Cryptography.decryptMsg(cid, secretKey);
           String private_ref_decrypted = Cryptography.decryptMsg(private_ref, secretKey);
           if(cid_decrypted != null && !cid_decrypted.isEmpty() && private_ref_decrypted!=null && !private_ref_decrypted.isEmpty()) {
             this.rootConfig = new land.fx.wnfslib.Config(cid_decrypted, private_ref_decrypted);
           }else{
-            createNewRootConfig(this.client, secretKey, identity_encrypted);
+            createNewRootConfig(this.client, secretKey, identity_encrypted, identity);
           }
         }else{
           //Create new root and store cid and private_ref
-          createNewRootConfig(this.client, secretKey, identity_encrypted);
+          createNewRootConfig(this.client, secretKey, identity_encrypted, identity);
         }
 
 

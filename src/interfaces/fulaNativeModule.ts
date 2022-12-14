@@ -5,7 +5,8 @@ interface FulaNativeModule {
     identity: string, //Private key of did identity
     storePath: string, //You can leave empty
     bloxAddr: string, //Blox multiadddr needs to be manually entered now
-    exchange: string //set to 'noope' for testing
+    exchange: string, //set to 'noope' for testing
+    rootCid: string|null //if you have the latest rootCid you can send it and it generates the private_ref for filesystem
   ) => Promise<{peerId: string, rootCid: string, private_ref:string}>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
