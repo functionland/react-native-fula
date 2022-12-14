@@ -11,10 +11,11 @@ export const init = (
   identity: string, //privateKey of did identity
   storePath: string,
   bloxAddr: string,
-  exchange: string
+  exchange: string,
+  rootCid: (string | null)=null,
 ): Promise<{peerId: string, rootCid: string, private_ref:string}> => {
   console.log('init in react-native started',identity, storePath, bloxAddr, exchange);
-  return Fula.init(identity, storePath, bloxAddr, exchange);
+  return Fula.init(identity, storePath, bloxAddr, exchange, rootCid);
 };
 
 /**

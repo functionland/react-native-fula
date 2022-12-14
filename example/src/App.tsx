@@ -25,7 +25,8 @@ const App = () => {
           '',
           '',
           'noop',
-		  Promise
+          null,
+		      Promise
         );
       } catch (e) {
         console.log(e);
