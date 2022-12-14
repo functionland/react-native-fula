@@ -55,6 +55,7 @@ repositories {
   mavenCentral()
 }
 dependencies {
+    implementation project(':react-native-fs')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 compileKotlin {

@@ -9,7 +9,26 @@ const App = () => {
   const [inprogress, setInprogress] = React.useState<boolean>(false);
 
   const [initComplete, setInitComplete] = React.useState<{peerId: string, rootCid: string, private_ref:string} | {}>({});
-
+  var RNFS = require('react-native-fs');
+  const readFile = () => {
+    RNFS.readDir(RNFS.DocumentDirectoryPath)
+     .then((result) => {
+     console.log('GOT RESULT', result);
+     return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+   })
+   .then((statResult) => {
+    if (statResult[0].isFile()) {
+     return RNFS.readFile(statResult[1], 'utf8');
+  }
+  return 'no file';
+  })
+  .then((contents) => {
+   console.log(contents);
+  })
+   .catch((err) => {
+    console.log(err.message, err.code);
+   });
+ }
   React.useEffect(() => {
     const initFula = async () => {
       try {
@@ -25,8 +44,7 @@ const App = () => {
           '',
           '',
           'noop',
-          null,
-		      Promise
+          null
         );
       } catch (e) {
         console.log(e);
@@ -38,6 +56,12 @@ const App = () => {
       .then((res) => {        
         console.log("OK",res);
         setInitComplete(res);
+        readFile();
+        console.log("readFile local comlete");
+        fula.ls('root/').then((res)=>{
+          console.log("ls complete");
+          console.log(res);
+        })
       })
       .catch((e) => {
         console.log('error', e);
@@ -56,6 +80,22 @@ const App = () => {
 
               if (initComplete) {
                 console.log('initialization is completed. putting key/value');
+                var path = RNFS.DocumentDirectoryPath + '/test.txt';
+                RNFS.writeFile(path, 'test', 'utf8')
+                  .then((success) => {
+                    console.log('FILE WRITTEN in '+RNFS.DocumentDirectoryPath + '/test.txt');
+                    fula.writeFile('root/test.txt', RNFS.DocumentDirectoryPath + '/test.txt').then((res)=>{
+                      console.log("upload completed");
+                      console.log(res);
+                      fula.readFile('root/test.txt', RNFS.DocumentDirectoryPath + '/test2.txt').then((res)=>{
+                        console.log('read completed');
+                        readFile();
+                      });
+                    });
+                  })
+                  .catch((err) => {
+                  console.log(err.message);
+                  });
                 
               } else {
                 console.log('wait for init to complete');
