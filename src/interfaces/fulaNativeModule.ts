@@ -8,6 +8,7 @@ interface FulaNativeModule {
     exchange: string, //set to 'noope' for testing
     rootCid: string|null //if you have the latest rootCid you can send it and it generates the private_ref for filesystem
   ) => Promise<{peerId: string, rootCid: string, private_ref:string}>;
+  logout: (identity: string, storePath: string) => Promise<boolean>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
   push: () => Promise<string>;

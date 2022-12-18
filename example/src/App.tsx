@@ -29,43 +29,52 @@ const App = () => {
     console.log(err.message, err.code);
    });
  }
+ const privateKey = [
+  183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27,
+  27, 17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204,
+  142, 241, 94, 225, 7, 153, 168, 239, 94, 7, 187, 123, 158, 149, 149,
+  227, 170, 32, 54, 203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6,
+  91, 87, 152,
+];
   React.useEffect(() => {
     const initFula = async () => {
       try {
-        const privateKey = [
-          183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27,
-          27, 17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204,
-          142, 241, 94, 225, 7, 153, 168, 239, 94, 7, 187, 123, 158, 149, 149,
-          227, 170, 32, 54, 203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6,
-          91, 87, 152,
-        ];
+        
         return fula.init(
           privateKey.toString(),
           '',
           '',
-          'noop',
-          null
+          'noop'
         );
       } catch (e) {
         console.log(e);
         return Promise.reject(e);
       }
     };
-
+    //fula.logout(privateKey.toString(),'').then((a) => {
     initFula()
       .then((res) => {        
         console.log("OK",res);
         setInitComplete(res);
         readFile();
         console.log("readFile local comlete");
-        fula.ls('root/').then((res)=>{
-          console.log("ls complete");
-          console.log(res);
-        })
+		fula.mkdir('root/test1').then((res1)=>{
+		console.log("root created");
+		console.log(res1);
+			fula.ls('root').then((res2)=>{
+			  console.log("ls complete");
+			  console.log(res2);
+			})
+			.catch((e)=>{
+			  console.log('error', e);
+			})
+		})
+		
       })
       .catch((e) => {
         console.log('error', e);
       });
+    //});
   }, []);
 
   return (
@@ -90,6 +99,11 @@ const App = () => {
                       fula.readFile('root/test.txt', RNFS.DocumentDirectoryPath + '/test2.txt').then((res)=>{
                         console.log('read completed');
                         readFile();
+                        fula.ls('root').then((res2)=>{
+                          console.log("ls2 complete");
+                          console.log(res2);
+                          fula.shutdown();
+                        })
                       });
                     });
                   })
