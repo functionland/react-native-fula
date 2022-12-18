@@ -19,6 +19,15 @@ export const init = (
 };
 
 /**
+ * rm removes all data
+ * @param path
+ * @returns string: new cid of the root
+ */
+export const logout = (identity: string, storePath: string): Promise<boolean> => {
+  return Fula.logout(identity, storePath);
+};
+
+/**
  * Get gets the value corresponding to the given key from the local datastore.
 // The key must be a valid ipld.Link.
  * @param key
@@ -99,15 +108,15 @@ export const writeFile = (fulaTargetFilename: string, localFilename: string): Pr
   return Fula.ls(path).then(
     (res)=> {
       let lsResult = [];
-      let lsRows = res.split("???");
+      let lsRows = res.split("!!!");
       for (const element of lsRows) {
-        let item = {
-          name: '',
-          created: '',
-          modified: ''
-        };
-        let rowItems = element.split("!!!");
+        let rowItems = element.split("???");
         if(rowItems && rowItems[0]){
+          let item = {
+            name: '',
+            created: '',
+            modified: ''
+          };
           item.name = rowItems[0];
           if(rowItems[1]) {
             item.created = rowItems[1];

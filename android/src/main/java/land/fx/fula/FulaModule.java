@@ -12,6 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.module.annotations.ReactModule;
 
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
@@ -169,6 +170,22 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void logout(String identityString, String storePath, Promise promise) {
+    Log.d("ReactNative", "logout started");
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        byte[] identity = toByte(identityString);
+        boolean obj = logoutInternal(identity, storePath);
+        Log.d("ReactNative", "logout completed");
+        promise.resolve(obj);
+      } catch (Exception e) {
+        Log.d("ReactNative", "logout failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
+      }
+    });
+  }
+
   @NonNull
   private byte[] createPeerIdentity(byte[] privateKey) throws Exception {
     try {
@@ -218,11 +235,40 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @NonNull
+  private boolean logoutInternal(byte[] identity, String storePath) throws Exception {
+    try {
+      SecretKey secretKey = Cryptography.generateKey(identity);
+      String identity_encrypted =Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
+      sharedPref.remove("cid_encrypted_"+ identity_encrypted);
+      sharedPref.remove("private_ref_encrypted_"+identity_encrypted);
+
+      //TODO: Should also remove peerid @Mahdi
+
+      sharedPref.remove("cid_encrypted_"+ identity_encrypted);
+      sharedPref.remove("private_ref_encrypted_"+ identity_encrypted);
+
+      this.rootConfig = null;
+
+      if (storePath == null || storePath.trim().isEmpty()) {
+        storePath = this.fulaStorePath;
+      }
+
+      File file = new File(storePath);
+      FileUtils.deleteDirectory(file);
+      return true;
+
+    } catch (Exception e) {
+      Log.d("ReactNative", "logout internal failed with Error: " + e.getMessage());
+      throw (e);
+    }
+  }
+
+  @NonNull
   private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, String rootCid) throws Exception {
     try {
       Config config_ext = new Config();
       if (storePath == null || storePath.trim().isEmpty()) {
-        config_ext.setStorePath(fulaStorePath);
+        config_ext.setStorePath(this.fulaStorePath);
       } else {
         config_ext.setStorePath(storePath);
       }
@@ -258,15 +304,15 @@ public class FulaModule extends ReactContextBaseJavaModule {
           String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), secretKey);
           sharedPref.add("cid_encrypted_"+ identity_encrypted, cid_encrypted);
           sharedPref.add("private_ref_encrypted_"+ identity_encrypted, private_ref_encrypted);
-        }else if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
+        } else if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
           String cid_decrypted = Cryptography.decryptMsg(cid, secretKey);
           String private_ref_decrypted = Cryptography.decryptMsg(private_ref, secretKey);
           if(cid_decrypted != null && !cid_decrypted.isEmpty() && private_ref_decrypted!=null && !private_ref_decrypted.isEmpty()) {
             this.rootConfig = new land.fx.wnfslib.Config(cid_decrypted, private_ref_decrypted);
-          }else{
+          } else{
             createNewRootConfig(this.client, secretKey, identity_encrypted, identity);
           }
-        }else{
+        } else{
           //Create new root and store cid and private_ref
           createNewRootConfig(this.client, secretKey, identity_encrypted, identity);
         }
