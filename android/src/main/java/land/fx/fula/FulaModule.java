@@ -363,8 +363,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
       try {
         String res = Fs.ls(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         Log.d("ReactNative", "ls: res = " + res);
-        JSONArray jsonArray = new JSONArray(res);
-        promise.resolve(jsonArray.toString());
+        //JSONArray jsonArray = new JSONArray(res);
+        promise.resolve(res);
       } catch (Exception e) {
         Log.d("get", e.getMessage());
         promise.reject(e);

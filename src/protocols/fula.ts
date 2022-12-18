@@ -98,7 +98,27 @@ export const writeFile = (fulaTargetFilename: string, localFilename: string): Pr
  export const ls = (path: string): Promise<void | JSON> => {
   return Fula.ls(path).then(
     (res)=> {
-      let jsonRes: JSON = JSON.parse(res);
+      let lsResult = [];
+      let lsRows = res.split("???");
+      for (const element of lsRows) {
+        let item = {
+          name: '',
+          created: '',
+          modified: ''
+        };
+        let rowItems = element.split("!!!");
+        if(rowItems && rowItems[0]){
+          item.name = rowItems[0];
+          if(rowItems[1]) {
+            item.created = rowItems[1];
+          }
+          if(rowItems[2]) {
+            item.modified = rowItems[2];
+          }
+          lsResult.push(item);
+        }
+      }
+      let jsonRes = JSON.parse(JSON.stringify(lsResult))
       return jsonRes;
   }). catch((e)=>{
     return e

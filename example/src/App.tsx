@@ -43,8 +43,7 @@ const App = () => {
           privateKey.toString(),
           '',
           '',
-          'noop',
-          null
+          'noop'
         );
       } catch (e) {
         console.log(e);
@@ -58,12 +57,12 @@ const App = () => {
         setInitComplete(res);
         readFile();
         console.log("readFile local comlete");
-		fula.mkdir('root').then((res1)=>{
+		fula.mkdir('root/test1').then((res1)=>{
 		console.log("root created");
 		console.log(res1);
-			fula.ls('root').then((res)=>{
+			fula.ls('root').then((res2)=>{
 			  console.log("ls complete");
-			  console.log(res);
+			  console.log(res2);
 			})
 			.catch((e)=>{
 			  console.log('error', e);
