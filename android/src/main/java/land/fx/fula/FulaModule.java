@@ -48,6 +48,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
   String privateForest;
   land.fx.wnfslib.Config rootConfig;
   SharedPreferenceHelper sharedPref;
+  SecretKey secretKeyGlobal;
+  String identityEncryptedGlobal;
   static String PRIVATE_KEY_STORE_ID = "PRIVATE_KEY";
 
   public static class Client implements land.fx.wnfslib.Datastore {
@@ -219,15 +221,13 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private void createNewRootConfig(FulaModule.Client iClient, SecretKey secretKey, String identity_encrypted, byte[] identity) throws Exception {
+  private void createNewRootConfig(FulaModule.Client iClient, byte[] identity) throws Exception {
     this.privateForest = Fs.createPrivateForest(iClient);
     Log.d("ReactNative", "privateForest is created: " + this.privateForest);
     this.rootConfig = Fs.createRootDir(iClient, this.privateForest, identity);
     Log.d("ReactNative", "new rootConfig is created: cid=" + this.rootConfig.getCid()+" & private_ref="+this.rootConfig.getPrivate_ref());
-    String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), secretKey);
-    String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), secretKey);
-    sharedPref.add("cid_encrypted_"+ identity_encrypted, cid_encrypted);
-    sharedPref.add("private_ref_encrypted_"+ identity_encrypted, private_ref_encrypted);
+
+    encrypt_and_store_config();
   }
 
   private String getPrivateRef(FulaModule.Client iClient, byte[] wnfsKey, String rootCid) throws Exception {
@@ -237,11 +237,29 @@ public class FulaModule extends ReactContextBaseJavaModule {
     return privateRef;
   }
 
+  private boolean encrypt_and_store_config() throws Exception {
+    try {
+      if(!this.identityEncryptedGlobal.isEmpty() && !this.identityEncryptedGlobal.isEmpty()) {
+        String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal);
+        String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), this.secretKeyGlobal);
+
+        sharedPref.add("cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
+        sharedPref.add("private_ref_encrypted_" + this.identityEncryptedGlobal, private_ref_encrypted);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      Log.d("ReactNative", "encrypt_and_store_config failed with Error: " + e.getMessage());
+      throw (e);
+    }
+  }
+
   @NonNull
   private boolean logoutInternal(byte[] identity, String storePath) throws Exception {
     try {
       SecretKey secretKey = Cryptography.generateKey(identity);
-      String identity_encrypted =Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
+      String identity_encrypted = Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
       sharedPref.remove("cid_encrypted_"+ identity_encrypted);
       sharedPref.remove("private_ref_encrypted_"+identity_encrypted);
 
@@ -251,6 +269,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
       sharedPref.remove("private_ref_encrypted_"+ identity_encrypted);
 
       this.rootConfig = null;
+      this.secretKeyGlobal = null;
+      this.identityEncryptedGlobal = null;
 
       if (storePath == null || storePath.trim().isEmpty()) {
         storePath = this.fulaStorePath;
@@ -287,50 +307,62 @@ public class FulaModule extends ReactContextBaseJavaModule {
       this.client = new Client(this.fula);
       Log.d("ReactNative", "fula initialized: " + this.fula.id());
 
-      if (this.rootConfig == null || this.rootConfig.getCid().isEmpty() || this.rootConfig.getPrivate_ref().isEmpty()) {
-        Log.d("ReactNative", "this.rootCid is empty");
-        //Load from keystore
-        SecretKey secretKey = Cryptography.generateKey(identity);
-        String identity_encrypted =Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
-        String cid = sharedPref.getValue("cid_encrypted_"+ identity_encrypted);
-        String private_ref = sharedPref.getValue("private_ref_encrypted_"+identity_encrypted);
+      SecretKey secretKey = Cryptography.generateKey(identity);
+      String identity_encrypted =Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
+      this.identityEncryptedGlobal = identity_encrypted;
+      this.secretKeyGlobal = secretKey;
 
-        if((cid == null || cid.isEmpty()) || (rootCid == null || rootCid.isEmpty()) ){
+      if (this.rootConfig == null || this.rootConfig.getCid().isEmpty() || this.rootConfig.getPrivate_ref().isEmpty()) {
+        Log.d("ReactNative", "this.rootCid is empty.");
+        //Load from keystore
+
+        String cid_encrypted_fetched = sharedPref.getValue("cid_encrypted_"+ identity_encrypted);
+        String private_ref_encrypted_fetched = sharedPref.getValue("private_ref_encrypted_"+identity_encrypted);
+        Log.d("ReactNative", "Here1");
+        String cid = "";
+        String private_ref = "";
+        if(cid_encrypted_fetched != null && !cid_encrypted_fetched.isEmpty()) {
+          Log.d("ReactNative", "decrypting cid="+cid_encrypted_fetched+" with secret="+secretKey.toString());
+          cid = Cryptography.decryptMsg(cid_encrypted_fetched, secretKey);
+        }
+        if(private_ref_encrypted_fetched != null && !private_ref_encrypted_fetched.isEmpty()) {
+          Log.d("ReactNative", "decrypting private_ref="+private_ref_encrypted_fetched+" with secret="+secretKey.toString());
+          private_ref = Cryptography.decryptMsg(private_ref_encrypted_fetched, secretKey);
+        }
+        Log.d("ReactNative", "Here2");
+        //Log.d("ReactNative", "Attempted to fetch cid from keystore; cid="+cid+" & private_ref="+private_ref);
+        if((cid == null || cid.isEmpty()) || (private_ref == null || private_ref.isEmpty()) ){
           Log.d("ReactNative", "cid or PrivateRef was not found");
           if(rootCid !=null && !rootCid.isEmpty()){
             Log.d("ReactNative", "Re-setting cid from input: "+rootCid);
             cid = rootCid;
           }
           if((private_ref == null || private_ref.isEmpty()) && (cid != null && !cid.isEmpty())){
+            Log.d("ReactNative", "Re-fetching privateRef from wnfs: cid="+cid);
             private_ref = getPrivateRef(this.client, identity, cid);
             Log.d("ReactNative", "Re-fetching privateRef from wnfs: "+private_ref);
           }
           if(cid == null || cid.isEmpty() || private_ref == null || private_ref.isEmpty()) {
             Log.d("ReactNative", "Tried to recover cid and privateRef but was not successful. Creating new ones");
-            createNewRootConfig(this.client, secretKey, identity_encrypted, identity);
+            createNewRootConfig(this.client, identity);
           } else {
             Log.d("ReactNative", "Tried to recover cid and privateRef and was successful. cid:"+cid+" & private_ref="+private_ref);
             this.rootConfig = new land.fx.wnfslib.Config(cid, private_ref);
-            String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), secretKey);
-            String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), secretKey);
-            sharedPref.add("cid_encrypted_" + identity_encrypted, cid_encrypted);
-            sharedPref.add("private_ref_encrypted_" + identity_encrypted, private_ref_encrypted);
+            encrypt_and_store_config();
           }
         } else if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
           Log.d("ReactNative", "Found cid and private ref in keychain store");
-          String cid_decrypted = Cryptography.decryptMsg(cid, secretKey);
-          String private_ref_decrypted = Cryptography.decryptMsg(private_ref, secretKey);
-          if(cid_decrypted != null && !cid_decrypted.isEmpty() && private_ref_decrypted!=null && !private_ref_decrypted.isEmpty()) {
+          if(cid != null && !cid.isEmpty() && private_ref!=null && !private_ref.isEmpty()) {
             Log.d("ReactNative", "Recovered cid and private ref from keychain store. cid="+cid+" & private_ref="+private_ref);
-            this.rootConfig = new land.fx.wnfslib.Config(cid_decrypted, private_ref_decrypted);
+            this.rootConfig = new land.fx.wnfslib.Config(cid, private_ref);
           } else{
             Log.d("ReactNative", "Found but Could not recover cid and private_ref from keychain store");
-            createNewRootConfig(this.client, secretKey, identity_encrypted, identity);
+            createNewRootConfig(this.client, identity);
           }
         } else{
           Log.d("ReactNative", "This cid and private_ref generation should never happen!!!");
           //Create new root and store cid and private_ref
-          createNewRootConfig(this.client, secretKey, identity_encrypted, identity);
+          createNewRootConfig(this.client, identity);
         }
 
 
@@ -394,6 +426,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       try {
         land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
         this.rootConfig = config;
+        encrypt_and_store_config();
         promise.resolve(config.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -411,6 +444,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         byte[] content = convertStringToByte(contentString);
         land.fx.wnfslib.Config config = Fs.writeFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path, content);
         this.rootConfig = config;
+        encrypt_and_store_config();
         promise.resolve(config.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -443,6 +477,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       try {
         land.fx.wnfslib.Config config = Fs.rm(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
         this.rootConfig = config;
+        encrypt_and_store_config();
         promise.resolve(config.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
