@@ -95,8 +95,15 @@ export const writeFile = (fulaTargetFilename: string, localFilename: string): Pr
  * @returns string: list of items
  * TODO: Findout how is the string and convert to array
  */
- export const ls = (path: string): Promise<string> => {
-  return Fula.ls(path);
+ export const ls = (path: string): Promise<void | JSON> => {
+  return Fula.ls(path).then(
+    (res)=> {
+      let jsonRes: JSON = JSON.parse(res);
+      return jsonRes;
+  }). catch((e)=>{
+    return e
+  });
+
 };
 
 /**

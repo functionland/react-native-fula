@@ -20,6 +20,9 @@ import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import fulamobile.Config;
 import fulamobile.Fulamobile;
 
@@ -359,7 +362,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "ls: path = " + path);
       try {
         String res = Fs.ls(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
-        promise.resolve(res);
+        Log.d("ReactNative", "ls: res = " + res);
+        JSONArray jsonArray = new JSONArray(res);
+        promise.resolve(jsonArray.toString());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
         promise.reject(e);

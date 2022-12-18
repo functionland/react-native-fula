@@ -40,7 +40,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-  buildToolsVersion '33.0.0'
   ndkVersion '25.1.8937393'
 }
 
@@ -64,6 +63,6 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'com.github.functionland:fula-build-aar:v0.7.3' // From jitpack.io
-    implementation 'com.github.functionland:wnfs-build-aar:v1.3.1' // From jitpack.io
+    implementation 'com.github.functionland:wnfs-build-aar:v1.3.5' // From jitpack.io
     // implementation files('mobile.aar')
 }

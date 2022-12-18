@@ -58,10 +58,18 @@ const App = () => {
         setInitComplete(res);
         readFile();
         console.log("readFile local comlete");
-        fula.ls('root/').then((res)=>{
-          console.log("ls complete");
-          console.log(res);
-        })
+		fula.mkdir('root').then((res1)=>{
+		console.log("root created");
+		console.log(res1);
+			fula.ls('root').then((res)=>{
+			  console.log("ls complete");
+			  console.log(res);
+			})
+			.catch((e)=>{
+			  console.log('error', e);
+			})
+		})
+		
       })
       .catch((e) => {
         console.log('error', e);
