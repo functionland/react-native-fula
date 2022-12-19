@@ -459,9 +459,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "ls: path = " + path);
       try {
         byte[] res = Fs.ls(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
-        Log.d("ReactNative", "ls: res = " + res);
+        
         //JSONArray jsonArray = new JSONArray(res);
         String s = new String(res, StandardCharsets.UTF_8);
+        Log.d("ReactNative", "ls: res = " + s);
         promise.resolve(s);
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -498,7 +499,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "readFile: fulaTargetFilename = " + fulaTargetFilename);
       try {
-        String path = Fs.readFileToPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
+        String path = Fs.readFilestreamToPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
         promise.resolve(path);
       } catch (Exception e) {
         Log.d("get", e.getMessage());
