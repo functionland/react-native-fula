@@ -81,6 +81,17 @@ await fula.rm(
 
 ```
 
+```js
+//removes all Fula related data and information (Except the encrypted filesystem) at the specified storage local path
+const result //returns true if succesful and false if fails
+= 
+await fula.logout(
+    identity: string, //bytes of the privateKey of did identity in string format
+    storePath: string, // leave empty to use the default temp one
+);
+
+```
+
 ## Roadmap
 
 Please note the following might not be done in order:
