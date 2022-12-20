@@ -12,9 +12,15 @@ export const init = (
   storePath: string,
   bloxAddr: string,
   exchange: string,
-  rootCid: (string | null)=null,
-): Promise<{peerId: string, rootCid: string, private_ref:string}> => {
-  console.log('init in react-native started',identity, storePath, bloxAddr, exchange);
+  rootCid: string | null = null
+): Promise<{ peerId: string; rootCid: string; private_ref: string }> => {
+  console.log(
+    'init in react-native started',
+    identity,
+    storePath,
+    bloxAddr,
+    exchange
+  );
   return Fula.init(identity, storePath, bloxAddr, exchange, rootCid);
 };
 
@@ -23,7 +29,10 @@ export const init = (
  * @param path
  * @returns string: new cid of the root
  */
-export const logout = (identity: string, storePath: string): Promise<boolean> => {
+export const logout = (
+  identity: string,
+  storePath: string
+): Promise<boolean> => {
   return Fula.logout(identity, storePath);
 };
 
@@ -83,18 +92,25 @@ export const mkdir = (path: string): Promise<string> => {
  * @param path
  * @returns string: new cid of the root
  */
-export const writeFileContent = (path: string, content: string): Promise<string> => {
+export const writeFileContent = (
+  path: string,
+  content: string
+): Promise<string> => {
   return Fula.writeFileContent(path, content);
 };
 
 /*
     // reads content of the file form localFilename (should include full absolute path to local file with read permission
     // writes content to the specified location by fulaTargetFilename in Fula filesystem
+    // It keeps the original file modiifcation date
     // fulaTargetFilename: a string including full path and filename of target file on Fula (e.g. root/pictures/cat.jpg)
     // localFilename: a string containing full path and filename of local file on hte device (e.g /usr/bin/cat.jpg)
     // Returns: new cid of the root after this file is placed in the tree
      */
-export const writeFile = (fulaTargetFilename: string, localFilename: string): Promise<string> => {
+export const writeFile = (
+  fulaTargetFilename: string,
+  localFilename: string
+): Promise<string> => {
   return Fula.writeFile(fulaTargetFilename, localFilename);
 };
 
@@ -104,35 +120,35 @@ export const writeFile = (fulaTargetFilename: string, localFilename: string): Pr
  * @returns string: list of items
  * TODO: Findout how is the string and convert to array
  */
- export const ls = (path: string): Promise<void | JSON> => {
-  return Fula.ls(path).then(
-    (res)=> {
+export const ls = (path: string): Promise<void | JSON> => {
+  return Fula.ls(path)
+    .then((res) => {
       let lsResult = [];
-      let lsRows = res.split("!!!");
+      let lsRows = res.split('!!!');
       for (const element of lsRows) {
-        let rowItems = element.split("???");
-        if(rowItems && rowItems[0]){
+        let rowItems = element.split('???');
+        if (rowItems && rowItems[0]) {
           let item = {
             name: '',
             created: '',
-            modified: ''
+            modified: '',
           };
           item.name = rowItems[0];
-          if(rowItems[1]) {
+          if (rowItems[1]) {
             item.created = rowItems[1];
           }
-          if(rowItems[2]) {
+          if (rowItems[2]) {
             item.modified = rowItems[2];
           }
           lsResult.push(item);
         }
       }
-      let jsonRes = JSON.parse(JSON.stringify(lsResult))
+      let jsonRes = JSON.parse(JSON.stringify(lsResult));
       return jsonRes;
-  }). catch((e)=>{
-    return e
-  });
-
+    })
+    .catch((e) => {
+      return e;
+    });
 };
 
 /**
@@ -144,6 +160,24 @@ export const rm = (path: string): Promise<string> => {
   return Fula.rm(path);
 };
 
+/**
+ * cp copies the file or folder at the sourcePath to targetPath. targetPath is a folder that must exist already
+ * @param sourcePath, targetPath
+ * @returns string: new cid of the root
+ */
+export const cp = (sourcePath: string, targetPath: string): Promise<string> => {
+  return Fula.cp(sourcePath, targetPath);
+};
+
+/**
+ * mv moves the file or folder at the sourcePath to targetPath. targetPath is a folder that must exist already
+ * @param sourcePath, targetPath
+ * @returns string: new cid of the root
+ */
+export const mv = (sourcePath: string, targetPath: string): Promise<string> => {
+  return Fula.mv(sourcePath, targetPath);
+};
+
 /*
     // reads content of the file form localFilename (should include full absolute path to local file with read permission
     // writes content to the specified location by fulaTargetFilename in Fula filesystem
@@ -151,16 +185,19 @@ export const rm = (path: string): Promise<string> => {
     // localFilename: a string containing full path and filename of local file on hte device (e.g /usr/bin/cat.jpg)
     // Returns: new cid of the root after this file is placed in the tree
      */
-    export const readFile = (fulaTargetFilename: string, localFilename: string): Promise<string> => {
-      return Fula.readFile(fulaTargetFilename, localFilename);
-    };
+export const readFile = (
+  fulaTargetFilename: string,
+  localFilename: string
+): Promise<string> => {
+  return Fula.readFile(fulaTargetFilename, localFilename);
+};
 
 /**
  * readFile reads content of a given path
  * @param path
  * @returns string: cotent
  */
- export const readFileContent = (path: string): Promise<string> => {
+export const readFileContent = (path: string): Promise<string> => {
   return Fula.readFileContent(path);
 };
 
