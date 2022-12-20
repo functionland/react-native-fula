@@ -8,44 +8,39 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
 
-  const [initComplete, setInitComplete] = React.useState<{peerId: string, rootCid: string, private_ref:string} | {}>({});
+  const [initComplete, setInitComplete] = React.useState<
+    { peerId: string; rootCid: string; private_ref: string } | {}
+  >({});
   var RNFS = require('react-native-fs');
   const readFile = () => {
     RNFS.readDir(RNFS.DocumentDirectoryPath)
-     .then((result) => {
-     console.log('GOT RESULT', result);
-     return Promise.all([RNFS.stat(result[0].path), result[0].path]);
-   })
-   .then((statResult) => {
-    if (statResult[0].isFile()) {
-     return RNFS.readFile(statResult[1], 'utf8');
-  }
-  return 'no file';
-  })
-  .then((contents) => {
-   console.log(contents);
-  })
-   .catch((err) => {
-    console.log(err.message, err.code);
-   });
- }
- const privateKey = [
-  183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27,
-  27, 17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204,
-  142, 241, 94, 225, 7, 153, 168, 239, 94, 7, 187, 123, 158, 149, 149,
-  227, 170, 32, 54, 203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6,
-  91, 87, 152,
-];
+      .then((result) => {
+        console.log('GOT RESULT', result);
+        return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+      })
+      .then((statResult) => {
+        if (statResult[0].isFile()) {
+          return RNFS.readFile(statResult[1], 'utf8');
+        }
+        return 'no file';
+      })
+      .then((contents) => {
+        console.log(contents);
+      })
+      .catch((err) => {
+        console.log(err.message, err.code);
+      });
+  };
+  const privateKey = [
+    183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27, 27,
+    17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204, 142, 241,
+    94, 225, 7, 153, 168, 239, 94, 7, 187, 123, 158, 149, 149, 227, 170, 32, 54,
+    203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
+  ];
   React.useEffect(() => {
     const initFula = async () => {
       try {
-        
-        return fula.init(
-          privateKey.toString(),
-          '',
-          '',
-          'noop'
-        );
+        return fula.init(privateKey.toString(), '', '', 'noop');
       } catch (e) {
         console.log(e);
         return Promise.reject(e);
@@ -53,23 +48,24 @@ const App = () => {
     };
     //fula.logout(privateKey.toString(),'').then((a) => {
     initFula()
-      .then((res) => {        
-        console.log("OK",res);
+      .then((res) => {
+        console.log('OK', res);
         setInitComplete(res);
         readFile();
-        console.log("readFile local comlete");
-		fula.mkdir('root/test1').then((res1)=>{
-		console.log("root created");
-		console.log(res1);
-			fula.ls('root').then((res2)=>{
-			  console.log("ls complete");
-			  console.log(res2);
-			})
-			.catch((e)=>{
-			  console.log('error', e);
-			})
-		})
-		
+        console.log('readFile local comlete');
+        fula.mkdir('root/test1').then((res1) => {
+          console.log('root created');
+          console.log(res1);
+          fula
+            .ls('root')
+            .then((res2) => {
+              console.log('ls complete');
+              console.log(res2);
+            })
+            .catch((e) => {
+              console.log('error', e);
+            });
+        });
       })
       .catch((e) => {
         console.log('error', e);
@@ -86,31 +82,56 @@ const App = () => {
           title={inprogress ? 'Putting & Getting...' : 'Test'}
           onPress={async () => {
             try {
-
               if (initComplete) {
                 console.log('initialization is completed. putting key/value');
                 var path = RNFS.DocumentDirectoryPath + '/test.txt';
                 RNFS.writeFile(path, 'test', 'utf8')
                   .then((success) => {
-                    console.log('FILE WRITTEN in '+RNFS.DocumentDirectoryPath + '/test.txt');
-                    fula.writeFile('root/test.txt', RNFS.DocumentDirectoryPath + '/test.txt').then((res)=>{
-                      console.log("upload completed");
-                      console.log(res);
-                      fula.readFile('root/test.txt', RNFS.DocumentDirectoryPath + '/test2.txt').then((res)=>{
-                        console.log('read completed');
-                        readFile();
-                        fula.ls('root').then((res2)=>{
-                          console.log("ls2 complete");
-                          console.log(res2);
-                          fula.shutdown();
-                        })
+                    console.log(
+                      'FILE WRITTEN in ' +
+                        RNFS.DocumentDirectoryPath +
+                        '/test.txt'
+                    );
+                    fula
+                      .writeFile(
+                        'root/test.txt',
+                        RNFS.DocumentDirectoryPath + '/test.txt'
+                      )
+                      .then((res) => {
+                        console.log('upload completed');
+                        console.log(res);
+                        fula
+                          .readFile(
+                            'root/test.txt',
+                            RNFS.DocumentDirectoryPath + '/test2.txt'
+                          )
+                          .then((res) => {
+                            console.log('read completed');
+                            readFile();
+                            fula
+                              .mv('root/test.txt', 'root/testmv.txt')
+                              .then((resmv) => {
+                                console.log('mv complete');
+                                console.log(resmv);
+                                fula
+                                  .cp('root/testmv.txt', 'root/testcp.txt')
+                                  .then((rescp) => {
+                                    console.log('cp complete');
+                                    console.log(rescp);
+
+                                    fula.ls('root').then((res2) => {
+                                      console.log('ls2 complete');
+                                      console.log(res2);
+                                      fula.shutdown();
+                                    });
+                                  });
+                              });
+                          });
                       });
-                    });
                   })
                   .catch((err) => {
-                  console.log(err.message);
+                    console.log(err.message);
                   });
-                
               } else {
                 console.log('wait for init to complete');
               }

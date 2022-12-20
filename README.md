@@ -40,7 +40,7 @@ await fula.mkdir(
 ```
 
 ```js
-//Write a local file on the device to the Fula tree (upload)
+//Write a local file on the device to the Fula tree (upload). It keeps the original file modification date.
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
 = 
 await fula.writeFile(
@@ -82,6 +82,28 @@ await fula.rm(
 ```
 
 ```js
+//copies the specified file or folder at sourcePath to the filename at targetPath. the path itself(apart from filename) must exist
+const cid //returns the cid of the new root. Note that on every write action the root cid changes.
+= 
+await fula.cp(
+    sourcePath: string, //path to the file or folder on the tree. It always starts from the "root". e.g. "root/pictures" or "root/pictures/cat.jpg"
+    targetPath: string, //path to the file or folder on the tree. It always starts from the "root". e.g. "root/pictures2" or "root/pictures2/cat.jpg"
+);
+
+```
+
+```js
+//moves the specified file or folder at sourcePath to the filename at targetPath. the path itself(apart from filename) must exist
+const cid //returns the cid of the new root. Note that on every write action the root cid changes.
+= 
+await fula.mv(
+    sourcePath: string, //path to the file or folder on the tree. It always starts from the "root". e.g. "root/pictures" or "root/pictures/cat.jpg"
+    targetPath: string, //path to the file or folder on the tree. It always starts from the "root". e.g. "root/pictures2" or "root/pictures2/cat.jpg"
+);
+
+```
+
+```js
 //removes all Fula related data and information (Except the encrypted filesystem) at the specified storage local path
 const result //returns true if succesful and false if fails
 = 
@@ -98,7 +120,7 @@ Please note the following might not be done in order:
 
 - [x] Initial version with all functions included
 - [x] Add WNFS tree encryption key generation from an input (deterministically)
-- [ ] Improve ls, read, and write functions to use a stream. ( :100: v1.0.0 Release here )
+- [x] Improve ead function to use a stream. ( :100: v1 Release here )
 - [ ] Connect to Blockchain codes using APIs
 - [ ] Connect to backend
 
