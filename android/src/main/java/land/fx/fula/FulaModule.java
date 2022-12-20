@@ -459,7 +459,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "ls: path = " + path);
       try {
         byte[] res = Fs.ls(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
-        
+
         //JSONArray jsonArray = new JSONArray(res);
         String s = new String(res, StandardCharsets.UTF_8);
         Log.d("ReactNative", "ls: res = " + s);
@@ -477,6 +477,38 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "rm: path = " + path);
       try {
         land.fx.wnfslib.Config config = Fs.rm(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        this.rootConfig = config;
+        encrypt_and_store_config();
+        promise.resolve(config.getCid());
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void cp(String sourcePath, String targetPath, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "rm: sourcePath = " + sourcePath);
+      try {
+        land.fx.wnfslib.Config config = Fs.cp(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), sourcePath, targetPath);
+        this.rootConfig = config;
+        encrypt_and_store_config();
+        promise.resolve(config.getCid());
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void mv(String sourcePath, String targetPath, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "rm: sourcePath = " + sourcePath);
+      try {
+        land.fx.wnfslib.Config config = Fs.mv(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), sourcePath, targetPath);
         this.rootConfig = config;
         encrypt_and_store_config();
         promise.resolve(config.getCid());
