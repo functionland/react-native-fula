@@ -51,14 +51,13 @@ await fula.writeFile(
 ```
 
 ```js
-//reads a file on fula tree to a local file on the device (download)
+//reads a file on fula tree to a local file on the device (download). It is stream so does not affect memory for large files.
 const localFilePath //returns the path to the local file and includes the filename
 = 
 await fula.readFile(
     fulaTargetFilename: string, //path to the file on the tree. It should include the filename and extension and start from the "root/". e.g. "root/pictures/cat.jpg"
     localFilename: string //path to the local file. It should include the filename and extension. e.g. "/temp/cat.jpg"
 );
-//// TODO: This needs to be improved by using stream to not overload the memory for large files
 ```
 
 ```js
