@@ -40,7 +40,12 @@ const App = () => {
   React.useEffect(() => {
     const initFula = async () => {
       try {
-        return fula.init(privateKey.toString(), '', '', 'noop');
+        return fula.init(
+          privateKey.toString(),
+          '',
+          '/ip4/192.168.68.103/tcp/40001/p2p/12D3KooWBdzmgXe9uyYoxaeLLKTLWM7mG3ZtBiKHAnSVxtrVJc2A',
+          ''
+        );
       } catch (e) {
         console.log(e);
         return Promise.reject(e);
@@ -108,7 +113,7 @@ const App = () => {
                           .then((res) => {
                             console.log('read completed');
                             readFile();
-                            fula
+                            /*fula
                               .mv('root/test.txt', 'root/testmv.txt')
                               .then((resmv) => {
                                 console.log('mv complete');
@@ -125,7 +130,7 @@ const App = () => {
                                       fula.shutdown();
                                     });
                                   });
-                              });
+                              });*/
                           });
                       });
                   })
@@ -137,7 +142,108 @@ const App = () => {
               }
             } catch (e) {}
           }}
-          color={inprogress ? 'green' : 'gray'}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Check Failes'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                console.log('initialization is completed. retry');
+                var path = RNFS.DocumentDirectoryPath + '/test_r.txt';
+                RNFS.writeFile(path, 'test_r', 'utf8')
+                  .then((success) => {
+                    console.log(
+                      'FILE WRITTEN in ' +
+                        RNFS.DocumentDirectoryPath +
+                        '/test_r.txt'
+                    );
+                    fula
+                      .writeFile(
+                        'root/test_r.txt',
+                        RNFS.DocumentDirectoryPath + '/test_r.txt'
+                      )
+                      .then((res) => {
+                        console.log('upload completed');
+                        console.log(res);
+                        fula
+                          .readFile(
+                            'root/test_r.txt',
+                            RNFS.DocumentDirectoryPath + '/test_r2.txt'
+                          )
+                          .then((res) => {
+                            console.log('read completed');
+                            readFile();
+                            fula
+                              .checkFailedActions()
+                              .then((f) => {
+                                console.log('failed actions');
+                                console.log(f);
+                              })
+                              .catch((e) => {
+                                console.log(e);
+                              });
+                            /*fula
+                              .mv('root/test.txt', 'root/testmv.txt')
+                              .then((resmv) => {
+                                console.log('mv complete');
+                                console.log(resmv);
+                                fula
+                                  .cp('root/testmv.txt', 'root/testcp.txt')
+                                  .then((rescp) => {
+                                    console.log('cp complete');
+                                    console.log(rescp);
+
+                                    fula.ls('root').then((res2) => {
+                                      console.log('ls2 complete');
+                                      console.log(res2);
+                                      fula.shutdown();
+                                    });
+                                  });
+                              });*/
+                          });
+                      });
+                  })
+                  .catch((err) => {
+                    console.log(err.message);
+                  });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Retry'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection cehck');
+                  console.log(r);
+                  if(r){
+                    console.log('initialization is completed. retry');
+                    fula
+                      .checkFailedActions(true)
+                      .then((res) => {
+                        console.log('retried');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('retry failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
         />
       </View>
     </View>

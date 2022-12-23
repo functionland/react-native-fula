@@ -103,6 +103,24 @@ await fula.mv(
 ```
 
 ```js
+//checks if client can reach server
+const result //returns true if it can, and false if it cannot
+= 
+await fula.checkConnection();
+
+```
+
+```js
+//checks if there are any un-synced actions on the client
+const result //returns true if there are, and false if everything is synced with server
+= 
+await fula.checkFailedActions(
+    retry: boolean //if true, it tries to sync device with server, if not, it only checks
+);
+
+```
+
+```js
 //removes all Fula related data and information (Except the encrypted filesystem) at the specified storage local path
 const result //returns true if succesful and false if fails
 = 

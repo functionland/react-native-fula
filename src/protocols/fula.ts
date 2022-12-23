@@ -25,6 +25,29 @@ export const init = (
 };
 
 /**
+ * Get gets the value corresponding to the given key from the local datastore.
+// The key must be a valid ipld.Link.
+ * @param config
+ * @returns boolean
+ */
+
+export const newClient = (
+  identity: string, //privateKey of did identity
+  storePath: string,
+  bloxAddr: string,
+  exchange: string
+): Promise<string> => {
+  console.log(
+    'newClient in react-native started',
+    identity,
+    storePath,
+    bloxAddr,
+    exchange
+  );
+  return Fula.newClient(identity, storePath, bloxAddr, exchange);
+};
+
+/**
  * rm removes all data
  * @param path
  * @returns string: new cid of the root
@@ -34,6 +57,22 @@ export const logout = (
   storePath: string
 ): Promise<boolean> => {
   return Fula.logout(identity, storePath);
+};
+
+/**
+ * Checks if there are any un-synced changes on the device
+ */
+export const checkFailedActions = (
+  retry: boolean = false
+): Promise<boolean> => {
+  return Fula.checkFailedActions(retry);
+};
+
+/**
+ * Checks if there are any un-synced changes on the device
+ */
+export const checkConnection = (): Promise<boolean> => {
+  return Fula.checkConnection();
 };
 
 /**
