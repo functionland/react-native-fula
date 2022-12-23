@@ -42,6 +42,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   public static final String NAME = "FulaModule";
   fulamobile.Client fula;
+
   Client client;
   String appDir;
   String fulaStorePath;
@@ -151,6 +152,42 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void checkConnection(Promise promise) {
+    Log.d("ReactNative", "checkConnection started");
+    ThreadUtils.runOnExecutor(() -> {
+      if (this.fula != null) {
+        try {
+          boolean connectionStatus = this.checkConnectionInternal();
+          promise.resolve(connectionStatus);
+        }
+        catch (Exception e) {
+          Log.d("ReactNative", "checkConnection failed with Error: " + e.getMessage());
+          promise.resolve(false);
+        }
+      }
+    });
+  }
+
+  @ReactMethod
+  public void newClient(String identityString, String storePath, String bloxAddr, String exchange, Promise promise) {
+    Log.d("ReactNative", "newClient started");
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        WritableMap resultData = new WritableNativeMap();
+        Log.d("ReactNative", "newClient storePath= " + storePath);
+        byte[] identity = toByte(identityString);
+        Log.d("ReactNative", "newClient identity= " + identityString);
+        byte[] obj = this.newClientInternal(identity, storePath, bloxAddr, exchange);
+        Log.d("ReactNative", "newClient object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
+        promise.resolve(obj);
+      } catch (Exception e) {
+        Log.d("ReactNative", "newClient failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
+      }
+    });
+  }
+
+  @ReactMethod
   public void init(String identityString, String storePath, String bloxAddr, String exchange, String rootConfig, Promise promise) {
     Log.d("ReactNative", "init started");
     ThreadUtils.runOnExecutor(() -> {
@@ -186,6 +223,129 @@ public class FulaModule extends ReactContextBaseJavaModule {
         promise.reject("Error", e.getMessage());
       }
     });
+  }
+
+  @ReactMethod
+  public void newClient(String identityString, String storePath, String bloxAddr, string exchange, Promise promise) {
+    Log.d("ReactNative", "newClient started");
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        byte[] identity = toByte(identityString);
+        byte[] obj = newClientInternal(identity, storePath, bloxAddr, exchange);
+        Log.d("ReactNative", "newClient completed");
+        promise.resolve(toString(obj));
+      } catch (Exception e) {
+        Log.d("ReactNative", "newClient failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
+      }
+    });
+  }
+
+  @NonNull
+  private boolean checkConnectionInternal() throws Exception {
+    try {
+      if (this.fula != null) {
+        try {
+          this.fula.connectToBlox();
+          return true;
+        }
+        catch (Exception e) {
+          Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
+      throw (e);
+    }
+  }
+
+  @ReactMethod
+  private void checkFailedActions(boolean retry, Promise promise) throws Exception {
+    try {
+      if (this.fula != null) {
+        if (!retry) {
+          fulamobile.LinkIterator failedLinks = this.fula.listFailedPushes();
+          if (failedLinks.hasNext()) {
+            promise.resolve(true);
+          } else {
+            promise.resolve(false);
+          }
+        } else {
+          boolean retryResults = this.retryFailedActionsInternal();
+          promise.resolve(retryResults);
+        }
+      } else {
+        throw new Exception("Fula is not initialized");
+      }
+    } catch (Exception e) {
+      Log.d("ReactNative", "checkFailedActions failed with Error: " + e.getMessage());
+      throw (e);
+    }
+  }
+
+  @NonNull
+  private boolean retryFailedActionsInternal() throws Exception {
+    try {
+      if (this.fula != null) {
+        //Fula is initialized
+        try {
+          boolean connectionCheck = this.checkConnectionInternal();
+          if(connectionCheck) {
+            //Blox online
+            fulamobile.LinkIterator failedLinks = this.fula.listFailedPushes();
+            if (failedLinks.hasNext()) {
+              Log.d("ReactNative", "Failed links");
+              //Failed list is not empty. iterate in the list
+              while (failedLinks.hasNext()) {
+                //Get the missing key
+                byte[] failedNode = failedLinks.next();
+                try {
+                  //Push to Blox
+                  Log.d("ReactNative", "Pushing Failed links "+Arrays.toString(failedNode));
+                  this.pushInternal(failedNode);
+                  Log.d("ReactNative", "Failed links pushed");
+                }
+                catch (Exception e) {
+                  Log.d("ReactNative", "retryFailedActionsInternal failed with Error: " + e.getMessage());
+                }
+              }
+              //check if list is empty now and all are pushed
+              Log.d("ReactNative", "Pushing finished");
+              fulamobile.LinkIterator failedLinks_after = this.fula.listFailedPushes();
+              if(failedLinks_after.hasNext()) {
+                //Some pushes failed
+                byte[] first_failed = failedLinks_after.next();
+                Log.d("ReactNative", "Failed links are not empty "+Arrays.toString(first_failed));
+                return false;
+              } else {
+                //All pushes successful
+                return true;
+              }
+            } else {
+              Log.d("ReactNative", "No Failed links");
+              //Failed list is empty
+              return true;
+            }
+          } else {
+            //Blox Offline
+            return false;
+          }
+        }
+        catch (Exception e) {
+          Log.d("ReactNative", "retryFailedActions failed with Error: " + e.getMessage());
+          return false;
+        }
+      } else {
+        //Fula is not initialized
+        return false;
+      }
+    } catch (Exception e) {
+      Log.d("ReactNative", "retryFailedActions failed with Error: " + e.getMessage());
+      throw (e);
+    }
   }
 
   @NonNull
@@ -287,7 +447,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @NonNull
-  private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, String rootCid) throws Exception {
+  private byte[] newClientInternal(byte[] identity, String storePath, String bloxAddr, String exchange) throws Exception {
     try {
       Config config_ext = new Config();
       if (storePath == null || storePath.trim().isEmpty()) {
@@ -304,6 +464,19 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "bloxAddr is set: " + config_ext.getBloxAddr());
       config_ext.setExchange(exchange);
       this.fula = Fulamobile.newClient(config_ext);
+      return peerIdentity;
+    } catch (Exception e) {
+      Log.d("ReactNative", "newclient failed with Error: " + e.getMessage());
+      throw (e);
+    }
+  }
+
+  @NonNull
+  private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, String rootCid) throws Exception {
+    try {
+      if (this.fula == null) {
+        newClientInternal(identity, storePath, bloxAddr, exchange);
+      }
       this.client = new Client(this.fula);
       Log.d("ReactNative", "fula initialized: " + this.fula.id());
 
@@ -625,7 +798,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "push started");
       try {
-        pushInternal(convertStringToByte(this.rootConfig.getCid()));
+        this.pushInternal(convertStringToByte(this.rootConfig.getCid()));
         promise.resolve(this.rootConfig.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
