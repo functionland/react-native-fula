@@ -15,7 +15,19 @@ import { fula } from 'react-native-fula'; // Until the library becomes stable, w
 ```
 
 ```js
-//Initialize the fula client, which creates the libp2p connection. Note that input is not an object e.g. init('','','','noop')
+// Creates a new client without creating a filesystem. It is better to call this instead of directly calling init
+const peerId //returns peerId as string
+=  newClient(
+  identity: string, //privateKey of did identity
+  storePath: string, // leave empty to use the default temp one
+  bloxAddr: string, //leave empty for testing without a backend node
+  exchange: 'noop'|'', //add noop for testing without a backend
+  autoFlush: boolean //Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
+)
+```
+
+```js
+//Initialize the fula client, which creates the libp2p connection if newClient is not called before, and creates filesystem. Note that input is not an object e.g. init('','','','noop', false)
 [
     peerId, //returns peerId of the created libp2p instance in form of a string of bytes
     cid, //return the root cid of the WNFS merkle DAG in form of a string
@@ -26,7 +38,8 @@ await fula.init(
     identity: string, //bytes of the privateKey of did identity in string format
     storePath: string, // leave empty to use the default temp one
     bloxAddr: string, //leave empty for testing without a backend node
-    exchange: 'noop'|'' //add noop for testing without a backend
+    exchange: 'noop'|'', //add noop for testing without a backend
+    autoFlush: boolean //Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
 );
 ```
 
