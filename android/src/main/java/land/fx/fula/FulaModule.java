@@ -177,7 +177,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "newClient identity= " + identityString);
         byte[] obj = this.newClientInternal(identity, storePath, bloxAddr, exchange);
-        promise.resolve(obj);
+        String objString = Arrays.toString(obj);
+        promise.resolve(objString);
       } catch (Exception e) {
         Log.d("ReactNative", "newClient failed with Error: " + e.getMessage());
         promise.reject("Error", e.getMessage());

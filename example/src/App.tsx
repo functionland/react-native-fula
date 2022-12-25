@@ -43,7 +43,7 @@ const App = () => {
         return fula.init(
           privateKey.toString(),
           '',
-          '/ip4/192.168.68.103/tcp/40001/p2p/12D3KooWBdzmgXe9uyYoxaeLLKTLWM7mG3ZtBiKHAnSVxtrVJc2A',
+          '/ip4/192.168.2.14/tcp/40001/p2p/12D3KooWBdzmgXe9uyYoxaeLLKTLWM7mG3ZtBiKHAnSVxtrVJc2A',
           ''
         );
       } catch (e) {
