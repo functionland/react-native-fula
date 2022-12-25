@@ -12,6 +12,7 @@ export const init = (
   storePath: string,
   bloxAddr: string,
   exchange: string,
+  autoFlush: boolean = false,
   rootCid: string | null = null
 ): Promise<{ peerId: string; rootCid: string; private_ref: string }> => {
   console.log(
@@ -19,9 +20,10 @@ export const init = (
     identity,
     storePath,
     bloxAddr,
-    exchange
+    exchange,
+    autoFlush
   );
-  return Fula.init(identity, storePath, bloxAddr, exchange, rootCid);
+  return Fula.init(identity, storePath, bloxAddr, exchange, autoFlush, rootCid);
 };
 
 /**
@@ -35,16 +37,18 @@ export const newClient = (
   identity: string, //privateKey of did identity
   storePath: string,
   bloxAddr: string,
-  exchange: string
+  exchange: string,
+  autoFlush: boolean = false
 ): Promise<string> => {
   console.log(
     'newClient in react-native started',
     identity,
     storePath,
     bloxAddr,
-    exchange
+    exchange,
+    autoFlush
   );
-  return Fula.newClient(identity, storePath, bloxAddr, exchange);
+  return Fula.newClient(identity, storePath, bloxAddr, exchange, autoFlush);
 };
 
 /**

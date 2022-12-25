@@ -44,7 +44,9 @@ const App = () => {
           privateKey.toString(),
           '',
           '/ip4/192.168.2.14/tcp/40001/p2p/12D3KooWBdzmgXe9uyYoxaeLLKTLWM7mG3ZtBiKHAnSVxtrVJc2A',
-          ''
+          '',
+          true,
+          null
         );
       } catch (e) {
         console.log(e);
