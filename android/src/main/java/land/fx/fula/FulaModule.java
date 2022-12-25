@@ -173,12 +173,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     Log.d("ReactNative", "newClient started");
     ThreadUtils.runOnExecutor(() -> {
       try {
-        WritableMap resultData = new WritableNativeMap();
         Log.d("ReactNative", "newClient storePath= " + storePath);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "newClient identity= " + identityString);
         byte[] obj = this.newClientInternal(identity, storePath, bloxAddr, exchange);
-        Log.d("ReactNative", "newClient object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
         promise.resolve(obj);
       } catch (Exception e) {
         Log.d("ReactNative", "newClient failed with Error: " + e.getMessage());
@@ -220,22 +218,6 @@ public class FulaModule extends ReactContextBaseJavaModule {
         promise.resolve(obj);
       } catch (Exception e) {
         Log.d("ReactNative", "logout failed with Error: " + e.getMessage());
-        promise.reject("Error", e.getMessage());
-      }
-    });
-  }
-
-  @ReactMethod
-  public void newClient(String identityString, String storePath, String bloxAddr, string exchange, Promise promise) {
-    Log.d("ReactNative", "newClient started");
-    ThreadUtils.runOnExecutor(() -> {
-      try {
-        byte[] identity = toByte(identityString);
-        byte[] obj = newClientInternal(identity, storePath, bloxAddr, exchange);
-        Log.d("ReactNative", "newClient completed");
-        promise.resolve(toString(obj));
-      } catch (Exception e) {
-        Log.d("ReactNative", "newClient failed with Error: " + e.getMessage());
         promise.reject("Error", e.getMessage());
       }
     });
