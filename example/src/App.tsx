@@ -37,22 +37,33 @@ const App = () => {
     94, 225, 7, 153, 168, 239, 94, 7, 187, 123, 158, 149, 149, 227, 170, 32, 54,
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
+  const newClient = async () => {
+    try {
+      return fula.newClient(
+        privateKey.toString(),
+        '',
+        '/ip4/192.168.2.14/tcp/40001/p2p/12D3KooWBdzmgXe9uyYoxaeLLKTLWM7mG3ZtBiKHAnSVxtrVJc2A',
+        ''
+      );
+    } catch (e) {
+      console.log(e);
+      return Promise.reject(e);
+    }
+  };
+  const initFula = async () => {
+    try {
+      return fula.init(
+        privateKey.toString(),
+        '',
+        '/ip4/192.168.2.14/tcp/40001/p2p/12D3KooWBdzmgXe9uyYoxaeLLKTLWM7mG3ZtBiKHAnSVxtrVJc2A',
+        ''
+      );
+    } catch (e) {
+      console.log(e);
+      return Promise.reject(e);
+    }
+  };
   React.useEffect(() => {
-    const initFula = async () => {
-      try {
-        return fula.init(
-          privateKey.toString(),
-          '',
-          '/ip4/192.168.2.14/tcp/40001/p2p/12D3KooWBdzmgXe9uyYoxaeLLKTLWM7mG3ZtBiKHAnSVxtrVJc2A',
-          '',
-          true,
-          null
-        );
-      } catch (e) {
-        console.log(e);
-        return Promise.reject(e);
-      }
-    };
     //fula.logout(privateKey.toString(),'').then((a) => {
     initFula()
       .then((res) => {
@@ -68,6 +79,7 @@ const App = () => {
             .then((res2) => {
               console.log('ls complete');
               console.log(res2);
+              fula.shutdown();
             })
             .catch((e) => {
               console.log('error', e);
@@ -89,7 +101,8 @@ const App = () => {
           title={inprogress ? 'Putting & Getting...' : 'Test'}
           onPress={async () => {
             try {
-              if (initComplete) {
+              let resinit = await initFula();
+              if (resinit) {
                 console.log('initialization is completed. putting key/value');
                 var path = RNFS.DocumentDirectoryPath + '/test.txt';
                 RNFS.writeFile(path, 'test', 'utf8')
@@ -226,7 +239,7 @@ const App = () => {
                 fula.checkConnection().then((r) => {
                   console.log('connection cehck');
                   console.log(r);
-                  if(r){
+                  if (r) {
                     console.log('initialization is completed. retry');
                     fula
                       .checkFailedActions(true)

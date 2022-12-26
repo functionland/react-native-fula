@@ -144,7 +144,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @NonNull
-  private static byte[] convertStringToByte(@NonNull String data) {
+  private byte[] convertStringToByte(@NonNull String data) {
     String[] keyInt_S = data.split(",");
     int[] keyInt = stringArrToIntArr(keyInt_S);
 
@@ -195,7 +195,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "init storePath= " + storePath);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "init identity= " + identityString);
-        String[] obj = initInternal(identity, storePath, bloxAddr, exchange, autoFlush, rootConfig);
+        String[] obj = this.initInternal(identity, storePath, bloxAddr, exchange, autoFlush, rootConfig);
         Log.d("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
         resultData.putString("peerId", obj[0]);
         resultData.putString("rootCid", obj[1]);
@@ -214,7 +214,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       try {
         byte[] identity = toByte(identityString);
-        boolean obj = logoutInternal(identity, storePath);
+        boolean obj = this.logoutInternal(identity, storePath);
         Log.d("ReactNative", "logout completed");
         promise.resolve(obj);
       } catch (Exception e) {
@@ -224,7 +224,6 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @NonNull
   private boolean checkConnectionInternal() throws Exception {
     try {
       Log.d("ReactNative", "checkConnectionInternal fstarted");
@@ -275,7 +274,6 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @NonNull
   private boolean retryFailedActionsInternal() throws Exception {
     try {
       Log.d("ReactNative", "retryFailedActionsInternal started");
@@ -385,7 +383,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
     Log.d("ReactNative", "new rootConfig is created: cid=" + this.rootConfig.getCid()+" & private_ref="+this.rootConfig.getPrivate_ref());
 
-    encrypt_and_store_config();
+    this.encrypt_and_store_config();
   }
 
   private String getPrivateRef(FulaModule.Client iClient, byte[] wnfsKey, String rootCid) throws Exception {
@@ -397,7 +395,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   private boolean encrypt_and_store_config() throws Exception {
     try {
-      if(!this.identityEncryptedGlobal.isEmpty() && !this.identityEncryptedGlobal.isEmpty()) {
+      if(this.identityEncryptedGlobal != null && !this.identityEncryptedGlobal.isEmpty()) {
         String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal);
         String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), this.secretKeyGlobal);
 
@@ -413,7 +411,6 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @NonNull
   private boolean logoutInternal(byte[] identity, String storePath) throws Exception {
     try {
       if (this.fula != null) {
@@ -458,20 +455,23 @@ public class FulaModule extends ReactContextBaseJavaModule {
       }
       Log.d("ReactNative", "storePath is set: " + config_ext.getStorePath());
 
-      byte[] peerIdentity = createPeerIdentity(identity);
+      byte[] peerIdentity = this.createPeerIdentity(identity);
       config_ext.setIdentity(peerIdentity);
       Log.d("ReactNative", "peerIdentity is set: " + toString(config_ext.getIdentity()));
       config_ext.setBloxAddr(bloxAddr);
       Log.d("ReactNative", "bloxAddr is set: " + config_ext.getBloxAddr());
       config_ext.setExchange(exchange);
       config_ext.setSyncWrites(autoFlush);
-      this.fula = Fulamobile.newClient(config_ext);
+      if (this.fula == null) {
+        Log.d("ReactNative", "Creating a new Fula instance");
+        this.fula = Fulamobile.newClient(config_ext);
+      }
       if (this.fula != null) {
         this.fula.flush();
       }
       return peerIdentity;
     } catch (Exception e) {
-      Log.d("ReactNative", "newclient failed with Error: " + e.getMessage());
+      Log.d("ReactNative", "newclientInternal failed with Error: " + e.getMessage());
       throw (e);
     }
   }
@@ -480,10 +480,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
   private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootCid) throws Exception {
     try {
       if (this.fula == null) {
-        newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush);
+        this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush);
       }
-      this.client = new Client(this.fula);
-      Log.d("ReactNative", "fula initialized: " + this.fula.id());
+      if(this.client == null) {
+        this.client = new Client(this.fula);
+        Log.d("ReactNative", "fula initialized: " + this.fula.id());
+      }
 
       SecretKey secretKey = Cryptography.generateKey(identity);
       String identity_encrypted =Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
@@ -511,36 +513,36 @@ public class FulaModule extends ReactContextBaseJavaModule {
         //Log.d("ReactNative", "Attempted to fetch cid from keystore; cid="+cid+" & private_ref="+private_ref);
         if((cid == null || cid.isEmpty()) || (private_ref == null || private_ref.isEmpty()) ){
           Log.d("ReactNative", "cid or PrivateRef was not found");
-          if(rootCid !=null && !rootCid.isEmpty()){
+          if(rootCid != null && !rootCid.isEmpty()){
             Log.d("ReactNative", "Re-setting cid from input: "+rootCid);
             cid = rootCid;
           }
           if((private_ref == null || private_ref.isEmpty()) && (cid != null && !cid.isEmpty())){
             Log.d("ReactNative", "Re-fetching privateRef from wnfs: cid="+cid);
-            private_ref = getPrivateRef(this.client, identity, cid);
+            private_ref = this.getPrivateRef(this.client, identity, cid);
             Log.d("ReactNative", "Re-fetching privateRef from wnfs: "+private_ref);
           }
           if(cid == null || cid.isEmpty() || private_ref == null || private_ref.isEmpty()) {
             Log.d("ReactNative", "Tried to recover cid and privateRef but was not successful. Creating new ones");
-            createNewRootConfig(this.client, identity);
+            this.createNewRootConfig(this.client, identity);
           } else {
             Log.d("ReactNative", "Tried to recover cid and privateRef and was successful. cid:"+cid+" & private_ref="+private_ref);
             this.rootConfig = new land.fx.wnfslib.Config(cid, private_ref);
-            encrypt_and_store_config();
+            this.encrypt_and_store_config();
           }
         } else if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
           Log.d("ReactNative", "Found cid and private ref in keychain store");
-          if(cid != null && !cid.isEmpty() && private_ref!=null && !private_ref.isEmpty()) {
+          if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
             Log.d("ReactNative", "Recovered cid and private ref from keychain store. cid="+cid+" & private_ref="+private_ref);
             this.rootConfig = new land.fx.wnfslib.Config(cid, private_ref);
           } else{
             Log.d("ReactNative", "Found but Could not recover cid and private_ref from keychain store");
-            createNewRootConfig(this.client, identity);
+            this.createNewRootConfig(this.client, identity);
           }
         } else{
           Log.d("ReactNative", "This cid and private_ref generation should never happen!!!");
           //Create new root and store cid and private_ref
-          createNewRootConfig(this.client, identity);
+          this.createNewRootConfig(this.client, identity);
         }
 
 
@@ -584,11 +586,17 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "mkdir: path = " + path);
       try {
         land.fx.wnfslib.Config config = Fs.mkdir(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
-        this.rootConfig = config;
-        if (this.fula != null) {
-          this.fula.flush();
+        if(config != null) {
+          this.rootConfig = config;
+          this.encrypt_and_store_config();
+          if (this.fula != null) {
+            this.fula.flush();
+          }
+          promise.resolve(config.getCid());
+        } else {
+          Log.d("ReactNative", "mkdir Error: config is null");
+          promise.reject(new Exception("mkdir Error: config is null"));
         }
-        promise.resolve(config.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
         promise.reject(e);
@@ -609,12 +617,17 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "writeFile to : path = " + fulaTargetFilename + ", from: " + localFilename);
       try {
         land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
-        this.rootConfig = config;
-        encrypt_and_store_config();
-        if (this.fula != null) {
-          this.fula.flush();
+        if(config != null) {
+          this.rootConfig = config;
+          this.encrypt_and_store_config();
+          if (this.fula != null) {
+            this.fula.flush();
+          }
+          promise.resolve(config.getCid());
+        } else {
+          Log.d("ReactNative", "writeFile Error: config is null");
+          promise.reject(new Exception("writeFile Error: config is null"));
         }
-        promise.resolve(config.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
         promise.reject(e);
@@ -628,10 +641,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "writeFile: contentString = " + contentString);
       Log.d("ReactNative", "writeFile: path = " + path);
       try {
-        byte[] content = convertStringToByte(contentString);
+        byte[] content = this.convertStringToByte(contentString);
         land.fx.wnfslib.Config config = Fs.writeFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path, content);
         this.rootConfig = config;
-        encrypt_and_store_config();
+        this.encrypt_and_store_config();
         if (this.fula != null) {
           this.fula.flush();
         }
@@ -667,12 +680,17 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "rm: path = " + path);
       try {
         land.fx.wnfslib.Config config = Fs.rm(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
-        this.rootConfig = config;
-        encrypt_and_store_config();
-        if (this.fula != null) {
-          this.fula.flush();
+        if(config != null) {
+          this.rootConfig = config;
+          this.encrypt_and_store_config();
+          if (this.fula != null) {
+            this.fula.flush();
+          }
+          promise.resolve(config.getCid());
+        } else {
+            Log.d("ReactNative", "rm Error: config is null");
+            promise.reject(new Exception("rm Error: config is null"));
         }
-        promise.resolve(config.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
         promise.reject(e);
@@ -686,12 +704,17 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "rm: sourcePath = " + sourcePath);
       try {
         land.fx.wnfslib.Config config = Fs.cp(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), sourcePath, targetPath);
-        this.rootConfig = config;
-        encrypt_and_store_config();
-        if (this.fula != null) {
-          this.fula.flush();
+        if(config != null) {
+          this.rootConfig = config;
+          this.encrypt_and_store_config();
+          if (this.fula != null) {
+            this.fula.flush();
+          }
+          promise.resolve(config.getCid());
+        } else {
+          Log.d("ReactNative", "cp Error: config is null");
+          promise.reject(new Exception("cp Error: config is null"));
         }
-        promise.resolve(config.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
         promise.reject(e);
@@ -705,12 +728,17 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "rm: sourcePath = " + sourcePath);
       try {
         land.fx.wnfslib.Config config = Fs.mv(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), sourcePath, targetPath);
-        this.rootConfig = config;
-        encrypt_and_store_config();
-        if (this.fula != null) {
-          this.fula.flush();
+        if(config != null) {
+          this.rootConfig = config;
+          this.encrypt_and_store_config();
+          if (this.fula != null) {
+            this.fula.flush();
+          }
+          promise.resolve(config.getCid());
+        } else {
+          Log.d("ReactNative", "mv Error: config is null");
+          promise.reject(new Exception("mv Error: config is null"));
         }
-        promise.resolve(config.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
         promise.reject(e);
@@ -759,8 +787,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "get: keyString = " + keyString);
       try {
-        byte[] key = convertStringToByte(keyString);
-        byte[] value = getInternal(key);
+        byte[] key = this.convertStringToByte(keyString);
+        byte[] value = this.getInternal(key);
         String valueString = toString(value);
         promise.resolve(valueString);
       } catch (Exception e) {
@@ -790,8 +818,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "has: keyString = " + keyString);
       try {
-        byte[] key = convertStringToByte(keyString);
-        boolean result = hasInternal(key);
+        byte[] key = this.convertStringToByte(keyString);
+        boolean result = this.hasInternal(key);
         promise.resolve(result);
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -824,7 +852,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "push started");
       try {
-        this.pushInternal(convertStringToByte(this.rootConfig.getCid()));
+        this.pushInternal(this.convertStringToByte(this.rootConfig.getCid()));
         promise.resolve(this.rootConfig.getCid());
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -835,15 +863,15 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   private void pushInternal(byte[] key) throws Exception {
     try {
-      if (this.fula.has(key)) {
+      if (this.fula != null && this.fula.has(key)) {
         this.fula.push(key);
         this.fula.flush();
       } else {
-        Log.d("pushInternal", "error: key wasn't found");
+        Log.d("ReactNative", "pushInternal error: key wasn't found or fula is not initialized");
         throw new Exception("key wasn't found in local storage");
       }
     } catch (Exception e) {
-      Log.d("pushInternal", e.getMessage());
+      Log.d("ReactNative", "pushInternal"+ e.getMessage());
       throw (e);
     }
   }
@@ -854,7 +882,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "put: codecString = " + codecString);
       Log.d("ReactNative", "put: valueString = " + valueString);
       try {
-        //byte[] codec = convertStringToByte(CodecString);
+        //byte[] codec = this.convertStringToByte(CodecString);
         long codec = Long.parseLong(codecString);
 
 
@@ -862,12 +890,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
         byte[] value = toByte(valueString);
 
         Log.d("ReactNative", "put: value.toString() = " + toString(value));
-        byte[] key = putInternal(value, codec);
+        byte[] key = this.putInternal(value, codec);
         Log.d("ReactNative", "put: key.toString() = " + toString(key));
         promise.resolve(toString(key));
       } catch (Exception e) {
         Log.d("ReactNative", "put: error = " + e.getMessage());
-        Log.d("put", e.getMessage());
         promise.reject(e);
       }
     });
@@ -876,11 +903,16 @@ public class FulaModule extends ReactContextBaseJavaModule {
   @NonNull
   private byte[] putInternal(byte[] value, long codec) throws Exception {
     try {
-      byte[] key = this.fula.put(value, codec);
-      this.fula.flush();
-      return key;
+      if(this.fula != null) {
+        byte[] key = this.fula.put(value, codec);
+        this.fula.flush();
+        return key;
+      } else {
+        Log.d("ReactNative", "putInternal Error: fula is not initialized");
+        throw (new Exception("putInternal Error: fula is not initialized"));
+      }
     } catch (Exception e) {
-      Log.d("putInternal", e.getMessage());
+      Log.d("ReactNative", "putInternal"+ e.getMessage());
       throw (e);
     }
   }
@@ -889,11 +921,15 @@ public class FulaModule extends ReactContextBaseJavaModule {
   public void shutdown(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       try {
-        fula.shutdown();
+        if(this.fula != null) {
+          this.fula.shutdown();
+          this.fula = null;
+          this.client = null;
+        }
         promise.resolve(true);
       } catch (Exception e) {
         promise.reject(e);
-        Log.d("shutdown", e.getMessage());
+        Log.d("ReactNative", "shutdown"+ e.getMessage());
       }
     });
 
