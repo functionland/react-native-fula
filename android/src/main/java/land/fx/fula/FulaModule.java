@@ -188,6 +188,23 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void isReady(Promise promise) {
+    Log.d("ReactNative", "isReady started");
+    ThreadUtils.runOnExecutor(() -> {
+      boolean initialized = false;
+      try {
+        if (this.fula != null && this.fula.id() != null) {
+          initialized = true;
+        }
+        promise.resolve(initialized);
+      } catch (Exception e) {
+        Log.d("ReactNative", "isReady failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
+      }
+    });
+  }
+
+  @ReactMethod
   public void init(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootConfig, Promise promise) {
     Log.d("ReactNative", "init started");
     ThreadUtils.runOnExecutor(() -> {

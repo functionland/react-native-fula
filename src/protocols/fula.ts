@@ -253,3 +253,12 @@ export const readFileContent = (path: string): Promise<string> => {
 export const shutdown = (): Promise<void> => {
   return Fula.shutdown();
 };
+
+/**
+ * rm removes all files and folders at a given path
+ * @param path
+ * @returns string: new cid of the root
+ */
+export const isReady = (): Promise<boolean> => {
+  return Fula.isReady();
+};
