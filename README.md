@@ -116,6 +116,14 @@ await fula.mv(
 ```
 
 ```js
+//checks if fula is ready (initialized through newClient or init)
+const result //returns true if succesful and false if fails
+= 
+await fula.isReady();
+
+```
+
+```js
 //checks if client can reach server
 const result //returns true if it can, and false if it cannot
 = 
