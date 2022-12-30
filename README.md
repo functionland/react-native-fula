@@ -130,7 +130,11 @@ const result //returns true if there are, and false if everything is synced with
 await fula.checkFailedActions(
     retry: boolean //if true, it tries to sync device with server, if not, it only checks
 );
+```
 
+```js
+//shuts down the fula libp2p and datastore
+await fula.shutdown();
 ```
 
 ```js
