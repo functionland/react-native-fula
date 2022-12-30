@@ -123,6 +123,7 @@ do
       /*)   app_path=$link ;; #(
       *)    app_path=$APP_HOME$link ;;
     esac
+done
 app_path=$0
 
 
@@ -288,4 +289,3 @@ eval "set -- $(
         tr '\n' ' '
     )" '"$@"'
 exec "$JAVACMD" "$@"
-done
