@@ -1,6 +1,6 @@
 # react-native-fula
 
-This package is a bridge to use the Fula protocols in the react-native. It uses WNFS to create the Merkle dag from files and folders and transfer the DAG using Graphsync to the nodes. 
+This package is a bridge to use the [Fula protocols](https://github.com/functionland/go-fula) in the react-native. It uses [WNFS](https://github.com/wnfs-wg/rs-wnfs) to create the Merkle dag from files and folders and transfer the DAG using Graphsync to the nodes. 
 
 ## Installation
 
@@ -165,6 +165,16 @@ Please note the following might not be done in order:
 - [x] Improve ead function to use a stream. ( :100: v1 Release here )
 - [x] Connect to backend
 - [ ] Connect to Blockchain codes using APIs
+
+## Other related libraries
+
+| Name | Description |
+| --- | --- |
+| [WNFS for Android](https://github.com/functionland/wnfs-android) | Android build for WNFS rust version |
+| [WNFS for iOS](https://github.com/functionland/wnfs-ios) | iOS build for WNFS rust version |
+| [WNFS Build](https://github.com/functionland/wnfs-build-aar) | Android .aar for WNFS |
+| [Fula Build](https://github.com/functionland/fula-build-aar) | android .aar file for Fula |
+| [Fx Fotos](https://github.com/functionland/fx-fotos) | Fx Fotos dApp using react-native-fula |
 
 ## Contributing
 
