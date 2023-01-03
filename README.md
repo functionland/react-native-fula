@@ -163,8 +163,8 @@ Please note the following might not be done in order:
 - [x] Initial version with all functions included
 - [x] Add WNFS tree encryption key generation from an input (deterministically)
 - [x] Improve ead function to use a stream. ( :100: v1 Release here )
+- [x] Connect to backend
 - [ ] Connect to Blockchain codes using APIs
-- [ ] Connect to backend
 
 ## Contributing
 
