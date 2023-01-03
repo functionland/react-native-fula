@@ -259,6 +259,6 @@ export const shutdown = (): Promise<void> => {
  * @param path
  * @returns string: new cid of the root
  */
-export const isReady = (): Promise<boolean> => {
-  return Fula.isReady();
+export const isReady = (filesystemCheck: boolean = true): Promise<boolean> => {
+  return Fula.isReady(filesystemCheck);
 };

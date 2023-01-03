@@ -16,7 +16,7 @@ interface FulaNativeModule {
     exchange: string, //set to 'noope' for testing
     autoFlush: boolean //set to false always unless you know what you are doing. This is to write actions to disk explicitly after each write
   ) => Promise<string>;
-  isReady: () => Promise<boolean>;
+  isReady: (filesystemCheck: boolean) => Promise<boolean>;
   logout: (identity: string, storePath: string) => Promise<boolean>;
   checkFailedActions: (retry: boolean) => Promise<boolean>;
   checkConnection: () => Promise<boolean>;
