@@ -188,13 +188,19 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void isReady(Promise promise) {
+  public void isReady(boolean filesystemCheck, Promise promise) {
     Log.d("ReactNative", "isReady started");
     ThreadUtils.runOnExecutor(() -> {
       boolean initialized = false;
       try {
         if (this.fula != null && this.fula.id() != null) {
-          initialized = true;
+          if (filesystemCheck) {
+            if (this.client != null && this.rootConfig != null && !this.rootConfig.getCid().isEmpty()) {
+              initialized = true;
+            }
+          } else {
+            initialized = true;
+          }
         }
         promise.resolve(initialized);
       } catch (Exception e) {

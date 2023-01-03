@@ -37,12 +37,13 @@ const App = () => {
     94, 225, 7, 153, 168, 239, 94, 7, 187, 123, 158, 149, 149, 227, 170, 32, 54,
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
+  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWR2EiA8DbULqDAJZCcN2V2Nasmh756R1aLe5t3NniCnAS';
   const newClient = async () => {
     try {
       return fula.newClient(
         privateKey.toString(),
         '',
-        '/ip4/192.168.2.14/tcp/40001/p2p/12D3KooWBdzmgXe9uyYoxaeLLKTLWM7mG3ZtBiKHAnSVxtrVJc2A',
+        bloxAddr,
         ''
       );
     } catch (e) {
@@ -55,7 +56,7 @@ const App = () => {
       return fula.init(
         privateKey.toString(),
         '',
-        '/ip4/192.168.2.14/tcp/40001/p2p/12D3KooWBdzmgXe9uyYoxaeLLKTLWM7mG3ZtBiKHAnSVxtrVJc2A',
+        bloxAddr,
         ''
       );
     } catch (e) {

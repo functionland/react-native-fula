@@ -119,7 +119,9 @@ await fula.mv(
 //checks if fula is ready (initialized through newClient or init)
 const result //returns true if succesful and false if fails
 = 
-await fula.isReady();
+await fula.isReady(
+    filesystemCheck: boolean //Default is true. If true it checks if both WNFS and Fula are ready. If false it only checks fula
+);
 
 ```
 
