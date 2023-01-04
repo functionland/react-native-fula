@@ -13,7 +13,8 @@ export const init = (
   bloxAddr: string,
   exchange: string,
   autoFlush: boolean = false,
-  rootCid: string | null = null
+  rootCid: string | null = null,
+  useRelay: boolean = true
 ): Promise<{ peerId: string; rootCid: string; private_ref: string }> => {
   console.log(
     'init in react-native started',
@@ -21,9 +22,10 @@ export const init = (
     storePath,
     bloxAddr,
     exchange,
-    autoFlush
+    autoFlush,
+    useRelay
   );
-  return Fula.init(identity, storePath, bloxAddr, exchange, autoFlush, rootCid);
+  return Fula.init(identity, storePath, bloxAddr, exchange, autoFlush, rootCid, useRelay);
 };
 
 /**
@@ -38,7 +40,8 @@ export const newClient = (
   storePath: string,
   bloxAddr: string,
   exchange: string,
-  autoFlush: boolean = false
+  autoFlush: boolean = false,
+  useRelay: boolean = true
 ): Promise<string> => {
   console.log(
     'newClient in react-native started',
@@ -46,9 +49,10 @@ export const newClient = (
     storePath,
     bloxAddr,
     exchange,
-    autoFlush
+    autoFlush,
+    useRelay
   );
-  return Fula.newClient(identity, storePath, bloxAddr, exchange, autoFlush);
+  return Fula.newClient(identity, storePath, bloxAddr, exchange, autoFlush, useRelay);
 };
 
 /**

@@ -22,7 +22,8 @@ const peerId //returns peerId as string
   storePath: string, // leave empty to use the default temp one
   bloxAddr: string, //leave empty for testing without a backend node
   exchange: 'noop'|'', //add noop for testing without a backend
-  autoFlush: boolean //Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
+  autoFlush: boolean, //Default to false. Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
+  useRelay: boolean //default to true. If true it forces the connection through relay
 )
 ```
 
@@ -39,7 +40,8 @@ await fula.init(
     storePath: string, // leave empty to use the default temp one
     bloxAddr: string, //leave empty for testing without a backend node
     exchange: 'noop'|'', //add noop for testing without a backend
-    autoFlush: boolean //Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
+    autoFlush: boolean, //Default to false. Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
+    useRelay: boolean //default to true. If true it forces the connection through relay
 );
 ```
 
