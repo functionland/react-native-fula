@@ -703,6 +703,25 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void newSeededAccount(String seed, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "seeded: seed = " + seed);
+      try {
+        byte[] res = this.fula.seeded(seed);
+
+        //JSONArray jsonArray = new JSONArray(res);
+        String responseString = new String(res, StandardCharsets.UTF_8);
+        JSONObject responseJson = new JSONObject(responseString);
+        Log.d("ReactNative", "ls: res = " + responseJson.get("account"));
+        promise.resolve(responseJson.get("account"));
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
   public void rm(String path, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "rm: path = " + path);

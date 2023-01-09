@@ -80,7 +80,7 @@ const App = () => {
             .then((res2) => {
               console.log('ls complete');
               console.log(res2);
-              fula.shutdown();
+              //fula.shutdown();
             })
             .catch((e) => {
               console.log('error', e);
@@ -250,6 +250,37 @@ const App = () => {
                       })
                       .catch((e) => {
                         console.log('retry failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+
+<Button
+          title={inprogress ? 'Putting & Getting...' : 'New Account'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection cehck');
+                  console.log(r);
+                  if (r) {
+                    console.log('initialization is completed. retry');
+                    fula
+                      .newSeededAccount("//81862be6b6ffea2d4b11aee9e6d02499363685171369f8a9088ac979b87eb8cb")
+                      .then((res) => {
+                        console.log('created');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('creation failed');
                         console.log(e);
                       });
                   }

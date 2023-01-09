@@ -19,6 +19,7 @@ interface FulaNativeModule {
     useRelay: boolean | null // if true it forces the use of relay
     ) => Promise<string>;
   isReady: (filesystemCheck: boolean) => Promise<boolean>;
+  newSeededAccount: (seed: string) => Promise<string>;
   logout: (identity: string, storePath: string) => Promise<boolean>;
   checkFailedActions: (retry: boolean) => Promise<boolean>;
   checkConnection: () => Promise<boolean>;

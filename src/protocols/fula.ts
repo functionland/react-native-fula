@@ -68,6 +68,15 @@ export const logout = (
 };
 
 /**
+ * Create a new account from the provided seed
+ */
+export const newSeededAccount = (
+  seed: string
+): Promise<string> => {
+  return Fula.newSeededAccount(seed);
+};
+
+/**
  * Checks if there are any un-synced changes on the device
  */
 export const checkFailedActions = (
