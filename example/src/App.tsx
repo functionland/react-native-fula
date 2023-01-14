@@ -296,7 +296,7 @@ const App = () => {
         />
 
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Request Replication'}
+          title={inprogress ? 'Putting & Getting...' : 'Check Account'}
           onPress={async () => {
             try {
               if (initComplete) {
@@ -304,9 +304,9 @@ const App = () => {
                   console.log('connection check');
                   console.log(r);
                   if (r) {
-                    console.log('initialization is completed. request Replication');
-                    fula
-                      .newReplicationRequest(privateKeyString, 1, 2, "QmWUjQczA5jHC3ibLq4y7CizVrebr1DTFRaTdJgFyxR5Nh")
+                    console.log('initialization is completed. check account');
+                    blockchain
+                      .checkAccountExists("5DAfEJDKAeejGCzw7kdvrzkhwyoNLZ1iSsq4LZkYPMMi6pgf")
                       .then((res) => {
                         console.log('replicationRequest created');
                         console.log(res);

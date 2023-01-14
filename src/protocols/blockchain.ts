@@ -1,4 +1,5 @@
-import Blockchain from '../interfaces/blockchainNativeModule';
+import Fula from '../interfaces/fulaNativeModule';
+import type * as BType from '../types/blockchain';
 
 
 export const createAccount = (
@@ -8,9 +9,9 @@ export const createAccount = (
     'createAccount in react-native started',
     seed
   );
-  let res = Blockchain.createAccount(seed).then((res) => {
+  let res = Fula.createAccount(seed).then((res) => {
     try{
-      let jsonRes: {seed: string, account: string} = JSON.parse(res);
+      let jsonRes:BType.SeededResponse = JSON.parse(res);
       return jsonRes;
     } catch (e) {
       try {
@@ -33,9 +34,9 @@ export const checkAccountExists = (
     'checkAccountExists in react-native started',
     account
   );
-  let res = Blockchain.checkAccountExists(account).then((res) => {
+  let res = Fula.checkAccountExists(account).then((res) => {
     try{
-      let jsonRes: {account: string; exists: boolean} = JSON.parse(res);
+      let jsonRes: BType.AccountExistsResponse = JSON.parse(res);
       return jsonRes;
     } catch (e) {
       try {
