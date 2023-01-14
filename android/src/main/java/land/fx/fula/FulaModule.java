@@ -468,6 +468,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
+  public fulamobile.Client getFulaClient() {
+    return this.fula;
+  }
+
   @NonNull
   private byte[] newClientInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay) throws Exception {
     try {

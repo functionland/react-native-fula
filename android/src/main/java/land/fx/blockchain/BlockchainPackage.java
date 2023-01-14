@@ -1,4 +1,4 @@
-package land.fx.fula;
+package land.fx.blockchain;
 
 import androidx.annotation.NonNull;
 
@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FulaPackage implements ReactPackage {
+public class BlockchainPackage implements ReactPackage {
   @NonNull
   @Override
   public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
       List<NativeModule> modules = new ArrayList<>();
       try {
-        modules.add(new FulaModule(reactContext));
+        modules.add(new BlockchainModule(reactContext));
       } catch (Exception e) {
         e.printStackTrace();
       }
