@@ -325,6 +325,37 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
 
+
+<Button
+          title={inprogress ? 'Putting & Getting...' : 'Get All Pools'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log('initialization is completed. get pools');
+                    blockchain
+                      .listPools()
+                      .then((res) => {
+                        console.log('listpool received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('listpool fetch failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
       </View>
     </View>
   );
