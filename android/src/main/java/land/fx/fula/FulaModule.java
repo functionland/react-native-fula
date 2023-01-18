@@ -44,6 +44,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   fulamobile.Client fula;
 
   Client client;
+  Config fulaConfig;
   String appDir;
   String fulaStorePath;
   String privateForest;
@@ -475,28 +476,28 @@ public class FulaModule extends ReactContextBaseJavaModule {
   @NonNull
   private byte[] newClientInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay) throws Exception {
     try {
-      Config config_ext = new Config();
+      fulaConfig = new Config();
       if (storePath == null || storePath.trim().isEmpty()) {
-        config_ext.setStorePath(this.fulaStorePath);
+        fulaConfig.setStorePath(this.fulaStorePath);
       } else {
-        config_ext.setStorePath(storePath);
+        fulaConfig.setStorePath(storePath);
       }
-      Log.d("ReactNative", "storePath is set: " + config_ext.getStorePath());
+      Log.d("ReactNative", "storePath is set: " + fulaConfig.getStorePath());
 
       byte[] peerIdentity = this.createPeerIdentity(identity);
-      config_ext.setIdentity(peerIdentity);
-      Log.d("ReactNative", "peerIdentity is set: " + toString(config_ext.getIdentity()));
-      config_ext.setBloxAddr(bloxAddr);
-      Log.d("ReactNative", "bloxAddr is set: " + config_ext.getBloxAddr());
-      config_ext.setExchange(exchange);
-      config_ext.setSyncWrites(autoFlush);
+      fulaConfig.setIdentity(peerIdentity);
+      Log.d("ReactNative", "peerIdentity is set: " + toString(fulaConfig.getIdentity()));
+      fulaConfig.setBloxAddr(bloxAddr);
+      Log.d("ReactNative", "bloxAddr is set: " + fulaConfig.getBloxAddr());
+      fulaConfig.setExchange(exchange);
+      fulaConfig.setSyncWrites(autoFlush);
       if (useRelay) {
-        config_ext.setAllowTransientConnection(true);
-        config_ext.setForceReachabilityPrivate(true);
+        fulaConfig.setAllowTransientConnection(true);
+        fulaConfig.setForceReachabilityPrivate(true);
       }
       if (this.fula == null) {
         Log.d("ReactNative", "Creating a new Fula instance");
-        this.fula = Fulamobile.newClient(config_ext);
+        this.fula = Fulamobile.newClient(fulaConfig);
       }
       if (this.fula != null) {
         this.fula.flush();
@@ -947,6 +948,27 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "putInternal"+ e.getMessage());
       throw (e);
     }
+  }
+
+  @ReactMethod
+  public void setAuth(String peerIdString, boolean allow, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "setAuth: peerIdString = " + peerIdString);
+      try {
+        if (this.fula != null && this.fula.id() != null && this.fulaConfig != null && this.fulaConfig.getBloxAddr() != null) {
+          String bloxAddr = this.fulaConfig.getBloxAddr();
+          this.fula.setAuth(bloxAddr, peerIdString, allow);
+          promise.resolve(true);
+        } else {
+          Log.d("ReactNative", "setAuth error: fula is not initialized");
+          throw new Exception("fula is not initialized");
+        }
+        promise.resolve(false);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
   }
 
   @ReactMethod
