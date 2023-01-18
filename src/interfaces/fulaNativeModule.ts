@@ -41,6 +41,7 @@ interface FulaNativeModule {
     localFilename: string
   ) => Promise<string>;
   readFileContent: (path: string) => Promise<string>;
+  setAuth: (peerId: string, allow: boolean) => Promise<boolean>;
 
   shutdown: () => Promise<void>;
 

@@ -259,9 +259,23 @@ export const shutdown = (): Promise<void> => {
 };
 
 /**
- * rm removes all files and folders at a given path
- * @param path
- * @returns string: new cid of the root
+ * setAuth adds or removes a peer from the list of peers that are allowed to push to this node.
+ * This can only be called on a peer that is added as an owner of blox by --authorizer parameter
+ * @param peerId, allow
+ * @returns boolean: true if successful or false if not
+ */
+export const setAuth = (
+  peerId: string,
+  allow: boolean
+): Promise<boolean> => {
+  return Fula.setAuth(peerId, allow);
+};
+
+
+/**
+ * isReady checks if the connection is ready to be used.
+ * @param filesystemCheck: also check if the wnfs is ready
+ * @returns boolean: true if ready or false if not
  */
 export const isReady = (filesystemCheck: boolean = true): Promise<boolean> => {
   return Fula.isReady(filesystemCheck);
