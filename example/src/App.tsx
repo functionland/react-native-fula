@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
-import { fula, blockchain } from '@functionland/react-native-fula';
+import { fula, blockchain, chainApi } from '@functionland/react-native-fula';
 
 const App = () => {
   const [key, setKey] = React.useState<string>('');
@@ -67,6 +67,19 @@ const App = () => {
     }
   };
   React.useEffect(() => {
+    chainApi.init().then((api) => {
+      chainApi.listPools(api).then((pools) => {
+        console.log('pools', pools);
+      }).catch((e) => {
+        console.log('error', e);
+      });
+
+      chainApi.checkJoinRequest(api, 1, "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty").then((poolReq) => {
+        console.log('poolReq', poolReq);
+      }).catch((err) => {
+        console.log('error', err);
+      });
+    });
     //fula.logout(privateKey.toString(),'').then((a) => {
     initFula()
       .then((res) => {
