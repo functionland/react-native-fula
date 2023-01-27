@@ -958,7 +958,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
         if (this.fula != null && this.fula.id() != null && this.fulaConfig != null && this.fulaConfig.getBloxAddr() != null) {
           String bloxAddr = this.fulaConfig.getBloxAddr();
           Log.d("ReactNative", "setAuth: bloxAddr = '" + bloxAddr+"'"+ " peerIdString = '" + peerIdString+"'");
-          this.fula.setAuth(bloxAddr, peerIdString, allow);
+          int index = bloxAddr.lastIndexOf("/");
+          String bloxPeerId = bloxAddr.substring(index + 1);
+          this.fula.setAuth(bloxPeerId, peerIdString, allow);
           promise.resolve(true);
         } else {
           Log.d("ReactNative", "setAuth error: fula is not initialized");
