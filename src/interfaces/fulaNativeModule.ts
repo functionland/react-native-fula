@@ -46,6 +46,7 @@ interface FulaNativeModule {
   shutdown: () => Promise<void>;
 
 //Blockchain related functions
+  bloxFreeSpace: () => Promise<string>;
   createAccount: (seed: string) => Promise<string>;
   checkAccountExists: (account: string) => Promise<string>;
   createPool: (seed: string, poolName: string) => Promise<string>;
