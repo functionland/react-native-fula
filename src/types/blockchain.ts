@@ -73,3 +73,9 @@
     engine: string;
     uri: string;
     }
+    export interface BloxFreeSpaceResponse {
+    size: number;
+    avail: number;
+    used: number;
+    used_percentage: number;
+    }

@@ -434,3 +434,27 @@ export const removeStoredReplication = (seed: string, uploader: string, poolID: 
   });
   return res;
 };
+
+  /*
+  bloxFreeSpace: This function takes no arguments and returns a promise of an object that contains the blox free space information.
+  */
+  export const bloxFreeSpace = (): Promise<BType.BloxFreeSpaceResponse> => {
+    console.log(
+    'bloxFreeSpace in react-native started'
+    );
+    let res = Fula.bloxFreeSpace().then((res) => {
+    try {
+    let jsonRes: BType.BloxFreeSpaceResponse = JSON.parse(res);
+    return jsonRes;
+    } catch (e) {
+    try {
+    return JSON.parse(res);
+    } catch (e) {
+    return res;
+    }
+    }
+    }).catch((err) => {
+    return err;
+    });
+    return res;
+    };
