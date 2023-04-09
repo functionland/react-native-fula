@@ -369,6 +369,37 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
 
+        <Button
+          title={inprogress ? 'Getting...' : 'Get Blox Free Space'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. get blox free space'
+                    );
+                    blockchain
+                      .bloxFreeSpace()
+                      .then((res) => {
+                        console.log('bloxFreeSpace received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('bloxFreeSpace fetch failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
       </View>
     </View>
   );
