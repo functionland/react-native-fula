@@ -42,7 +42,8 @@ export const newClient = (
   bloxAddr: string,
   exchange: string,
   autoFlush: boolean = false,
-  useRelay: boolean = true
+  useRelay: boolean = true,
+  refresh: boolean = false
 ): Promise<string> => {
   console.log(
     'newClient in react-native started',
@@ -51,9 +52,10 @@ export const newClient = (
     bloxAddr,
     exchange,
     autoFlush,
-    useRelay
+    useRelay,
+    refresh
   );
-  return Fula.newClient(identity, storePath, bloxAddr, exchange, autoFlush, useRelay);
+  return Fula.newClient(identity, storePath, bloxAddr, exchange, autoFlush, useRelay, refresh);
 };
 
 /**

@@ -17,7 +17,8 @@ interface FulaNativeModule {
     bloxAddr: string, //Blox multiadddr needs to be manually entered now
     exchange: string, //set to 'noope' for testing
     autoFlush: boolean, //set to false always unless you know what you are doing. This is to write actions to disk explicitly after each write
-    useRelay: boolean | null // if true it forces the use of relay
+    useRelay: boolean | null, // if true it forces the use of relay
+    refresh: boolean // if true it forces to refresh the fula object
     ) => Promise<string>;
   isReady: (filesystemCheck: boolean) => Promise<boolean>;
   logout: (identity: string, storePath: string) => Promise<boolean>;

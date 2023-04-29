@@ -170,14 +170,14 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void newClient(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay, Promise promise) {
+  public void newClient(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay, boolean refresh, Promise promise) {
     Log.d("ReactNative", "newClient started");
     ThreadUtils.runOnExecutor(() -> {
       try {
         Log.d("ReactNative", "newClient storePath= " + storePath);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "newClient identity= " + identityString);
-        this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay);
+        this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay, refresh);
         //String objString = Arrays.toString(obj);
         String peerId = this.fula.id();
         promise.resolve(peerId);
@@ -474,7 +474,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @NonNull
-  private byte[] newClientInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay) throws Exception {
+  private byte[] newClientInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay, boolean refresh) throws Exception {
     try {
       fulaConfig = new Config();
       if (storePath == null || storePath.trim().isEmpty()) {
@@ -495,7 +495,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         fulaConfig.setAllowTransientConnection(true);
         fulaConfig.setForceReachabilityPrivate(true);
       }
-      if (this.fula == null) {
+      if (this.fula == null || refresh) {
         Log.d("ReactNative", "Creating a new Fula instance");
         this.fula = Fulamobile.newClient(fulaConfig);
       }
@@ -513,7 +513,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootCid, boolean useRelay, boolean refresh) throws Exception {
     try {
       if (this.fula == null || refresh) {
-        this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay);
+        this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay, refresh);
       }
       if(this.client == null || refresh) {
         this.client = new Client(this.fula);
