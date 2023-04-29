@@ -41,7 +41,8 @@ await fula.init(
     bloxAddr: string, //leave empty for testing without a backend node
     exchange: 'noop'|'', //add noop for testing without a backend
     autoFlush: boolean, //Default to false. Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
-    useRelay: boolean //default to true. If true it forces the connection through relay
+    useRelay: boolean, //default to true. If true it forces the connection through relay
+    refresh: boolean //forces the fula object to be recreated. default is false
 );
 ```
 

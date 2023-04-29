@@ -212,7 +212,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void init(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootConfig, boolean useRelay, Promise promise) {
+  public void init(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootConfig, boolean useRelay, boolean refresh, Promise promise) {
     Log.d("ReactNative", "init started");
     ThreadUtils.runOnExecutor(() -> {
       try {
@@ -220,7 +220,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "init storePath= " + storePath);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "init identity= " + identityString);
-        String[] obj = this.initInternal(identity, storePath, bloxAddr, exchange, autoFlush, rootConfig, useRelay);
+        String[] obj = this.initInternal(identity, storePath, bloxAddr, exchange, autoFlush, rootConfig, useRelay, refresh);
         Log.d("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
         resultData.putString("peerId", obj[0]);
         resultData.putString("rootCid", obj[1]);
@@ -251,7 +251,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   private boolean checkConnectionInternal() throws Exception {
     try {
-      Log.d("ReactNative", "checkConnectionInternal fstarted");
+      Log.d("ReactNative", "checkConnectionInternal started");
       if (this.fula != null) {
         try {
           Log.d("ReactNative", "connectToBlox started");
@@ -510,12 +510,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @NonNull
-  private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootCid, boolean useRelay) throws Exception {
+  private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootCid, boolean useRelay, boolean refresh) throws Exception {
     try {
-      if (this.fula == null) {
+      if (this.fula == null || refresh) {
         this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay);
       }
-      if(this.client == null) {
+      if(this.client == null || refresh) {
         this.client = new Client(this.fula);
         Log.d("ReactNative", "fula initialized: " + this.fula.id());
       }

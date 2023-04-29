@@ -8,7 +8,8 @@ interface FulaNativeModule {
     exchange: string, //set to 'noope' for testing
     autoFlush: boolean, //set to false always unless you know what you are doing. This is to write actions to disk explicitly after each write
     rootCid: string | null, //if you have the latest rootCid you can send it and it generates the private_ref for filesystem
-    useRelay: boolean | null // if true it forces the use of relay
+    useRelay: boolean | null, // if true it forces the use of relay
+    refresh: boolean // if true it forces to refresh the fula object
   ) => Promise<{ peerId: string; rootCid: string; private_ref: string }>;
   newClient: (
     identity: string, //Private key of did identity

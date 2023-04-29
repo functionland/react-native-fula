@@ -14,7 +14,8 @@ export const init = (
   exchange: string,
   autoFlush: boolean = false,
   rootCid: string | null = null,
-  useRelay: boolean = true
+  useRelay: boolean = true,
+  refresh: boolean = false
 ): Promise<{ peerId: string; rootCid: string; private_ref: string }> => {
   console.log(
     'init in react-native started',
@@ -25,7 +26,7 @@ export const init = (
     autoFlush,
     useRelay
   );
-  return Fula.init(identity, storePath, bloxAddr, exchange, autoFlush, rootCid, useRelay);
+  return Fula.init(identity, storePath, bloxAddr, exchange, autoFlush, rootCid, useRelay, refresh);
 };
 
 /**
