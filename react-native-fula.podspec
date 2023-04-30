@@ -16,4 +16,5 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,mm}"
   s.dependency "React-Core"
   s.dependency 'Mobile','~> 0.0.3'
+  s.dependency "WnfsSwift",  "0.1.6"
 end
