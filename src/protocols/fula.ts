@@ -74,16 +74,17 @@ export const logout = (
  * Checks if there are any un-synced changes on the device
  */
 export const checkFailedActions = (
-  retry: boolean = false
+  retry: boolean = false,
+  timeout: number = 20
 ): Promise<boolean> => {
-  return Fula.checkFailedActions(retry);
+  return Fula.checkFailedActions(retry, timeout);
 };
 
 /**
  * Checks if there are any un-synced changes on the device
  */
-export const checkConnection = (): Promise<boolean> => {
-  return Fula.checkConnection();
+export const checkConnection = (timeout: number = 20): Promise<boolean> => {
+  return Fula.checkConnection(timeout);
 };
 
 /**

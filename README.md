@@ -24,7 +24,7 @@ const peerId //returns peerId as string
   exchange: 'noop'|'', //add noop for testing without a backend
   autoFlush: boolean, //Default to false. Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
   useRelay: boolean, //default to true. If true it forces the connection through relay
-  refresh: boolean //forces the fula object to be recreated. default is false
+  refresh: boolean? //forces the fula object to be recreated. default is false
 )
 ```
 
@@ -43,7 +43,7 @@ await fula.init(
     exchange: 'noop'|'', //add noop for testing without a backend
     autoFlush: boolean, //Default to false. Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
     useRelay: boolean, //default to true. If true it forces the connection through relay
-    refresh: boolean //forces the fula object to be recreated. default is false
+    refresh: boolean? //forces the fula object to be recreated. default is false
 );
 ```
 
@@ -133,7 +133,9 @@ await fula.isReady(
 //checks if client can reach server
 const result //returns true if it can, and false if it cannot
 = 
-await fula.checkConnection();
+await fula.checkConnection(
+    timeout: number? //default to 20. Maximum time in seconds that checkConnection waits before throwing an error
+);
 
 ```
 
@@ -143,6 +145,7 @@ const result //returns true if there are, and false if everything is synced with
 = 
 await fula.checkFailedActions(
     retry: boolean //if true, it tries to sync device with server, if not, it only checks
+    timeout: number? //default to 20. Maximum time in seconds that checkConnection waits before throwing an error
 );
 ```
 
