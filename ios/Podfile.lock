@@ -1,0 +1,24 @@
+PODS:
+  - Mobile (0.0.3)
+  - WnfsBindings (0.1.6)
+  - WnfsSwift (0.1.6):
+    - WnfsBindings (= 0.1.6)
+
+DEPENDENCIES:
+  - Mobile (~> 0.0.3)
+  - WnfsSwift (~> 0.1.6)
+
+SPEC REPOS:
+  trunk:
+    - Mobile
+    - WnfsBindings
+    - WnfsSwift
+
+SPEC CHECKSUMS:
+  Mobile: 449b0e95a46cd4fcae842696036dc606f95a486b
+  WnfsBindings: 14a2a54584a591e08fefd1ab3c1d609b54240530
+  WnfsSwift: 36d20a9aeb221c5e548ecd4dd1764672d91c90ee
+
+PODFILE CHECKSUM: ef6008db8a0144f8dfb3214613f99550ccc888dd
+
+COCOAPODS: 1.12.0
