@@ -170,6 +170,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
           Log.d("ReactNative", "checkConnection failed with Error: " + e.getMessage());
           promise.resolve(false);
         }
+      } else {
+        Log.d("ReactNative", "checkConnection failed with Error: " + "fula is null");
+        promise.resolve(false);
       }
     });
   }
@@ -179,12 +182,13 @@ public class FulaModule extends ReactContextBaseJavaModule {
     Log.d("ReactNative", "newClient started");
     ThreadUtils.runOnExecutor(() -> {
       try {
-        Log.d("ReactNative", "newClient storePath= " + storePath);
+        Log.d("ReactNative", "newClient storePath= " + storePath + " bloxAddr= " + bloxAddr + " exchange= " + exchange + " autoFlush= " + autoFlush + " useRelay= " + useRelay + " refresh= " + refresh);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "newClient identity= " + identityString);
         this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay, refresh);
         //String objString = Arrays.toString(obj);
         String peerId = this.fula.id();
+        Log.d("ReactNative", "newClient peerId= " + peerId);
         promise.resolve(peerId);
       } catch (Exception e) {
         Log.d("ReactNative", "newClient failed with Error: " + e.getMessage());
@@ -203,8 +207,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
           if (filesystemCheck) {
             if (this.client != null && this.rootConfig != null && !this.rootConfig.getCid().isEmpty()) {
               initialized = true;
+              Log.d("ReactNative", "isReady is true with filesystem check");
             }
           } else {
+            Log.d("ReactNative", "isReady is true without filesystem check");
             initialized = true;
           }
         }
@@ -267,6 +273,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
                     try {
                         this.fula.connectToBlox();
                         connectionStatus.set(true);
+                        Log.d("ReactNative", "checkConnectionInternal succeeded ");
                     } catch (Exception e) {
                         Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
                     }
@@ -502,7 +509,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       } else {
         fulaConfig.setStorePath(storePath);
       }
-      Log.d("ReactNative", "storePath is set: " + fulaConfig.getStorePath());
+      Log.d("ReactNative", "newClientInternal storePath is set: " + fulaConfig.getStorePath());
 
       byte[] peerIdentity = this.createPeerIdentity(identity);
       fulaConfig.setIdentity(peerIdentity);
