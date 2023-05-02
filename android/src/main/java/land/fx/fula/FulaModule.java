@@ -1019,7 +1019,13 @@ public class FulaModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void shutdown(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      shutdownInternal();
+      try {
+        shutdownInternal();
+        promise.resolve(true);
+      } catch (Exception e) {
+        promise.reject(e);
+        Log.d("ReactNative", "shutdown"+ e.getMessage());
+      }
     });
   }
 
