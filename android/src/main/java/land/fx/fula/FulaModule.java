@@ -164,6 +164,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       if (this.fula != null) {
         try {
           boolean connectionStatus = this.checkConnectionInternal(timeout);
+          Log.d("ReactNative", "checkConnection ended " + connectionStatus);
           promise.resolve(connectionStatus);
         }
         catch (Exception e) {
@@ -524,6 +525,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       }
       if (this.fula == null || refresh) {
         Log.d("ReactNative", "Creating a new Fula instance");
+        shutdownInternal();
         this.fula = Fulamobile.newClient(fulaConfig);
       }
       if (this.fula != null) {
@@ -1001,20 +1003,23 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
+  private void shutdownInternal() throws Exception {
+    try {
+      if(this.fula != null) {
+        this.fula.shutdown();
+        this.fula = null;
+        this.client = null;
+      }
+    } catch (Exception e) {
+      Log.d("ReactNative", "shutdownInternal"+ e.getMessage());
+      throw (e);
+    }
+  }
+
   @ReactMethod
   public void shutdown(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      try {
-        if(this.fula != null) {
-          this.fula.shutdown();
-          this.fula = null;
-          this.client = null;
-        }
-        promise.resolve(true);
-      } catch (Exception e) {
-        promise.reject(e);
-        Log.d("ReactNative", "shutdown"+ e.getMessage());
-      }
+      shutdownInternal();
     });
   }
 
