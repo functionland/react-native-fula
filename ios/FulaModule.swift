@@ -6,11 +6,78 @@ import Mobile
 
 @objc(FulaModule)
 class FulaModule: NSObject {
-    
+    public static let NAME: String = "FulaModule"
+    var fula: Mobile.Fula
+
+    var client: Client
+    var fulaConfig: Mobile.Config
+    var appDir: URL
+    var fulaStorePath: String
+    var privateForest: String
+    var rootConfig: WnfsConfig
+    var sharedPref: SharedPreferenceHelper
+    var secretKeyGlobal: SecretKey
+    var identityEncryptedGlobal: String
+    static let PRIVATE_KEY_STORE_ID = "PRIVATE_KEY"
+
+    @objc(Client)
+    public class Client: NSObject {
+      var internalClient: Mobile.Client
+
+      override init(clientInput: Mobile.Client) {
+            internalClient = clientInput
+      }
+
+        
+
+    func get(cid: Data?) -> Data? {
+        do {
+            print(String(format: "ReactNative get cid: %s", cid! as NSData))
+         return try internalClient.get(cid);
+        } catch let error {
+            print (error.localizedDescription)
+        }
+        print("ReactNative Error get");
+        return nil
+      }
+
+      func put(data: Data?, codec: Int) -> Data? {
+        do {
+            print(String(format: "ReactNative put data: %s , codec: %d", data! as NSData, codec))
+            return try internalClient.put(data, codec);
+        } catch let error {
+                print("ReactNative put Error");
+                print (error.localizedDescription)
+            }
+        print("ReactNative Error put");
+        return nil
+      }
+    }
     var wnfsWrapper: WnfsWrapper
     override init() {
-        wnfsWrapper = WnfsWrapper(putFn: mockFulaPut, getFn: mockFulaGet);
-    }
+        
+        if let appDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            fulaStoreURL = appDir.appendingPathComponent("/fula")
+            
+            let storePath = fulaStoreURL.path
+            let fileManager = FileManager.default
+            var success = true
+            if !fileManager.fileExists(atPath: storePath) {
+                do{
+                    try fileManager.createDirectory(atPath: storePath, withIntermediateDirectories: true)
+                }catch let error{
+                    print(error.localizedDescription)
+                    success = false
+                }
+                
+            }
+            if success {
+                    print("Fula store folder created")
+            } else {
+                print("Unable to create fula store folder!")
+                
+            }
+          }
     func convertConfigToJson(config: WnfsConfig) -> String {
         return String(format: "{\"cid\": \"%@\", \"private_ref\": \"%@\"}", config.getCid(), config.getPrivateRef())
      }
