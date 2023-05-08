@@ -1275,9 +1275,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       try {
         byte[] result = this.fula.bloxFreeSpace();
         String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
