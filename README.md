@@ -150,6 +150,17 @@ await fula.checkFailedActions(
 ```
 
 ```js
+//Gives access to the blox for a specific peerId. This call must be made from the authorizer only.
+const result //returns true if succesful and false if fails
+= 
+await fula.setAuth(
+    peerId: string, //peer ID of the app that needs access to the blox
+    allow: boolean, // true to allow and false to remove access
+);
+
+```
+
+```js
 //shuts down the fula libp2p and datastore
 await fula.shutdown();
 ```
