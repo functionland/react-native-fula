@@ -25,6 +25,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -263,42 +265,50 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   private boolean checkConnectionInternal(int timeout) throws Exception {
     try {
-        Log.d("ReactNative", "checkConnectionInternal started");
-        if (this.fula != null) {
+      Log.d("ReactNative", "checkConnectionInternal started");
+      if (this.fula != null) {
+        try {
+          Log.d("ReactNative", "connectToBlox started");
+
+          AtomicBoolean connectionStatus = new AtomicBoolean(false);
+          ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+          Future<?> future = executor.submit(() -> {
             try {
-                Log.d("ReactNative", "connectToBlox started");
-
-                AtomicBoolean connectionStatus = new AtomicBoolean(false);
-                ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-                executor.schedule(() -> {
-                    try {
-                        this.fula.connectToBlox();
-                        connectionStatus.set(true);
-                        Log.d("ReactNative", "checkConnectionInternal succeeded ");
-                    } catch (Exception e) {
-                        Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
-                    }
-                }, 0, TimeUnit.SECONDS);
-
-                executor.schedule(() -> {
-                    executor.shutdown();
-                }, timeout, TimeUnit.SECONDS);
-
-                executor.awaitTermination(timeout, TimeUnit.SECONDS);
-                return connectionStatus.get();
+              this.fula.connectToBlox();
+              connectionStatus.set(true);
+              Log.d("ReactNative", "checkConnectionInternal succeeded ");
             } catch (Exception e) {
-                Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
-                return false;
+              Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
             }
-        } else {
-            Log.d("ReactNative", "checkConnectionInternal failed because fula is not initialized ");
+          });
+
+          try {
+            future.get(timeout, TimeUnit.SECONDS);
+          } catch (TimeoutException te) {
+            // If the timeout occurs, shut down the executor and return false
+            executor.shutdownNow();
             return false;
+          } finally {
+            // If the future task is done, we can shut down the executor
+            if (future.isDone()) {
+              executor.shutdown();
+            }
+          }
+
+          return connectionStatus.get();
+        } catch (Exception e) {
+          Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
+          return false;
         }
+      } else {
+        Log.d("ReactNative", "checkConnectionInternal failed because fula is not initialized ");
+        return false;
+      }
     } catch (Exception e) {
-        Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
-        throw (e);
+      Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
+      throw (e);
     }
-}
+  }
 
   @ReactMethod
   private void checkFailedActions(boolean retry, int timeout, Promise promise) throws Exception {

@@ -39,7 +39,7 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
   const privateKeyString = "\\test";
-  const bloxAddr = '/ip4/192.168.2.14/udp/40001/quic/p2p/12D3KooWR2EiA8DbULqDAJZCcN2V2Nasmh756R1aLe5t3NniCnAS';
+  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWD69C5yX91nPe3tz6HRiuw7Pia4xsxE9xv2CghoyK6MPK';
   const newClient = async () => {
     try {
       return fula.newClient(
@@ -67,7 +67,7 @@ const App = () => {
     }
   };
   React.useEffect(() => {
-    chainApi.init().then((api) => {
+    /*chainApi.init().then((api) => {
       chainApi.listPools(api).then((pools) => {
         console.log('pools', pools);
       }).catch((e) => {
@@ -79,9 +79,9 @@ const App = () => {
       }).catch((err) => {
         console.log('error', err);
       });
-    });
+    });*/
     //fula.logout(privateKey.toString(),'').then((a) => {
-    initFula()
+    /*initFula()
       .then((res) => {
         console.log('OK', res);
         setInitComplete(res);
@@ -104,7 +104,7 @@ const App = () => {
       })
       .catch((e) => {
         console.log('error', e);
-      });
+      });*/
     //});
   }, []);
 
@@ -114,11 +114,26 @@ const App = () => {
         <Text>Put & Get</Text>
 
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Test'}
+          title={inprogress ? 'Putting & Getting...' : 'Init'}
           onPress={async () => {
             try {
               let resinit = await initFula();
               if (resinit) {
+                console.log('init complete');
+                console.log(resinit);
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
                 console.log('initialization is completed. putting key/value');
                 var path = RNFS.DocumentDirectoryPath + '/test.txt';
                 RNFS.writeFile(path, 'test', 'utf8')
@@ -252,11 +267,12 @@ const App = () => {
           onPress={async () => {
             try {
               if (initComplete) {
+                console.log('initialization is completed. retrying... first checking connection:');
                 fula.checkConnection().then((r) => {
-                  console.log('connection cehck');
+                  console.log('connection cehck passed');
                   console.log(r);
                   if (r) {
-                    console.log('initialization is completed. retry');
+                    console.log('check connection is completed. retry');
                     fula
                       .checkFailedActions(true)
                       .then((res) => {
@@ -268,6 +284,9 @@ const App = () => {
                         console.log(e);
                       });
                   }
+                }) .catch((e) => {
+                  console.log('connection cehck failed');
+                  console.log(e);
                 });
               } else {
                 console.log('wait for init to complete');
