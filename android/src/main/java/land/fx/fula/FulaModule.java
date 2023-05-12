@@ -478,8 +478,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal);
         String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), this.secretKeyGlobal);
 
-        sharedPref.add("cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
-        sharedPref.add("private_ref_encrypted_" + this.identityEncryptedGlobal, private_ref_encrypted);
+        sharedPref.add("FULA_ENC_V2:cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
+        sharedPref.add("FULA_ENC_V2:private_ref_encrypted_" + this.identityEncryptedGlobal, private_ref_encrypted);
         return true;
       } else {
         return false;
@@ -497,13 +497,13 @@ public class FulaModule extends ReactContextBaseJavaModule {
       }
       SecretKey secretKey = Cryptography.generateKey(identity);
       String identity_encrypted = Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
-      sharedPref.remove("cid_encrypted_"+ identity_encrypted);
-      sharedPref.remove("private_ref_encrypted_"+identity_encrypted);
+      sharedPref.remove("FULA_ENC_V2:cid_encrypted_"+ identity_encrypted);
+      sharedPref.remove("FULA_ENC_V2:private_ref_encrypted_"+identity_encrypted);
 
       //TODO: Should also remove peerid @Mahdi
 
-      sharedPref.remove("cid_encrypted_"+ identity_encrypted);
-      sharedPref.remove("private_ref_encrypted_"+ identity_encrypted);
+      sharedPref.remove("FULA_ENC_V2:cid_encrypted_"+ identity_encrypted);
+      sharedPref.remove("FULA_ENC_V2:private_ref_encrypted_"+ identity_encrypted);
 
       this.rootConfig = null;
       this.secretKeyGlobal = null;
@@ -591,8 +591,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "this.rootCid is empty.");
         //Load from keystore
 
-        String cid_encrypted_fetched = sharedPref.getValue("cid_encrypted_"+ identity_encrypted);
-        String private_ref_encrypted_fetched = sharedPref.getValue("private_ref_encrypted_"+identity_encrypted);
+        String cid_encrypted_fetched = sharedPref.getValue("FULA_ENC_V2:cid_encrypted_"+ identity_encrypted);
+        String private_ref_encrypted_fetched = sharedPref.getValue("FULA_ENC_V2:private_ref_encrypted_"+identity_encrypted);
         Log.d("ReactNative", "Here1");
         String cid = "";
         String private_ref = "";
