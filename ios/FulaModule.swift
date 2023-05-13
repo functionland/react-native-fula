@@ -6,9 +6,9 @@ import Mobile
 
 @objc(FulaModule)
 class FulaModule: NSObject {
-    public static let NAME: String = "FulaModule"
+    public let NAME: String = "FulaModule"
     var fula: Mobile.Fula
-
+    
     var client: Client
     var fulaConfig: Mobile.Config
     var appDir: URL
@@ -19,39 +19,37 @@ class FulaModule: NSObject {
     var secretKeyGlobal: SecretKey
     var identityEncryptedGlobal: String
     static let PRIVATE_KEY_STORE_ID = "PRIVATE_KEY"
-
+    
     @objc(Client)
     public class Client: NSObject {
-      var internalClient: Mobile.Client
-
-      override init(clientInput: Mobile.Client) {
-            internalClient = clientInput
-      }
-
+        var internalClient: Mobile.Client
         
-
-    func get(cid: Data?) -> Data? {
-        do {
-            print(String(format: "ReactNative get cid: %s", cid! as NSData))
-         return try internalClient.get(cid);
-        } catch let error {
-            print (error.localizedDescription)
+        override init(clientInput: Mobile.Client) {
+            internalClient = clientInput
         }
-        print("ReactNative Error get");
-        return nil
-      }
-
-      func put(data: Data?, codec: Int) -> Data? {
-        do {
-            print(String(format: "ReactNative put data: %s , codec: %d", data! as NSData, codec))
-            return try internalClient.put(data, codec);
-        } catch let error {
+        
+        func get(cid: Data?) -> Data? {
+            do {
+                print(String(format: "ReactNative get cid: %s", cid! as NSData))
+                return try internalClient.get(cid);
+            } catch let error {
+                print (error.localizedDescription)
+            }
+            print("ReactNative Error get");
+            return nil
+        }
+        
+        func put(data: Data?, codec: Int) -> Data? {
+            do {
+                print(String(format: "ReactNative put data: %s , codec: %d", data! as NSData, codec))
+                return try internalClient.put(data, codec);
+            } catch let error {
                 print("ReactNative put Error");
                 print (error.localizedDescription)
             }
-        print("ReactNative Error put");
-        return nil
-      }
+            print("ReactNative Error put");
+            return nil
+        }
     }
     var wnfsWrapper: WnfsWrapper
     override init() {
@@ -72,59 +70,109 @@ class FulaModule: NSObject {
                 
             }
             if success {
-                    print("Fula store folder created")
+                print("Fula store folder created")
             } else {
                 print("Unable to create fula store folder!")
                 
             }
-          }
-    func convertConfigToJson(config: WnfsConfig) -> String {
-        return String(format: "{\"cid\": \"%@\", \"private_ref\": \"%@\"}", config.getCid(), config.getPrivateRef())
-     }
-    
-    
-    @objc(createPrivateForest:withResolver:withRejecter:)
-    func createPrivateForest(dbPath: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-        resolve(wnfsWrapper.CreatePrivateForest(wnfsKey: "test"))
-    }
-    
-    @objc(createRootDir:withCid:withResolver:withRejecter:)
-    func createRootDir(dbPath: String, cid: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-        resolve("")
-    }
-    
-    @objc(writeFile:withCid:withPrivateRef:withPath:withLocalFilePath:withResolver:withRejecter:)
-    func writeFile(dbPath: String, cid: String, privateRef: String, path: String, localFilePath: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-        do{
-            let contentStr = try String(contentsOfFile: localFilePath)
-            let data = contentStr.data(using: .utf8)
-            let c = try wnfsWrapper.WriteFile(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path, data: data!)
-            resolve(convertConfigToJson(config: c))
-        }catch let error{
-            reject("ERR_WRITE_WNFS", "Can't write file", error)
         }
-
-    }
-    
-    @objc(readFile:withCid:withPrivateRef:withPath:withResolver:withRejecter:)
-    func readFile(dbPath: String, cid: String, privateRef: String, path: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-        do{
-            let data = try wnfsWrapper.ReadFile(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path)
-            resolve(data)
-        }catch let error{
-            reject("ERR_READ_WNFS", "Can't read file", error)
+        func convertConfigToJson(config: WnfsConfig) -> String {
+            return String(format: "{\"cid\": \"%@\", \"private_ref\": \"%@\"}", config.getCid(), config.getPrivateRef())
         }
-    }
-    
-    @objc(readFile:withCid:withPrivateRef:withPath:withResolver:withRejecter:)
-    func ls(dbPath: String, cid: String, privateRef: String, path: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
         
-        resolve(wnfsWrapper.Ls(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path))
-        do{
-            let data = try wnfsWrapper.Ls(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path)
-            resolve(String(data: data!, encoding: .utf8))
-        }catch let error{
-            reject("ERR_LS_WNFS", "Can't list files", error)
+        func getName() -> String {
+            return NAME
+        }
+        
+        func toByte(_ input: String) -> Data? {
+            return input.data(using: .utf8)
+        }
+        
+        func toString(_ input: Data) -> String? {
+            return String(data: input, encoding: .utf8)
+        }
+        
+        func stringArrToIntArr(_ s: Array<String>) -> Array<Int> {
+            return s.map { Int($0)!}
+        }
+        
+        func convertIntToByte(_ s: Array<Int>) -> Array<UInt8> {
+            return s.map { UInt8(exactly: $0)!}
+        }
+        
+        func convertStringToByte(_ input: String) -> Array<UInt8> {
+            let splitted = input.split(separator: ",").map { String($0) }
+            let keyInt = stringArrToIntArr(splitted)
+            return convertIntToByte(keyInt);
+        }
+        
+        @objc(checkConnection:withResolver:withRejecter:)
+        func checkConnection(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
+            print("ReactNative", "checkConnection started")
+            let group = DispatchGroup() // initialize
+            
+            
+            if (fula != nil) {
+                do {
+                    group.enter()
+                    let connectionStatus = try checkConnectionInternal()
+                    group.leave()
+                    resolve(connectionStatus);
+                }
+                catch let error {
+                    print("ReactNative", "checkConnection failed with Error: ", error.localizedDescription);
+                    resolve(false);
+                }
+            }
+            
+            group.notify(queue: .main) {
+                // do something here when loop finished
+            }
+            
+        }
+        
+        @objc(createPrivateForest:withResolver:withRejecter:)
+        func createPrivateForest(dbPath: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+            resolve(wnfsWrapper.CreatePrivateForest(wnfsKey: "test"))
+        }
+        
+        @objc(createRootDir:withCid:withResolver:withRejecter:)
+        func createRootDir(dbPath: String, cid: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+            resolve("")
+        }
+        
+        @objc(writeFile:withCid:withPrivateRef:withPath:withLocalFilePath:withResolver:withRejecter:)
+        func writeFile(dbPath: String, cid: String, privateRef: String, path: String, localFilePath: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+            do{
+                let contentStr = try String(contentsOfFile: localFilePath)
+                let data = contentStr.data(using: .utf8)
+                let c = try wnfsWrapper.WriteFile(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path, data: data!)
+                resolve(convertConfigToJson(config: c))
+            }catch let error{
+                reject("ERR_WRITE_WNFS", "Can't write file", error)
+            }
+            
+        }
+        
+        @objc(readFile:withCid:withPrivateRef:withPath:withResolver:withRejecter:)
+        func readFile(dbPath: String, cid: String, privateRef: String, path: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+            do{
+                let data = try wnfsWrapper.ReadFile(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path)
+                resolve(data)
+            }catch let error{
+                reject("ERR_READ_WNFS", "Can't read file", error)
+            }
+        }
+        
+        @objc(readFile:withCid:withPrivateRef:withPath:withResolver:withRejecter:)
+        func ls(dbPath: String, cid: String, privateRef: String, path: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+            
+            resolve(wnfsWrapper.Ls(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path))
+            do{
+                let data = try wnfsWrapper.Ls(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path)
+                resolve(String(data: data!, encoding: .utf8))
+            }catch let error{
+                reject("ERR_LS_WNFS", "Can't list files", error)
+            }
         }
     }
-}
