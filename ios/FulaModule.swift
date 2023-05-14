@@ -7,14 +7,14 @@ import Mobile
 @objc(FulaModule)
 class FulaModule: NSObject {
     public let NAME: String = "FulaModule"
-    var fula: Mobile.Fula
+    var fula: Mobile.Fula?
     
-    var client: Client
+    var client: Client?
     var fulaConfig: Mobile.Config
     var appDir: URL
     var fulaStorePath: String
     var privateForest: String
-    var rootConfig: WnfsConfig
+    var rootConfig: WnfsConfig?
     var sharedPref: SharedPreferenceHelper
     var secretKeyGlobal: SecretKey
     var identityEncryptedGlobal: String
@@ -84,12 +84,12 @@ class FulaModule: NSObject {
             return NAME
         }
         
-        func toByte(_ input: String) -> Data? {
-            return input.data(using: .utf8)
+        func toByte(_ input: String) -> Data {
+            return input.data(using: .utf8)!
         }
         
-        func toString(_ input: Data) -> String? {
-            return String(data: input, encoding: .utf8)
+        func toString(_ input: Data) -> String {
+            return String(data: input, encoding: .utf8)!
         }
         
         func stringArrToIntArr(_ s: Array<String>) -> Array<Int> {
@@ -109,26 +109,189 @@ class FulaModule: NSObject {
         @objc(checkConnection:withResolver:withRejecter:)
         func checkConnection(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
             print("ReactNative", "checkConnection started")
-            let group = DispatchGroup() // initialize
-            
             
             if (fula != nil) {
                 do {
-                    group.enter()
-                    let connectionStatus = try checkConnectionInternal()
-                    group.leave()
-                    resolve(connectionStatus);
+                    Task {
+                        let connectionStatus = try await checkConnectionInternal()
+                        resolve(connectionStatus);
+                    }
                 }
                 catch let error {
                     print("ReactNative", "checkConnection failed with Error: ", error.localizedDescription);
                     resolve(false);
                 }
             }
+        }
+        
+        @objc(newClient:withIdentityString:withStorePath:withBloxAddr:withExchange:withAutoFlush:withUseRelay:withResolver:withRejecter:)
+        func newClient(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
+            print("ReactNative", "newClient started");
             
-            group.notify(queue: .main) {
-                // do something here when loop finished
+            do {
+                Task{
+                    print("ReactNative", "newClient storePath= ", storePath)
+                    let identity = toByte(identityString)
+                    print("ReactNative", "newClient identity= ", identityString)
+                    try await newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay)
+                    let peerId = fula.id()
+                    resolve(peerId)
+                }
+            } catch let error {
+                print("ReactNative", "newClient failed with Error: ", error.localizedDescription);
+                reject("ERR_FULA", "Can't create client", error.localizedDescription)
             }
             
+        }
+       
+        @objc(isReady:withFilesystemCheck:withResolver:withRejecter:)
+        func isReady(filesystemCheck: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void{
+          print("ReactNative", "isReady started");
+            var initialized = false
+            do {
+              if (fula != nil && fula.id() != nil) {
+                if (filesystemCheck) {
+                  if (client != nil && rootConfig != nil && !rootConfig!.getCid().isEmpty) {
+                    initialized = true
+                  }
+                } else {
+                  initialized = true
+                }
+              }
+                resolve(initialized)
+            } catch let error {
+                print("ReactNative", "isReady failed with Error: " + error.localizedDescription)
+                reject("ERR_FULA", "Check if fula is ready", error.localizedDescription)
+            }
+        }
+        
+        @objc(init:withIdentityString:withStorePath:withBloxAddr:withExchange:withAutoFlush:withRootConfig:withUseRelay:withResolver:withRejecter:)
+        func init(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, rootConfig: String, useRelay: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+            print("ReactNative", "init started")
+            do {
+                Task{
+                    var resultData = Dictionary<String, String>()
+                    print("ReactNative", "init storePath= ", storePath)
+                    let identity = toByte(identityString)
+                    print("ReactNative", "init identity= ", identityString)
+                    let obj = try await initInternal(identity, storePath, bloxAddr, exchange, autoFlush, rootConfig, useRelay)
+                    print("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]")
+                    resultData["peerId"] = obj[0]
+                    resultData["rootCid"] = obj[1]
+                    resultData["private_ref"] = obj[2]
+                    resolve(resultData)
+                }
+            } catch let error {
+                print("ReactNative", "init failed with Error: ", error.localizedDescription)
+                reject("ERR_FULA", "init failed", error.localizedDescription)
+            }
+        }
+        
+        @objc(logout:withIdentityString:withStorePath:withResolver:withRejecter:)
+        func logout(identityString: String, storePath: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void{
+            print("ReactNative", "logout started")
+            do {
+                Task{
+                    let identity = toByte(identityString)
+                    let obj = try await logoutInternal(identity, storePath)
+                    print("ReactNative", "logout completed")
+                    resolve(obj)
+                }
+            } catch let error {
+                print("ReactNative", "logout failed with Error: ", error.localizedDescription)
+                reject("ERR_FULA", "logout failed", error.localizedDescription)
+            }
+        }
+        
+        func checkConnectionInternal() async throws -> Bool {
+            do {
+                print("ReactNative", "checkConnectionInternal fstarted")
+                if (fula != nil) {
+                    do {
+                        print("ReactNative", "connectToBlox started")
+                        try fula.connectToBlox()
+                        return true
+                    } catch let error {
+                        print("ReactNative", "checkConnectionInternal failed with Error: ", error.localizedDescription)
+                        return false
+                    }
+                } else {
+                    print("ReactNative", "checkConnectionInternal failed because fula is not initialized ")
+                    return false
+                }
+            } catch let error {
+                print("ReactNative", "checkConnectionInternal failed with Error: ", error.localizedDescription)
+                throw error
+            }
+        }
+        
+        @objc(checkFailedActions:withRetry:withResolver:withRejecter:)
+        func checkFailedActions(retry: Bool, resolve:RCTPromiseResolveBlock, reject:RCTPromiseRejectBlock) -> Void{
+          do {
+            if (fula != nil) {
+              if (!retry) {
+                print("ReactNative", "checkFailedActions without retry")
+                let failedLinks = fula.listFailedPushes()
+                if (failedLinks.hasNext()) {
+                    print("ReactNative", "checkFailedActions found: ", failedLinks.next().joined())
+                  resolve(true)
+                } else {
+                  resolve(false)
+                }
+              } else {
+                print("ReactNative", "checkFailedActions with retry")
+                let retryResults = retryFailedActionsInternal()
+                resolve(!retryResults)
+              }
+            } else {
+                reject("ERR_FULA", "Fula is not initialized")
+            }
+          } catch let error {
+              print("ReactNative", "checkFailedActions failed with Error: ", error.localizedDescription)
+              reject("ERR_FULA", "CheckFailedActions failed", error.localizedDescription)
+          }
+        }
+
+        func retryFailedActionsInternal() async throws -> Bool {
+            do {
+                print("ReactNative", "retryFailedActionsInternal started")
+                if (fula != nil) {
+                    //Fula is initialized
+                    do {
+                        let connectionCheck = try await checkConnectionInternal()
+                        if(connectionCheck) {
+                            do {
+                                print("ReactNative", "retryFailedPushes started")
+                                try fula.retryFailedPushes()
+                                print("ReactNative", "flush started")
+                                fula.flush()
+                                return true
+                            }
+                            catch let error {
+                                fula.flush()
+                                print("ReactNative", "retryFailedActionsInternal failed with Error: ", error.localizedDescription)
+                                return false
+                            }
+                            
+                        } else {
+                            print("ReactNative", "retryFailedActions failed because blox is offline")
+                            //Blox Offline
+                            return false
+                        }
+                    }
+                    catch let error {
+                        print("ReactNative", "retryFailedActions failed with Error: ", error.localizedDescription)
+                        return false
+                    }
+                } else {
+                    print("ReactNative", "retryFailedActions failed because fula is not initialized")
+                    //Fula is not initialized
+                    return false
+                }
+            } catch let error {
+                print("ReactNative", "retryFailedActions failed with Error: ", error.localizedDescription)
+                throw error
+            }
         }
         
         @objc(createPrivateForest:withResolver:withRejecter:)
