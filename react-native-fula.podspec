@@ -17,4 +17,5 @@ Pod::Spec.new do |s|
   s.dependency "React-Core"
   s.dependency 'Mobile','~> 0.0.3'
   s.dependency "WnfsSwift",  "0.1.6"
+  s.dependency 'CryptoSwift', '~> 1.7.1'
 end

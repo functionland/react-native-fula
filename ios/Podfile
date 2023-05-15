@@ -8,4 +8,5 @@ target 'FulaModule' do
   # Pods for FulaModule
   pod 'Mobile','~> 0.0.3'
   pod "WnfsSwift",  '~> 0.1.6'
+  pod 'CryptoSwift', '~> 1.7.1'
 end
