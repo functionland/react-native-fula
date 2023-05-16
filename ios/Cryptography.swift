@@ -8,31 +8,37 @@
 
 import Foundation
 import CommonCrypto
+import CryptoSwift
 
-public class Cryptography {
-    public static func encryptMsg(message: String, SecretKey secret)
+public class Cryptography: NSObject {
+    public static func encryptMsg(message: String, secretKey: Array<UInt8>)
     throws -> String {
-    Cipher cipher = null;
-    cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-    cipher.init(Cipher.ENCRYPT_MODE, secret);
-    byte[] cipherText = cipher.doFinal(message.getBytes("UTF-8"));
-    return Base64.encodeToString(cipherText, Base64.NO_WRAP);
-  }
+        let aes = try! AES(key: secretKey, blockMode: ECB(), padding: .pkcs5)
+        let encrypted = try! aes.encrypt(message.bytes)
+        return Data(encrypted).base64EncodedString()
+    }
+    
+    public static func decryptMsg(cipherText: String, secretKey: Array<UInt8>)
+    throws -> String {
+        let aes = try! AES(key: secretKey, blockMode: ECB(), padding: .pkcs5)
+        let data =  try! cipherText.fromBase64()
+        let encrypted = try! aes.decrypt(message.bytes)
+        return String(bytes: encrypted, encoding: .utf)
+    }
+    
+    public static func generateKey(salt: String)
+    throws -> Array<UInt8> {
+        let password: [UInt8] = Array("".utf8)
+        let salt: [UInt8] = Array(salt.utf8)
 
-  public static String decryptMsg(String cipherText, SecretKey secret)
-    throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidParameterSpecException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException {
-    Cipher cipher = null;
-    cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-    cipher.init(Cipher.DECRYPT_MODE, secret);
-    byte[] decode = Base64.decode(cipherText, Base64.NO_WRAP);
-    String decryptString = new String(cipher.doFinal(decode), "UTF-8");
-    return decryptString;
-  }
-
-  public static SecretKey generateKey(byte[] key)
-    throws NoSuchAlgorithmException, InvalidKeySpecException {
-    PBEKeySpec pbeKeySpec = new PBEKeySpec(StaticHelper.bytesToBase64(key).toCharArray(), key, 1000, 128);
-    SecretKey pbeKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(pbeKeySpec);
-    return new SecretKeySpec(pbeKey.getEncoded(), "AES");
-  }
+        //TODO: Generate a key from a salt and an empty password
+        let key = try PKCS5.PBKDF2(
+            password: password,
+            salt: salt,
+            iterations: 4096,
+            keyLength: 16, /* AES-128 */
+            variant: .sha256
+        ).calculate()
+        return key
+    }
 }
