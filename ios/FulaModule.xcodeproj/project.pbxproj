@@ -28,7 +28,6 @@
 		066DC22929FE50F800DD3EDE /* FulaModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulaModule.swift; sourceTree = "<group>"; };
 		0673AB682A122B850087A7C0 /* Cryptography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cryptography.swift; sourceTree = "<group>"; };
 		0673AB692A122BD00087A7C0 /* UserDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataHelper.swift; sourceTree = "<group>"; };
-		0673AB6A2A122BF30087A7C0 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		11C0B56A28882C93007D9057 /* FulaModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FulaModule.m; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libFulaModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFulaModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		486AC486EC46EA3A8EB84D8A /* Pods-FulaModule.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FulaModule.release.xcconfig"; path = "Target Support Files/Pods-FulaModule/Pods-FulaModule.release.xcconfig"; sourceTree = "<group>"; };
@@ -59,7 +58,6 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				0673AB6A2A122BF30087A7C0 /* Utils.swift */,
 				0673AB692A122BD00087A7C0 /* UserDataHelper.swift */,
 				0673AB682A122B850087A7C0 /* Cryptography.swift */,
 				066DC22929FE50F800DD3EDE /* FulaModule.swift */,
