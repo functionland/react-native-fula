@@ -1,11 +1,3 @@
-//
-//  UserDataHelper.swift
-//  FulaModule
-//
-//  Created by Homayoun on 5/15/23.
-//  Copyright © 2023 Facebook. All rights reserved.
-//
-
 import Foundation
 
 public class UserDataHelper: NSObject {
@@ -15,11 +7,11 @@ public class UserDataHelper: NSObject {
         defaults = UserDefaults.standard
     }
     
-    public getValue(key: String) -> String {
+    public func getValue(key: String) -> String {
         return defaults.string(forKey: key)
     }
     
-    public getBooleanValue(key: String) -> Bool {
+    public func getBooleanValue(key: String) -> Bool {
         return defaults.bool(forKey: key)
     }
     

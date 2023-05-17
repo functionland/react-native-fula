@@ -1,11 +1,3 @@
-//
-//  Cryptography.swift
-//  FulaModule
-//
-//  Created by Homayoun on 5/15/23.
-//  Copyright © 2023 Facebook. All rights reserved.
-//
-
 import Foundation
 import CommonCrypto
 import CryptoSwift
@@ -26,10 +18,10 @@ public class Cryptography: NSObject {
         return String(bytes: encrypted, encoding: .utf)
     }
     
-    public static func generateKey(salt: String)
+    public static func generateKey(salt: Data)
     throws -> Array<UInt8> {
         let password: [UInt8] = Array("".utf8)
-        let salt: [UInt8] = Array(salt.utf8)
+        let salt: [UInt8] = salt.bytes
 
         //TODO: Generate a key from a salt and an empty password
         let key = try PKCS5.PBKDF2(
