@@ -31,23 +31,23 @@ class FulaModule: NSObject {
         func get(cid: Data?) -> Data? {
             do {
                 print(String(format: "ReactNative get cid: %s", cid! as NSData))
-                return try internalClient.get(cid);
+                return try internalClient.get(cid)
             } catch let error {
                 print (error.localizedDescription)
             }
-            print("ReactNative Error get");
+            print("ReactNative Error get")
             return nil
         }
         
         func put(data: Data?, codec: Int) -> Data? {
             do {
                 print(String(format: "ReactNative put data: %s , codec: %d", data! as NSData, codec))
-                return try internalClient.put(data, codec);
+                return try internalClient.put(data, codec)
             } catch let error {
-                print("ReactNative put Error");
+                print("ReactNative put Error")
                 print (error.localizedDescription)
             }
-            print("ReactNative Error put");
+            print("ReactNative Error put")
             return nil
         }
     }
@@ -57,12 +57,12 @@ class FulaModule: NSObject {
         if let appDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             fulaStoreURL = appDir.appendingPathComponent("/fula")
             
-            let storePath = fulaStoreURL.path
+            fulaStorePath = fulaStoreURL.path
             let fileManager = FileManager.default
             var success = true
-            if !fileManager.fileExists(atPath: storePath) {
+            if !fileManager.fileExists(atPath: fulaStorePath) {
                 do{
-                    try fileManager.createDirectory(atPath: storePath, withIntermediateDirectories: true)
+                    try fileManager.createDirectory(atPath: fulaStorePath, withIntermediateDirectories: true)
                 }catch let error{
                     print(error.localizedDescription)
                     success = false
@@ -103,7 +103,7 @@ class FulaModule: NSObject {
         func convertStringToByte(_ input: String) -> Array<UInt8> {
             let splitted = input.split(separator: ",").map { String($0) }
             let keyInt = stringArrToIntArr(splitted)
-            return convertIntToByte(keyInt);
+            return convertIntToByte(keyInt)
         }
         
         @objc(checkConnection:withResolver:withRejecter:)
@@ -114,19 +114,19 @@ class FulaModule: NSObject {
                 do {
                     Task {
                         let connectionStatus = try await checkConnectionInternal()
-                        resolve(connectionStatus);
+                        resolve(connectionStatus)
                     }
                 }
                 catch let error {
-                    print("ReactNative", "checkConnection failed with Error: ", error.localizedDescription);
-                    resolve(false);
+                    print("ReactNative", "checkConnection failed with Error: ", error.localizedDescription)
+                    resolve(false)
                 }
             }
         }
         
         @objc(newClient:withIdentityString:withStorePath:withBloxAddr:withExchange:withAutoFlush:withUseRelay:withResolver:withRejecter:)
         func newClient(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
-            print("ReactNative", "newClient started");
+            print("ReactNative", "newClient started")
             
             do {
                 Task{
@@ -138,7 +138,7 @@ class FulaModule: NSObject {
                     resolve(peerId)
                 }
             } catch let error {
-                print("ReactNative", "newClient failed with Error: ", error.localizedDescription);
+                print("ReactNative", "newClient failed with Error: ", error.localizedDescription)
                 reject("ERR_FULA", "Can't create client", error.localizedDescription)
             }
             
@@ -146,7 +146,7 @@ class FulaModule: NSObject {
        
         @objc(isReady:withFilesystemCheck:withResolver:withRejecter:)
         func isReady(filesystemCheck: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void{
-          print("ReactNative", "isReady started");
+          print("ReactNative", "isReady started")
             var initialized = false
             do {
               if (fula != nil && fula.id() != nil) {
@@ -303,18 +303,18 @@ class FulaModule: NSObject {
             // 4: If not found or decryption not successful, generate an identity
             // 5: then encrypt and store in keychain
             // TODO: recheck error handling
-            var encryptedKey = UserDataHelper.getValue(PRIVATE_KEY_STORE_ID);
+            var encryptedKey = userDataHelper.getValue(PRIVATE_KEY_STORE_ID)
             let secretKey = try Cryptography.generateKey(privateKey)
             if (encryptedKey == nil) {
               let autoGeneratedIdentity = Fulamobile.generateEd25519Key()
-              encryptedKey = try Cryptography.encryptMsg(Data(autoGeneratedIdentity).base64EncodedString(), secretKey);
-              UserDataHelper.add(PRIVATE_KEY_STORE_ID, encryptedKey);
+              encryptedKey = try Cryptography.encryptMsg(Data(autoGeneratedIdentity).base64EncodedString(), secretKey)
+              userDataHelper.add(PRIVATE_KEY_STORE_ID, encryptedKey)
             }
             return Data(Cryptography.decryptMsg(encryptedKey, secretKey).utf8)
 
           } catch let error {
             print("ReactNative", "createPeerIdentity failed with Error: ", error.localizedDescription)
-            throw e
+            throw error
           }
         }
 
@@ -322,15 +322,15 @@ class FulaModule: NSObject {
             privateForest = wnfsWrapper.createPrivateForest(iClient)
             print("ReactNative", "privateForest is created: ", privateForest)
             rootConfig = wnfsWrapper.createRootDir(iClient, privateForest, identity)
-            if (this.fula != nil) {
+            if (fula != nil) {
                 fula.flush()
             }
-            print("ReactNative", "new rootConfig is created: cid=", rootConfig.getCid(), " & private_ref=", rootConfig.getPrivate_ref())
+            print("ReactNative", "rootConfig is created: cid=", rootConfig.getCid(), " & private_ref=", rootConfig.getPrivate_ref())
             encrypt_and_store_config()
         }
 
         func getPrivateRef(iClient: FulaModule.Client ,wnfsKey: Data , rootCid: String) throws -> String {
-            print("ReactNative", "getPrivateRef called: rootCid=", rootCid);
+            print("ReactNative", "getPrivateRef called: rootCid=", rootCid)
             let privateRef = try wnfsWrapper.getPrivateRef(iClient, wnfsKey, rootCid)
             print("ReactNative", "getPrivateRef completed: privateRef=", privateRef)
             return privateRef
@@ -340,18 +340,195 @@ class FulaModule: NSObject {
         func encrypt_and_store_config() throws -> Bool {
             do {
             if(identityEncryptedGlobal != nil && !identityEncryptedGlobal.isEmpty) {
-                let cid_encrypted = Cryptography.encryptMsg(rootConfig.getCid(), secretKeyGlobal);
-                let private_ref_encrypted = Cryptography.encryptMsg(rootConfig.getPrivate_ref(), secretKeyGlobal);
+                let cid_encrypted = Cryptography.encryptMsg(rootConfig.getCid(), secretKeyGlobal)
+                let private_ref_encrypted = Cryptography.encryptMsg(rootConfig.getPrivate_ref(), secretKeyGlobal)
 
-                UserDataHelper.add("cid_encrypted_" + identityEncryptedGlobal, cid_encrypted)
-                UserDataHelper.add("private_ref_encrypted_" + identityEncryptedGlobal, private_ref_encrypted)
+                userDataHelper.add("cid_encrypted_" + identityEncryptedGlobal, cid_encrypted)
+                userDataHelper.add("private_ref_encrypted_" + identityEncryptedGlobal, private_ref_encrypted)
                 return true
             } else {
                 return false
             }
             } catch let error {
-            print("ReactNative", "encrypt_and_store_config failed with Error: ", error.localizedDescription);
-            throw e
+            print("ReactNative", "encrypt_and_store_config failed with Error: ", error.localizedDescription)
+            throw error
+            }
+        }
+
+        func logoutInternal(identity: Data, storePath: String) throws -> Bool {
+            do {
+            if (fula != nil) {
+                fula.flush()
+            }
+            let secretKey = try Cryptography.generateKey(identity)
+            let identity_encrypted: String = try Cryptography.encryptMsg(identity.toHex(), secretKey)
+            userDataHelper.remove("cid_encrypted_"+ identity_encrypted)
+            userDataHelper.remove("private_ref_encrypted_"+identity_encrypted)
+
+            //TODO: Should also remove peerid @Mahdi
+
+            userDataHelper.remove("cid_encrypted_"+ identity_encrypted)
+            userDataHelper.remove("private_ref_encrypted_"+ identity_encrypted)
+
+            rootConfig = nil
+            secretKeyGlobal = nil
+            identityEncryptedGlobal = nil
+
+            if (storePath == nil || storePath.trim().isEmpty) {
+                storePath = fulaStorePath
+            }
+
+            do{
+                try fileManager.removeItem(atPath: fulaStorePath)
+            }catch let error{
+                print("Deleting fula store path", error.localizedDescription)
+            }      
+            return true
+
+            } catch let error {
+                print("ReactNative", "logout internal failed with Error: ", error.localizedDescription)
+                throw error
+            }
+        }
+
+        func getFulaClient() -> fulamobile.Client {
+            return fula
+        }
+
+        func newClientInternal(identity: Data, storePath: String, bloxAddr: String, exchange: String, autoFlush: String, useRelay: String) throws -> Data {
+            do {
+                fulaConfig = Config()
+                if (storePath == nil || storePath.trim().isEmpty) {
+                    fulaConfig.setStorePath(fulaStorePath)
+                } else {
+                    fulaConfig.setStorePath(storePath)
+                }
+                print("ReactNative", "storePath is set: " + fulaConfig.getStorePath())
+
+                let peerIdentity = createPeerIdentity(identity)
+                fulaConfig.setIdentity(peerIdentity)
+                print("ReactNative", "peerIdentity is set: " + fulaConfig.getIdentity().toString())
+                fulaConfig.setBloxAddr(bloxAddr)
+                print("ReactNative", "bloxAddr is set: " + fulaConfig.getBloxAddr())
+                fulaConfig.setExchange(exchange)
+                fulaConfig.setSyncWrites(autoFlush)
+                if (useRelay) {
+                    fulaConfig.setAllowTransientConnection(true)
+                    fulaConfig.setForceReachabilityPrivate(true)
+                }
+                if (fula == nil) {
+                    print("ReactNative", "Creating a Fula instance")
+                    fula = Fulamobile.newClient(fulaConfig)
+                }
+                if (fula != nil) {
+                    fula.flush()
+                }
+                return peerIdentity
+            } catch let error {
+                print("ReactNative", "newclientInternal failed with Error: ", error.localizedDescription)
+                throw error
+            }
+        }
+
+        func initInternal(identity: Data, storePath: String, bloxAddr: String, exchange: String, autoFlush: String, rootCid: String, useRelay: String) throws -> [String] {
+            do {
+            if (fula == nil) {
+                newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay)
+            }
+            if(client == nil) {
+                client = Client(fula)
+                print("ReactNative", "fula initialized: " + fula.id())
+            }
+
+            let secretKey = Cryptography.generateKey(identity)
+            let identity_encrypted =Cryptography.encryptMsg(identity.toString(), secretKey)
+            identityEncryptedGlobal = identity_encrypted
+            secretKeyGlobal = secretKey
+
+            if (rootConfig == nil || rootConfig.getCid().isEmpty || rootConfig.getPrivate_ref().isEmpty) {
+                print("ReactNative", "rootCid is empty.")
+                //Load from keystore
+
+                let cid_encrypted_fetched = sharedPref.getValue("cid_encrypted_"+ identity_encrypted)
+                let private_ref_encrypted_fetched = sharedPref.getValue("private_ref_encrypted_"+identity_encrypted)
+                print("ReactNative", "Here1")
+                var cid = ""
+                var private_ref = ""
+                if(cid_encrypted_fetched != nil && !cid_encrypted_fetched.isEmpty) {
+                print("ReactNative", "decrypting cid="+cid_encrypted_fetched+" with secret="+secretKey.toString())
+                cid = Cryptography.decryptMsg(cid_encrypted_fetched, secretKey)
+                }
+                if(private_ref_encrypted_fetched != nil && !private_ref_encrypted_fetched.isEmpty) {
+                print("ReactNative", "decrypting private_ref="+private_ref_encrypted_fetched+" with secret="+secretKey.toString())
+                private_ref = Cryptography.decryptMsg(private_ref_encrypted_fetched, secretKey)
+                }
+                print("ReactNative", "Here2")
+                //print("ReactNative", "Attempted to fetch cid from keystore cid="+cid+" & private_ref="+private_ref)
+                if((cid == nil || cid.isEmpty) || (private_ref == nil || private_ref.isEmpty) ){
+                print("ReactNative", "cid or PrivateRef was not found")
+                if(rootCid != nil && !rootCid.isEmpty){
+                    print("ReactNative", "Re-setting cid from input: "+rootCid)
+                    cid = rootCid
+                }
+                if((private_ref == nil || private_ref.isEmpty) && (cid != nil && !cid.isEmpty)){
+                    print("ReactNative", "Re-fetching privateRef from wnfs: cid="+cid)
+                    private_ref = getPrivateRef(client, identity, cid)
+                    print("ReactNative", "Re-fetching privateRef from wnfs: "+private_ref)
+                }
+                if(cid == nil || cid.isEmpty || private_ref == nil || private_ref.isEmpty) {
+                    print("ReactNative", "Tried to recover cid and privateRef but was not successful. Creating ones")
+                    createNewRootConfig(client, identity)
+                } else {
+                    print("ReactNative", "Tried to recover cid and privateRef and was successful. cid:"+cid+" & private_ref="+private_ref)
+                    rootConfig = WnfsConfig(cid, private_ref)
+                    encrypt_and_store_config()
+                }
+                } else if(cid != nil && !cid.isEmpty && private_ref != nil && !private_ref.isEmpty) {
+                print("ReactNative", "Found cid and private ref in keychain store")
+                if(cid != nil && !cid.isEmpty && private_ref != nil && !private_ref.isEmpty) {
+                    print("ReactNative", "Recovered cid and private ref from keychain store. cid="+cid+" & private_ref="+private_ref)
+                    rootConfig = WnfsConfig(cid, private_ref)
+                } else{
+                    print("ReactNative", "Found but Could not recover cid and private_ref from keychain store")
+                    createNewRootConfig(client, identity)
+                }
+                } else{
+                print("ReactNative", "This cid and private_ref generation should never happen!!!")
+                //Create root and store cid and private_ref
+                createNewRootConfig(client, identity)
+                }
+
+
+                print("ReactNative", "creating rootConfig completed")
+
+                /*
+                byte[] testbyte = convertStringToByte("-104,40,24,-93,24,100,24,114,24,111,24,111,24,116,24,-126,24,-126,0,0,24,-128,24,103,24,118,24,101,24,114,24,115,24,105,24,111,24,110,24,101,24,48,24,46,24,49,24,46,24,48,24,105,24,115,24,116,24,114,24,117,24,99,24,116,24,117,24,114,24,101,24,100,24,104,24,97,24,109,24,116")
+                long testcodec = 85
+                byte[] testputcid = client.put(testbyte, testcodec)
+                print("ReactNative", "client.put test done"+ Arrays.toString(testputcid))
+                byte[] testfetchedcid = convertStringToByte("1,113,18,32,-6,-63,-128,79,-102,-89,57,77,-8,67,-98,8,-81,40,-87,123,122,29,-52,-124,-60,-53,100,105,125,123,-5,-99,41,106,-124,-64")
+                byte[] testfetchedbytes = client.get(testfetchedcid)
+                print("ReactNative", "client.get test done"+ Arrays.toString(testfetchedbytes))
+                */
+
+
+                print("ReactNative", "rootConfig is created: cid=" + rootConfig.getCid()+"& private_ref="+rootConfig.getPrivate_ref())
+            } else {
+                print("ReactNative", "rootConfig existed: cid=" + rootConfig.getCid()+" & private_ref="+rootConfig.getPrivate_ref())
+            }
+            let peerId = fula.id()
+            var obj = [String]()
+            obj.append(peerId)
+            obj.append(rootConfig.getCid())
+            obj.append(rootConfig.getPrivate_ref())
+            print("ReactNative", "initInternal is completed successfully")
+            if (fula != nil) {
+                fula.flush()
+            }
+            return obj
+            } catch let error {
+            print("ReactNative", "init internal failed with Error: " , error.localizedDescription)
+            throw error
             }
         }
         

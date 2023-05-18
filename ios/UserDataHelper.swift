@@ -27,3 +27,39 @@ public class UserDataHelper: NSObject {
         defaults.removeObject(forKey: key)
     }
 }
+
+// TODO: move these to an utils file.
+extension String {   
+    func trim() -> String {
+        return self.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+    }
+}
+extension Data {
+    /// Fast convert to hex by reserving memory (instead of mapping and join).
+    public func toHex(uppercase: Bool = false) -> String {
+        // Constants (Hex has 2 characters for each Byte).
+        let size = self.count * 2;
+        let degitToCharMap = Array((
+            uppercase ? "0123456789ABCDEF" : "0123456789abcdef"
+        ).utf16);
+        // Reserve dynamic memory (plus one for null termination).
+        let buffer = UnsafeMutablePointer<unichar>.allocate(capacity: size + 1);
+        // Convert each byte.
+        var index = 0
+        for byte in self {
+            buffer[index] = degitToCharMap[Int(byte / 16)];
+            index += 1;
+            buffer[index] = degitToCharMap[Int(byte % 16)];
+            index += 1;
+        }
+        // Set Null termination.
+        buffer[index] = 0;
+        // Casts to string (without any copying).
+        return String(utf16CodeUnitsNoCopy: buffer,
+                      count: size, freeWhenDone: true)
+    }
+    public func toString() -> String {
+        //TODO: make utf8
+
+    }
+}
