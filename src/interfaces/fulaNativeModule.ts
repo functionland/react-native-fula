@@ -27,6 +27,7 @@ interface FulaNativeModule {
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
   push: () => Promise<string>;
+  listFoundPeers: () => Promise<string>;
   put: (content: string, codec: string) => Promise<string>;
   mkdir: (path: string) => Promise<string>;
   writeFileContent: (path: string, content: string) => Promise<string>;

@@ -350,12 +350,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "listPeersFound started");
       try {
-        string res = this.fula.listPeersFound();
+        String res = this.fula.listPeersFound();
 
         //JSONArray jsonArray = new JSONArray(res);
-        String s = new String(res, StandardCharsets.UTF_8);
-        Log.d("ReactNative", "ls: res = " + s);
-        promise.resolve(s);
+        Log.d("ReactNative", "listPeersFound: res = " + res);
+        promise.resolve(res);
       } catch (Exception e) {
         Log.d("get", e.getMessage());
         promise.reject(e);
