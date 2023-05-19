@@ -345,6 +345,24 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
+  @ReactMethod
+  public void listPeersFound(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "listPeersFound started");
+      try {
+        string res = this.fula.listPeersFound();
+
+        //JSONArray jsonArray = new JSONArray(res);
+        String s = new String(res, StandardCharsets.UTF_8);
+        Log.d("ReactNative", "ls: res = " + s);
+        promise.resolve(s);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
   private boolean retryFailedActionsInternal(int timeout) throws Exception {
     try {
       Log.d("ReactNative", "retryFailedActionsInternal started");
@@ -716,7 +734,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
           this.rootConfig = config;
           this.encrypt_and_store_config();
           if (this.fula != null) {
+            Log.d("ReactNative", "writeFile flsuhing");
             this.fula.flush();
+            Log.d("ReactNative", "writeFile flsuhed");
+          } else {
+            Log.d("ReactNative", "writeFile Error: fula is null");
           }
           promise.resolve(config.getCid());
         } else {

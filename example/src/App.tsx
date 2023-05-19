@@ -39,7 +39,8 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
   const privateKeyString = "\\test";
-  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWD69C5yX91nPe3tz6HRiuw7Pia4xsxE9xv2CghoyK6MPK';
+  //const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWD69C5yX91nPe3tz6HRiuw7Pia4xsxE9xv2CghoyK6MPK';
+  const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/12D3KooWD69C5yX91nPe3tz6HRiuw7Pia4xsxE9xv2CghoyK6MPK';
   const newClient = async () => {
     try {
       return fula.newClient(
