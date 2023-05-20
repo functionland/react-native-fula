@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
-import { fula, blockchain, chainApi } from '@functionland/react-native-fula';
+import { fula, blockchain, chainApi, blox } from '@functionland/react-native-fula';
 
 const App = () => {
   const [key, setKey] = React.useState<string>('');
@@ -64,6 +64,7 @@ const App = () => {
       );
     } catch (e) {
       console.log(e);
+      await fula.shutdown();
       return Promise.reject(e);
     }
   };
@@ -118,11 +119,13 @@ const App = () => {
           title={inprogress ? 'Putting & Getting...' : 'Init'}
           onPress={async () => {
             try {
+              await fula.shutdown();
               let resinit = await initFula();
               if (resinit) {
                 console.log('init complete');
                 console.log(resinit);
               } else {
+
                 console.log('wait for init to complete');
               }
             } catch (e) {}
@@ -188,6 +191,22 @@ const App = () => {
                 console.log('wait for init to complete');
               }
             } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'List New bloxes'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                console.log('initialization is completed. listing bloxes');
+                var bloxes = await blox.listFoundPeers();
+                console.log(bloxes);
+              }
+            } catch (e) {
+              console.log(e);
+            }
           }}
           color={inprogress ? 'green' : 'blue'}
         />

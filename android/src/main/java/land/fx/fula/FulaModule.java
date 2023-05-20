@@ -1,5 +1,8 @@
 package land.fx.fula;
 
+import android.content.Context;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.MulticastLock;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -47,6 +50,7 @@ import land.fx.wnfslib.Fs;
 @ReactModule(name = FulaModule.NAME)
 public class FulaModule extends ReactContextBaseJavaModule {
 
+  private ReactApplicationContext reactContext;
 
   @Override
   public void initialize() {
@@ -72,6 +76,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   public static class Client implements land.fx.wnfslib.Datastore {
 
     private final fulamobile.Client internalClient;
+    private MulticastLock multicastLock = null;
 
     Client(fulamobile.Client clientInput) {
       this.internalClient = clientInput;
@@ -107,6 +112,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   public FulaModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    this.reactContext = reactContext;
     appDir = reactContext.getFilesDir().toString();
     fulaStorePath = appDir + "/fula";
     File storeDir = new File(fulaStorePath);
@@ -571,9 +577,17 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "Creating a new Fula instance");
         try {
           shutdownInternal();
+          Log.d("ReactNative", "shutdown completed before creating a new Fula instance");
+          //Found a potential solution for netlinkrib: https://stackoverflow.com/questions/13221736/android-device-not-receiving-multicast-package
+          WifiManager wifi = (WifiManager) this.reactContext.getSystemService(Context.WIFI_SERVICE);
+          WifiManager.MulticastLock multicastLock = wifi.createMulticastLock("multicastLock");
+          multicastLock.setReferenceCounted(true);
+          multicastLock.acquire();
+          Log.d("ReactNative", "Fulamobile.newClient started");
           this.fula = Fulamobile.newClient(fulaConfig);
+          Log.d("ReactNative", "Fulamobile.newClient finished");
           if (this.fula != null) {
-            this.fula.flush();
+            this.fula.flush(); //This should be uncomented after "route ip+net: netlinkrib: permission denied" is rsolved
           }
         } catch (Exception e) {
           Log.d("ReactNative", "Failed to create new Fula instance: " + e.getMessage());
@@ -1063,6 +1077,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
         this.fula.shutdown();
         this.fula = null;
         this.client = null;
+
+        //Found a potential solution for netlinkrib: https://stackoverflow.com/questions/13221736/android-device-not-receiving-multicast-package
+        /*if (multicastLock != null) {
+          multicastLock.release();
+          multicastLock = null;
+        }*/
       }
     } catch (Exception e) {
       Log.d("ReactNative", "shutdownInternal"+ e.getMessage());
