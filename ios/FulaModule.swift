@@ -108,14 +108,13 @@ class FulaModule: NSObject {
         
         @objc(checkConnection:withResolver:withRejecter:)
         func checkConnection(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
+        Task {
             print("ReactNative", "checkConnection started")
             
             if (fula != nil) {
                 do {
-                    Task {
                         let connectionStatus = try await checkConnectionInternal()
                         resolve(connectionStatus)
-                    }
                 }
                 catch let error {
                     print("ReactNative", "checkConnection failed with Error: ", error.localizedDescription)
@@ -123,25 +122,26 @@ class FulaModule: NSObject {
                 }
             }
         }
+        }
         
         @objc(newClient:withIdentityString:withStorePath:withBloxAddr:withExchange:withAutoFlush:withUseRelay:withResolver:withRejecter:)
         func newClient(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
+        Task {   
             print("ReactNative", "newClient started")
             
             do {
-                Task{
+                
                     print("ReactNative", "newClient storePath= ", storePath)
                     let identity = toByte(identityString)
                     print("ReactNative", "newClient identity= ", identityString)
                     try await newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay)
                     let peerId = fula.id()
                     resolve(peerId)
-                }
             } catch let error {
                 print("ReactNative", "newClient failed with Error: ", error.localizedDescription)
-                reject("ERR_FULA", "Can't create client", error.localizedDescription)
+                reject("ERR_FULA", "Can't create client", error)
             }
-            
+        }
         }
        
         @objc(isReady:withFilesystemCheck:withResolver:withRejecter:)
@@ -161,15 +161,16 @@ class FulaModule: NSObject {
                 resolve(initialized)
             } catch let error {
                 print("ReactNative", "isReady failed with Error: " + error.localizedDescription)
-                reject("ERR_FULA", "Check if fula is ready", error.localizedDescription)
+                reject("ERR_FULA", "Check if fula is ready", error)
             }
         }
         
         @objc(init:withIdentityString:withStorePath:withBloxAddr:withExchange:withAutoFlush:withRootConfig:withUseRelay:withResolver:withRejecter:)
         func init(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, rootConfig: String, useRelay: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+        Task{
             print("ReactNative", "init started")
             do {
-                Task{
+                
                     var resultData = Dictionary<String, String>()
                     print("ReactNative", "init storePath= ", storePath)
                     let identity = toByte(identityString)
@@ -180,27 +181,29 @@ class FulaModule: NSObject {
                     resultData["rootCid"] = obj[1]
                     resultData["private_ref"] = obj[2]
                     resolve(resultData)
-                }
+                
             } catch let error {
                 print("ReactNative", "init failed with Error: ", error.localizedDescription)
-                reject("ERR_FULA", "init failed", error.localizedDescription)
+                reject("ERR_FULA", "init failed", error)
             }
+        }
         }
         
         @objc(logout:withIdentityString:withStorePath:withResolver:withRejecter:)
         func logout(identityString: String, storePath: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void{
+        Task {
             print("ReactNative", "logout started")
             do {
-                Task{
                     let identity = toByte(identityString)
                     let obj = try await logoutInternal(identity, storePath)
                     print("ReactNative", "logout completed")
                     resolve(obj)
-                }
+                
             } catch let error {
                 print("ReactNative", "logout failed with Error: ", error.localizedDescription)
-                reject("ERR_FULA", "logout failed", error.localizedDescription)
+                reject("ERR_FULA", "logout failed", error)
             }
+        }
         }
         
         func checkConnectionInternal() async throws -> Bool {
@@ -248,7 +251,7 @@ class FulaModule: NSObject {
             }
           } catch let error {
               print("ReactNative", "checkFailedActions failed with Error: ", error.localizedDescription)
-              reject("ERR_FULA", "CheckFailedActions failed", error.localizedDescription)
+              reject("ERR_FULA", "CheckFailedActions failed", error)
           }
         }
 
@@ -531,49 +534,640 @@ class FulaModule: NSObject {
             throw error
             }
         }
+
         
-        @objc(createPrivateForest:withResolver:withRejecter:)
-        func createPrivateForest(dbPath: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-            resolve(wnfsWrapper.CreatePrivateForest(wnfsKey: "test"))
-        }
-        
-        @objc(createRootDir:withCid:withResolver:withRejecter:)
-        func createRootDir(dbPath: String, cid: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-            resolve("")
-        }
-        
-        @objc(writeFile:withCid:withPrivateRef:withPath:withLocalFilePath:withResolver:withRejecter:)
-        func writeFile(dbPath: String, cid: String, privateRef: String, path: String, localFilePath: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-            do{
-                let contentStr = try String(contentsOfFile: localFilePath)
-                let data = contentStr.data(using: .utf8)
-                let c = try wnfsWrapper.WriteFile(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path, data: data!)
-                resolve(convertConfigToJson(config: c))
-            }catch let error{
-                reject("ERR_WRITE_WNFS", "Can't write file", error)
-            }
-            
-        }
-        
-        @objc(readFile:withCid:withPrivateRef:withPath:withResolver:withRejecter:)
-        func readFile(dbPath: String, cid: String, privateRef: String, path: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-            do{
-                let data = try wnfsWrapper.ReadFile(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path)
-                resolve(data)
-            }catch let error{
-                reject("ERR_READ_WNFS", "Can't read file", error)
+        @objc(mkdir:withPath:withResolver:withRejecter:)
+        func mkdir(path: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+        Task{
+            print("ReactNative", "mkdir: path = " + path)
+            do {
+                
+                    let config = try await wnfsWrapper.mkdir(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), path)
+                    if(config != nil) {
+                        rootConfig = config
+                        encrypt_and_store_config()
+                        if (fula != nil) {
+                        fula.flush()
+                        }
+                        resolve(config.getCid())
+                    } else {
+                        print("ReactNative", "mkdir Error: config is nil")
+                        reject("ERR_WNFS", "Can't make dir", error)
+                    }
+                
+            } catch let error{
+                print("get", error.localizedDescription)
+                reject("ERR_WNFS", "get", error)
             }
         }
-        
-        @objc(readFile:withCid:withPrivateRef:withPath:withResolver:withRejecter:)
-        func ls(dbPath: String, cid: String, privateRef: String, path: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-            
-            resolve(wnfsWrapper.Ls(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path))
-            do{
-                let data = try wnfsWrapper.Ls(wnfsConfig: WnfsConfig(cid: cid, privateRef: privateRef), remotePath: path)
-                resolve(String(data: data!, encoding: .utf8))
-            }catch let error{
-                reject("ERR_LS_WNFS", "Can't list files", error)
+        }
+
+        @objc(writeFile:withFulaTargetFilename:withLocalFilename:withResolver:withRejecter:)
+        func writeFile(fulaTargetFilename: String, localFilename: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        /*
+        // reads content of the file form localFilename (should include full absolute path to local file with read permission
+        // writes content to the specified location by fulaTargetFilename in Fula filesystem
+        // fulaTargetFilename: a string including full path and filename of target file on Fula (e.g. root/pictures/cat.jpg)
+        // localFilename: a string containing full path and filename of local file on hte device (e.g /usr/bin/cat.jpg)
+        // Returns: new cid of the root after this file is placed in the tree
+            */
+        Task {
+        print("ReactNative", "writeFile to : path = " + fulaTargetFilename + ", from: " + localFilename)
+        do {
+        let config = try wnfsWrapper.WriteFileFromPath(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename)
+        if(config != nil) {
+            rootConfig = config
+            encrypt_and_store_config()
+            if (fula != nil) {
+            fula.flush()
+            }
+            resolve(config.getCid())
+        } else {
+            print("ReactNative", "writeFile Error: config is nil")
+            reject("ERR_WNFS", "writeFile Error: config is nil", nil)
+        }
+        } catch let error {
+        print("get", error.localizedDescription)
+        reject("ERR_WNFS", "get", error)
+        }
+        }
+
+        }
+
+        @objc(writeFileContent:withContentString:withResolver:withRejecter:)
+        func writeFileContent(path: String, contentString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        Task{
+            print("ReactNative", "writeFile: contentString = " + contentString)
+            print("ReactNative", "writeFile: path = " + path)
+            do {  
+            let content = convertStringToByte(contentString)
+            let config = try wnfsWrapper.WriteFile(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), path, content)
+            rootConfig = config
+            encrypt_and_store_config()
+            if (fula != nil) {
+                fula.flush()
+            }
+            resolve(config.getCid())
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
             }
         }
-    }
+        }
+
+        @objc(ls:withResolver:withRejecter:)
+        func ls(path: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        Task{
+            print("ReactNative", "ls: path = " + path)
+            do {
+            let res =  try wnfsWrapper.ls(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), path)
+
+            //JSONArray jsonArray = new JSONArray(res)
+            let s = String(res, encodings: .utf8)
+            print("ReactNative", "ls: res = " + s)
+            resolve(s)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        }
+        }
+
+        @objc(rm:withResolver:withRejecter:)
+        func rm(path: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        Task{
+            print("ReactNative", "rm: path = " + path)
+            do {
+            let config = try wnfsWrapper.rm(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), path)
+            if(config != nil) {
+                rootConfig = config
+                encrypt_and_store_config()
+                if (fula != nil) {
+                fula.flush()
+                }
+                resolve(config.getCid())
+            } else {
+                print("ReactNative", "rm Error: config is nil")
+                reject("ERR_WNFS", "rm Error: config is nil"))
+            }
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        }
+        }
+
+        @objc(cp:withTargetPath:withResolver:withRejecter:)
+        func cp(sourcePath: String, targetPath: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        Task {
+            print("ReactNative", "rm: sourcePath = " + sourcePath)
+            do {
+            let config = wnfsWrapper.cp(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), sourcePath, targetPath)
+            if(config != nil) {
+                rootConfig = config
+                encrypt_and_store_config()
+                if (fula != nil) {
+                fula.flush()
+                }
+                resolve(config.getCid())
+            } else {
+                print("ReactNative", "cp Error: config is nil")
+                reject("ERR_WNFS", "cp Error: config is nil"))
+            }
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        }
+        }
+
+        @objc(mv:withTargetPath:withResolver:withRejecter:)
+        func mv(sourcePath: String, targetPath: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        Task {
+            print("ReactNative", "rm: sourcePath = " + sourcePath)
+            do {
+            let config = wnfsWrapper.Mv(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), sourcePath, targetPath)
+            if(config != nil) {
+                rootConfig = config
+                encrypt_and_store_config()
+                if (fula != nil) {
+                fula.flush()
+                }
+                resolve(config.getCid())
+            } else {
+                print("ReactNative", "mv Error: config is nil")
+                reject("ERR_WNFS", "mv Error: config is nil"))
+            }
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        }
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func readFile(fulaTargetFilename: String, localFilename: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        /*
+        // reads content of the file form localFilename (should include full absolute path to local file with read permission
+        // writes content to the specified location by fulaTargetFilename in Fula filesystem
+        // fulaTargetFilename: a string including full path and filename of target file on Fula (e.g. root/pictures/cat.jpg)
+        // localFilename: a string containing full path and filename of local file on hte device (e.g /usr/bin/cat.jpg)
+        // Returns: new cid of the root after this file is placed in the tree
+            */
+        Task {
+            print("ReactNative", "readFile: fulaTargetFilename = " + fulaTargetFilename)
+            do {
+            let path = wnfsWrapper.ReadFilestreamToPath(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename)
+            resolve(path)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        }
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func readFileContent(path: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        Task {
+            print("ReactNative", "readFileContent: path = " + path)
+            do {
+            let res = wnfsWrapper.readFile(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), path)
+            let resString = toString(res)
+            resolve(resString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        }
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func get(keyString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "get: keyString = " + keyString)
+            do {
+            key: Data = convertStringToByte(keyString)
+            let value = getInternal(key)
+            valueString: String = toString(value)
+            resolve(valueString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @Nonnil
+        private byte[] getInternal(key: Data) throws -> {
+        do {
+            print("ReactNative", "getInternal: key.toString() = " + toString(key))
+            print("ReactNative", "getInternal: key.toString().bytes = " + Arrays.toString(key))
+            let value = fula.get(key)
+            print("ReactNative", "getInternal: value.toString() = " + toString(value))
+            return value
+        } catch let error {
+            print("ReactNative", "getInternal: error = " + error.localizedDescription)
+            print("getInternal", error.localizedDescription)
+            throw (e)
+        }
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func has(keyString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "has: keyString = " + keyString)
+            do {
+            key: Data = convertStringToByte(keyString)
+            Bool result = hasInternal(key)
+            resolve(result)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        private Bool hasInternal(key: Data) throws -> {
+        do {
+            Bool res = fula.has(key)
+            return res
+        } catch let error {
+            print("hasInternal", error.localizedDescription)
+            throw (e)
+        }
+        }
+
+        func pullInternal(key: Data) throws -> {
+        do {
+            fula.pull(key)
+        } catch let error {
+            print("pullInternal", error.localizedDescription)
+            throw (e)
+        }
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func push(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "push started")
+            do {
+            pushInternal(convertStringToByte(rootConfig.getCid()))
+            resolve(rootConfig.getCid())
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        func pushInternal(key: Data) throws -> {
+        do {
+            if (fula != nil && fula.has(key)) {
+            fula.push(key)
+            fula.flush()
+            } else {
+            print("ReactNative", "pushInternal error: key wasn't found or fula is not initialized")
+            throw "ERR_WNFS", "key wasn't found in local storage")
+            }
+        } catch let error {
+            print("ReactNative", "pushInternal"+ error.localizedDescription)
+            throw (e)
+        }
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func put(valueString: String, codecString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "put: codecString = " + codecString)
+            print("ReactNative", "put: valueString = " + valueString)
+            do {
+            //byte[] codec = convertStringToByte(CodecString)
+            let codec = Long.parseLong(codecString)
+
+
+            print("ReactNative", "put: codec = " + codec)
+            let value = toByte(valueString)
+
+            print("ReactNative", "put: value.toString() = " + toString(value))
+            key: Data = putInternal(value, codec)
+            print("ReactNative", "put: key.toString() = " + toString(key))
+            resolve(toString(key))
+            } catch let error {
+            print("ReactNative", "put: error = " + error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @Nonnil
+        private byte[] putInternal(let value, let codec) throws -> {
+        do {
+            if(fula != nil) {
+            key: Data = fula.put(value, codec)
+            fula.flush()
+            return key
+            } else {
+            print("ReactNative", "putInternal Error: fula is not initialized")
+            throw ("ERR_WNFS", "putInternal Error: fula is not initialized"))
+            }
+        } catch let error {
+            print("ReactNative", "putInternal"+ error.localizedDescription)
+            throw (e)
+        }
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func setAuth(String peerIdString, Bool allow,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "setAuth: peerIdString = " + peerIdString)
+            do {
+            if (fula != nil && fula.id() != nil && fulaConfig != nil && fulaConfig.getBloxAddr() != nil) {
+                String bloxAddr = fulaConfig.getBloxAddr()
+                print("ReactNative", "setAuth: bloxAddr = '" + bloxAddr+"'"+ " peerIdString = '" + peerIdString+"'")
+                int index = bloxAddr.lastIndexOf("/")
+                String bloxPeerId = bloxAddr.substring(index + 1)
+                fula.setAuth(bloxPeerId, peerIdString, allow)
+                resolve(true)
+            } else {
+                print("ReactNative", "setAuth error: fula is not initialized")
+                throw "ERR_WNFS", "fula is not initialized")
+            }
+            resolve(false)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func shutdown( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            do {
+            if(fula != nil) {
+                fula.shutdown()
+                fula = nil
+                client = nil
+            }
+            resolve(true)
+            } catch let error {
+            reject("ERR_WNFS", "get", error)
+            print("ReactNative", "shutdown"+ error.localizedDescription)
+            }
+        })
+        }
+
+        ///////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
+        //////////////////////ANYTHING BELOW IS FOR BLOCKCHAIN/////
+        ///////////////////////////////////////////////////////////
+        @objc(:withResolver:withRejecter:)
+        func createAccount(seedString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "createAccount: seedString = " + seedString)
+            do {
+            if (fula == nil || fula.id() == nil || fula.id().isEmpty) {
+                reject(new Error("Fula client is not initialized"))
+            } else {
+
+                if (!seedString.startsWith("/")) {
+                reject(new Error("seed should start with /"))
+                }
+                let result = fula.seeded(seedString)
+                let resultString = toString(result)
+                resolve(resultString)
+            }
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func checkAccountExists(accountString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "checkAccountExists: accountString = " + accountString)
+            do {
+            let result = fula.accountExists(accountString)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func createPool(seedString: String, String poolName,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "createPool: seedString = " + seedString + " poolName = " + poolName)
+            do {
+            let result = fula.poolCreate(seedString, poolName)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func listPools( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "listPools")
+            do {
+            let result = fula.poolList()
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func joinPool(seedString: String, poolID: long,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "joinPool: seedString = " + seedString + " poolID = " + poolID)
+            do {
+            let result = fula.poolJoin(seedString, poolID)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func cancelPoolJoin(seedString: String, poolID: long,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "cancelPoolJoin: seedString = " + seedString + " poolID = " + poolID)
+            do {
+            let result = fula.poolCancelJoin(seedString, poolID)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func listPoolJoinRequests(poolID: long,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "listPoolJoinRequests: poolID = " + poolID)
+            do {
+            let result = fula.poolRequests(poolID)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func votePoolJoinRequest(seedString: String, poolID: long, accountString: String, accept: Bool,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "votePoolJoinRequest: seedString = " + seedString + " poolID = " + poolID + " accountString = " + accountString + " accept = " + accept)
+            do {
+            let result = fula.poolVote(seedString, poolID, accountString, accept)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func leavePool(seedString: String, poolID: long,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "leavePool: seedString = " + seedString + " poolID = " + poolID)
+            do {
+            let result = fula.poolLeave(seedString, poolID)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func newReplicationRequest(seedString: String, poolID: long, long replicationFactor, String cid,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "newReplicationRequest: seedString = " + seedString + " poolID = " + poolID + " replicationFactor = " + replicationFactor + " cid = " + cid)
+            do {
+            let result = fula.manifestUpload(seedString, poolID, replicationFactor, cid)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func newStoreRequest(seedString: String, poolID: long, String uploader, String cid,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "newStoreRequest: seedString = " + seedString + " poolID = " + poolID + " uploader = " + uploader + " cid = " + cid)
+            do {
+            let result = fula.manifestStore(seedString, poolID, uploader, cid)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func listAvailableReplicationRequests(poolID: long,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "listAvailableReplicationRequests: poolID = " + poolID)
+            do {
+            let result = fula.manifestAvailable(poolID)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func removeReplicationRequest(seedString: String, poolID: long, String cid,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "newReplicationRequest: seedString = " + seedString + " poolID = " + poolID + " cid = " + cid)
+            do {
+            let result = fula.manifestRemove(seedString, poolID,  cid)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func removeStorer(seedString: String, String storage, poolID: long, String cid,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "removeStorer: seedString = " + seedString + " storage = " + storage + " poolID = " + poolID + " cid = " + cid)
+            do {
+            let result = fula.manifestRemoveStorer(seedString, storage, poolID, cid)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func removeStoredReplication(seedString: String, String uploader, poolID: long, String cid,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "removeStoredReplication: seedString = " + seedString + " uploader = " + uploader + " poolID = " + poolID + " cid = " + cid)
+            do {
+            let result = fula.manifestRemoveStored(seedString, uploader, poolID, cid)
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+
+        @objc(:withResolver:withRejecter:)
+        func bloxFreeSpace( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        ThreadUtils.runOnExecutor(() -> {
+            print("ReactNative", "bloxFreeSpace")
+            do {
+            let result = fula.bloxFreeSpace()
+            let resultString = toString(result)
+            resolve(resultString)
+            } catch let error {
+            print("get", error.localizedDescription)
+            reject("ERR_WNFS", "get", error)
+            }
+        })
+        }
+        }

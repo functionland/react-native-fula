@@ -38,7 +38,20 @@ RCT_EXTERN_METHOD(checkFailedActions:(Bool)retry
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(mkdir:(String)path
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(writeFile:(String)fulaTargetFilename
+                  withFulaTargetFilename:(String) fulaTargetFilename
+                  withLocalFilename: (String) localFilename
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(writeFileContent:(String)path
+                  withContentString:(String) contentString
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
 
 
 
