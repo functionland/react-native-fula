@@ -64,6 +64,7 @@ interface FulaNativeModule {
   removeStorer: (seed: string, storer: string, poolID: number, cid: string) => Promise<string>;
   removeStoredReplication: (seed: string, uploader: string, poolID: number, cid: string) => Promise<string>;
   bloxFreeSpace: () => Promise<string>;
+  wifiRemoveall: () => Promise<string>;
 }
 
 const LINKING_ERROR =

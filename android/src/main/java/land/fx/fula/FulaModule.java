@@ -1301,12 +1301,32 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
+  ////////////////////////////////////////////////////////////////
+  ///////////////// Blox Hardware Methods ////////////////////////
+  ////////////////////////////////////////////////////////////////
+
   @ReactMethod
   public void bloxFreeSpace(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "bloxFreeSpace");
       try {
         byte[] result = this.fula.bloxFreeSpace();
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void wifiRemoveall(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "wifiRemoveall");
+      try {
+        byte[] result = this.fula.wifiRemoveall();
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
         promise.resolve(resultString);

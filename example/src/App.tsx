@@ -419,6 +419,38 @@ const App = () => {
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+
+        <Button
+          title={inprogress ? 'Getting...' : 'Remove all Wifis'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send remove wifis command'
+                    );
+                    blockchain
+                      .bloxFreeSpace()
+                      .then((res) => {
+                        console.log('wifiRemoveall received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('wifiRemoveall failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
       </View>
     </View>
   );
