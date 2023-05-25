@@ -1,5 +1,5 @@
 import Fula from '../interfaces/fulaNativeModule';
-import type * as BType from '../types/blox';
+import type * as BType from '../types/fxblox';
 
 /**
  * send a command to Blox hardware to remove all save wifis.
@@ -8,7 +8,21 @@ import type * as BType from '../types/blox';
 
 export const wifiRemoveall = (): Promise<BType.wifiRemoveallResponse> => {
   console.log(
-    'wifiRemoveall in react-native started'
+  'wifiRemoveall in react-native started'
   );
-  return Fula.wifiRemoveall();
-};
+  let res = Fula.wifiRemoveall().then((res) => {
+  try {
+  let jsonRes: BType.wifiRemoveallResponse = JSON.parse(res);
+  return jsonRes;
+  } catch (e) {
+  try {
+  return JSON.parse(res);
+  } catch (e) {
+  return res;
+  }
+  }
+  }).catch((err) => {
+  return err;
+  });
+  return res;
+  };
