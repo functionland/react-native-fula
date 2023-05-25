@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
-import { fula, blockchain, chainApi } from '@functionland/react-native-fula';
+import { fula, blockchain, chainApi, fxblox } from '@functionland/react-native-fula';
 
 const App = () => {
   const [key, setKey] = React.useState<string>('');
@@ -39,7 +39,7 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
   const privateKeyString = "\\test";
-  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWD69C5yX91nPe3tz6HRiuw7Pia4xsxE9xv2CghoyK6MPK';
+  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWQR2XygKM7jhBduhvz2GDJdGEbZL8SZhkeBuXYPn2kRt6';
   const newClient = async () => {
     try {
       return fula.newClient(
@@ -432,8 +432,8 @@ const App = () => {
                     console.log(
                       'initialization is completed. send remove wifis command'
                     );
-                    blockchain
-                      .bloxFreeSpace()
+                    fxblox
+                      .wifiRemoveall()
                       .then((res) => {
                         console.log('wifiRemoveall received');
                         console.log(res);
