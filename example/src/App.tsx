@@ -31,7 +31,7 @@ const App = () => {
         console.log(err.message, err.code);
       });
   };
-  //Key for peerId: 12D3KooWQGQo81K99HfbwuwhvbP4MYfo13fo7U6SAdkAnxoNBdPE
+  //Key for peerId: 12D3KooWDPZGpr4Jeq144R2KhezH7UHgHqyMXySh8tA5jzUyu2P8
   const privateKey = [
     183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27, 27,
     17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204, 142, 241,
