@@ -451,6 +451,38 @@ const App = () => {
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+
+<Button
+          title={inprogress ? 'Getting...' : 'Reboot'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send reboot command'
+                    );
+                    fxblox
+                      .reboot()
+                      .then((res) => {
+                        console.log('reboot received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('reboot failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
       </View>
     </View>
   );

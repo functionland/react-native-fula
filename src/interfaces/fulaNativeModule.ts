@@ -19,7 +19,7 @@ interface FulaNativeModule {
     autoFlush: boolean, //set to false always unless you know what you are doing. This is to write actions to disk explicitly after each write
     useRelay: boolean | null, // if true it forces the use of relay
     refresh: boolean // if true it forces to refresh the fula object
-    ) => Promise<string>;
+  ) => Promise<string>;
   isReady: (filesystemCheck: boolean) => Promise<boolean>;
   logout: (identity: string, storePath: string) => Promise<boolean>;
   checkFailedActions: (retry: boolean, timeout: number) => Promise<boolean>;
@@ -47,7 +47,7 @@ interface FulaNativeModule {
 
   shutdown: () => Promise<void>;
 
-//Blockchain related functions
+  //Blockchain related functions
   createAccount: (seed: string) => Promise<string>;
   checkAccountExists: (account: string) => Promise<string>;
   createPool: (seed: string, poolName: string) => Promise<string>;
@@ -56,15 +56,47 @@ interface FulaNativeModule {
   leavePool: (seed: string, poolID: number) => Promise<string>;
   cancelPoolJoin: (seed: string, poolID: number) => Promise<string>;
   listPoolJoinRequests: (poolID: number) => Promise<string>;
-  votePoolJoinRequest: (seed: string, poolID: number, account: string, accept: boolean) => Promise<string>;
-  newReplicationRequest: (seed: string, poolID: number, replicationFactor: number, cid: string) => Promise<string>;
-  newStoreRequest: (seed: string, poolID: number, uploader: string, cid: string) => Promise<string>;
+  votePoolJoinRequest: (
+    seed: string,
+    poolID: number,
+    account: string,
+    accept: boolean
+  ) => Promise<string>;
+  newReplicationRequest: (
+    seed: string,
+    poolID: number,
+    replicationFactor: number,
+    cid: string
+  ) => Promise<string>;
+  newStoreRequest: (
+    seed: string,
+    poolID: number,
+    uploader: string,
+    cid: string
+  ) => Promise<string>;
   listAvailableReplicationRequests: (poolID: number) => Promise<string>;
-  removeReplicationRequest: (seed: string, poolID: number, cid: string) => Promise<string>;
-  removeStorer: (seed: string, storer: string, poolID: number, cid: string) => Promise<string>;
-  removeStoredReplication: (seed: string, uploader: string, poolID: number, cid: string) => Promise<string>;
+  removeReplicationRequest: (
+    seed: string,
+    poolID: number,
+    cid: string
+  ) => Promise<string>;
+  removeStorer: (
+    seed: string,
+    storer: string,
+    poolID: number,
+    cid: string
+  ) => Promise<string>;
+  removeStoredReplication: (
+    seed: string,
+    uploader: string,
+    poolID: number,
+    cid: string
+  ) => Promise<string>;
+
+  //Hardware
   bloxFreeSpace: () => Promise<string>;
   wifiRemoveall: () => Promise<string>;
+  reboot: () => Promise<string>;
 }
 
 const LINKING_ERROR =
