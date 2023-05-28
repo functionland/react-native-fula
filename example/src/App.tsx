@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
-import { fula, blockchain, chainApi } from '@functionland/react-native-fula';
+import { fula, blockchain, chainApi, fxblox } from '@functionland/react-native-fula';
 
 const App = () => {
   const [key, setKey] = React.useState<string>('');
@@ -31,7 +31,7 @@ const App = () => {
         console.log(err.message, err.code);
       });
   };
-  //Key for peerId: 12D3KooWQGQo81K99HfbwuwhvbP4MYfo13fo7U6SAdkAnxoNBdPE
+  //Key for peerId: 12D3KooWDPZGpr4Jeq144R2KhezH7UHgHqyMXySh8tA5jzUyu2P8
   const privateKey = [
     183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27, 27,
     17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204, 142, 241,
@@ -39,7 +39,7 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
   const privateKeyString = "\\test";
-  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWD69C5yX91nPe3tz6HRiuw7Pia4xsxE9xv2CghoyK6MPK';
+  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWQR2XygKM7jhBduhvz2GDJdGEbZL8SZhkeBuXYPn2kRt6';
   const newClient = async () => {
     try {
       return fula.newClient(
@@ -408,6 +408,70 @@ const App = () => {
                       })
                       .catch((e) => {
                         console.log('bloxFreeSpace fetch failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Getting...' : 'Remove all Wifis'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send remove wifis command'
+                    );
+                    fxblox
+                      .wifiRemoveall()
+                      .then((res) => {
+                        console.log('wifiRemoveall received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('wifiRemoveall failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+<Button
+          title={inprogress ? 'Getting...' : 'Reboot'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send reboot command'
+                    );
+                    fxblox
+                      .reboot()
+                      .then((res) => {
+                        console.log('reboot received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('reboot failed');
                         console.log(e);
                       });
                   }
