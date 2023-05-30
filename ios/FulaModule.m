@@ -141,6 +141,8 @@ RCT_EXTERN_METHOD(listPoolJoinRequests:(Int)poolID
 
 RCT_EXTERN_METHOD(votePoolJoinRequest:(String)seedString
                   withPoolID: (Int)poolID
+                  withAccountString: (String) accountString
+                  withAccept: (Bool) accept
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 

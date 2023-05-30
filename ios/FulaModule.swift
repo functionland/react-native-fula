@@ -10,12 +10,13 @@ class FulaModule: NSObject {
     var fula: Mobile.Fula?
     
     var client: Client?
+    var wnfsWrapper: WnfsWrapper
     var fulaConfig: Mobile.Config
     var appDir: URL
     var fulaStorePath: String
     var privateForest: String
     var rootConfig: WnfsConfig?
-    var sharedPref: SharedPreferenceHelper
+    let userDataHelper = UserDataHelper()
     var secretKeyGlobal: SecretKey
     var identityEncryptedGlobal: String
     static let PRIVATE_KEY_STORE_ID = "PRIVATE_KEY"
@@ -55,9 +56,7 @@ class FulaModule: NSObject {
             return nil
         }
     }
-    var wnfsWrapper: WnfsWrapper
     override init() {
-        
         if let appDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             fulaStoreURL = appDir.appendingPathComponent("/fula")
             
@@ -139,7 +138,7 @@ class FulaModule: NSObject {
                     let identity = toByte(identityString)
                     print("ReactNative", "newClient identity= ", identityString)
                     try await newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay)
-                    let peerId = fula.id()
+                    let peerId = fula.Id()
                     resolve(peerId)
             } catch let error {
                 print("ReactNative", "newClient failed with Error: ", error.localizedDescription)
@@ -153,7 +152,7 @@ class FulaModule: NSObject {
           print("ReactNative", "isReady started")
             var initialized = false
             do {
-              if (fula != nil && fula.id() != nil) {
+              if (fula != nil && fula.Id() != nil) {
                 if (filesystemCheck) {
                   if (client != nil && rootConfig != nil && !rootConfig!.getCid().isEmpty) {
                     initialized = true
@@ -169,8 +168,10 @@ class FulaModule: NSObject {
             }
         }
         
+        //TODO: we should consider refactor the name of this \
+        // function to be compatible with the android version.
         @objc(init:withIdentityString:withStorePath:withBloxAddr:withExchange:withAutoFlush:withRootConfig:withUseRelay:withResolver:withRejecter:)
-        func init(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, rootConfig: String, useRelay: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+        func initFula(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, rootConfig: String, useRelay: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
         Task{
             print("ReactNative", "init started")
             do {
@@ -271,11 +272,11 @@ class FulaModule: NSObject {
                                 print("ReactNative", "retryFailedPushes started")
                                 try fula.retryFailedPushes()
                                 print("ReactNative", "flush started")
-                                fula.flush()
+                                fula.Flush()
                                 return true
                             }
                             catch let error {
-                                fula.flush()
+                                fula.Flush()
                                 print("ReactNative", "retryFailedActionsInternal failed with Error: ", error.localizedDescription)
                                 return false
                             }
@@ -330,7 +331,7 @@ class FulaModule: NSObject {
             print("ReactNative", "privateForest is created: ", privateForest)
             rootConfig = wnfsWrapper.createRootDir(iClient, privateForest, identity)
             if (fula != nil) {
-                fula.flush()
+                fula.Flush()
             }
             print("ReactNative", "rootConfig is created: cid=", rootConfig.getCid(), " & private_ref=", rootConfig.getPrivate_ref())
             encrypt_and_store_config()
@@ -365,17 +366,17 @@ class FulaModule: NSObject {
         func logoutInternal(identity: Data, storePath: String) throws -> Bool {
             do {
             if (fula != nil) {
-                fula.flush()
+                fula.Flush()
             }
             let secretKey = try Cryptography.generateKey(identity)
             let identity_encrypted: String = try Cryptography.encryptMsg(identity.toHex(), secretKey)
-            userDataHelper.remove("cid_encrypted_"+ identity_encrypted)
+            userDataHelper.remove("cid_encrypted_"+identity_encrypted)
             userDataHelper.remove("private_ref_encrypted_"+identity_encrypted)
 
             //TODO: Should also remove peerid @Mahdi
 
-            userDataHelper.remove("cid_encrypted_"+ identity_encrypted)
-            userDataHelper.remove("private_ref_encrypted_"+ identity_encrypted)
+            userDataHelper.remove("cid_encrypted_"+identity_encrypted)
+            userDataHelper.remove("private_ref_encrypted_"+identity_encrypted)
 
             rootConfig = nil
             secretKeyGlobal = nil
@@ -428,7 +429,7 @@ class FulaModule: NSObject {
                     fula = Fulamobile.newClient(fulaConfig)
                 }
                 if (fula != nil) {
-                    fula.flush()
+                    fula.Flush()
                 }
                 return peerIdentity
             } catch let error {
@@ -444,11 +445,11 @@ class FulaModule: NSObject {
             }
             if(client == nil) {
                 client = Client(fula)
-                print("ReactNative", "fula initialized: " + fula.id())
+                print("ReactNative", "fula initialized: " + fula.Id())
             }
 
             let secretKey = Cryptography.generateKey(identity)
-            let identity_encrypted =Cryptography.encryptMsg(identity.toString(), secretKey)
+            let identity_encrypted = Cryptography.encryptMsg(identity.toString(), secretKey)
             identityEncryptedGlobal = identity_encrypted
             secretKeyGlobal = secretKey
 
@@ -456,7 +457,7 @@ class FulaModule: NSObject {
                 print("ReactNative", "rootCid is empty.")
                 //Load from keystore
 
-                let cid_encrypted_fetched = sharedPref.getValue("cid_encrypted_"+ identity_encrypted)
+                let cid_encrypted_fetched = sharedPref.getValue("cid_encrypted_"+identity_encrypted)
                 let private_ref_encrypted_fetched = sharedPref.getValue("private_ref_encrypted_"+identity_encrypted)
                 print("ReactNative", "Here1")
                 var cid = ""
@@ -523,14 +524,14 @@ class FulaModule: NSObject {
             } else {
                 print("ReactNative", "rootConfig existed: cid=" + rootConfig.getCid()+" & private_ref="+rootConfig.getPrivate_ref())
             }
-            let peerId = fula.id()
+            let peerId = fula.Id()
             var obj = [String]()
             obj.append(peerId)
             obj.append(rootConfig.getCid())
             obj.append(rootConfig.getPrivate_ref())
             print("ReactNative", "initInternal is completed successfully")
             if (fula != nil) {
-                fula.flush()
+                fula.Flush()
             }
             return obj
             } catch let error {
@@ -546,12 +547,12 @@ class FulaModule: NSObject {
             print("ReactNative", "mkdir: path = " + path)
             do {
                 
-                    let config = try await wnfsWrapper.mkdir(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), path)
+                    let config = try await wnfsWrapper.Mkdir(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), path)
                     if(config != nil) {
                         rootConfig = config
                         encrypt_and_store_config()
                         if (fula != nil) {
-                        fula.flush()
+                        fula.Flush()
                         }
                         resolve(config.getCid())
                     } else {
@@ -583,7 +584,7 @@ class FulaModule: NSObject {
             rootConfig = config
             encrypt_and_store_config()
             if (fula != nil) {
-            fula.flush()
+            fula.Flush()
             }
             resolve(config.getCid())
         } else {
@@ -609,7 +610,7 @@ class FulaModule: NSObject {
             rootConfig = config
             encrypt_and_store_config()
             if (fula != nil) {
-                fula.flush()
+                fula.Flush()
             }
             resolve(config.getCid())
             } catch let error {
@@ -647,12 +648,12 @@ class FulaModule: NSObject {
                 rootConfig = config
                 encrypt_and_store_config()
                 if (fula != nil) {
-                fula.flush()
+                fula.Flush()
                 }
                 resolve(config.getCid())
             } else {
                 print("ReactNative", "rm Error: config is nil")
-                reject("ERR_WNFS", "rm Error: config is nil"))
+                reject("ERR_WNFS", "rm Error: config is nil", nil)
             }
             } catch let error {
             print("rm", error.localizedDescription)
@@ -666,17 +667,17 @@ class FulaModule: NSObject {
         Task {
             print("ReactNative", "rm: sourcePath = " + sourcePath)
             do {
-            let config = wnfsWrapper.cp(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), sourcePath, targetPath)
+            let config = wnfsWrapper.Cp(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), sourcePath, targetPath)
             if(config != nil) {
                 rootConfig = config
                 encrypt_and_store_config()
                 if (fula != nil) {
-                fula.flush()
+                fula.Flush()
                 }
                 resolve(config.getCid())
             } else {
                 print("ReactNative", "cp Error: config is nil")
-                reject("ERR_WNFS", "cp Error: config is nil"))
+                reject("ERR_WNFS", "cp Error: config is nil", nil)
             }
             } catch let error {
             print("cp", error.localizedDescription)
@@ -695,12 +696,12 @@ class FulaModule: NSObject {
                 rootConfig = config
                 encrypt_and_store_config()
                 if (fula != nil) {
-                fula.flush()
+                fula.Flush()
                 }
                 resolve(config.getCid())
             } else {
                 print("ReactNative", "mv Error: config is nil")
-                reject("ERR_WNFS", "mv Error: config is nil"))
+                reject("ERR_WNFS", "mv Error: config is nil", nil)
             }
             } catch let error {
             print("mv", error.localizedDescription)
@@ -735,7 +736,7 @@ class FulaModule: NSObject {
         Task {
             print("ReactNative", "readFileContent: path = " + path)
             do {
-            let res = wnfsWrapper.readFile(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), path)
+            let res = wnfsWrapper.ReadFile(client, rootConfig.getCid(), rootConfig.getPrivate_ref(), path)
             let resString = toString(res)
             resolve(resString)
             } catch let error {
@@ -751,12 +752,12 @@ class FulaModule: NSObject {
             print("ReactNative", "get: keyString = " + keyString)
             do {
             let key: Data = convertStringToByte(keyString)
-            let value = getInternal(key)
+            let value = try getInternal(key)
             let valueString: String = toString(value)
             resolve(valueString)
             } catch let error {
             print("get", error.localizedDescription)
-            reject("ERR_WNFS", "get", error)
+            reject("ERR_FULA", "get", error)
             }
         }
         }
@@ -765,7 +766,7 @@ class FulaModule: NSObject {
         do {
             print("ReactNative", "getInternal: key.toString() = " + toString(key))
             print("ReactNative", "getInternal: key.toString().bytes = " + key.toString())
-            let value = try fula.get(key)
+            let value = try fula.Get(key)
             print("ReactNative", "getInternal: value.toString() = " + toString(value))
             return value
         } catch let error {
@@ -785,7 +786,7 @@ class FulaModule: NSObject {
             resolve(result)
             } catch let error {
             print("has", error.localizedDescription)
-            reject("ERR_WNFS", "has", error)
+            reject("ERR_FULA", "has", error)
             }
         }
         }
@@ -818,7 +819,7 @@ class FulaModule: NSObject {
             resolve(rootConfig.getCid())
             } catch let error {
             print("get", error.localizedDescription)
-            reject("ERR_WNFS", "push", error)
+            reject("ERR_FULA", "push", error)
             }
         }
         }
@@ -826,8 +827,8 @@ class FulaModule: NSObject {
         func pushInternal(key: Data) throws -> Void {
         do {
             if (fula != nil && try fula.Has(key)) {
-            try fula.push(key)
-            try fula.flush()
+            try fula.Push(key)
+            try fula.Flush()
             } else {
             print("ReactNative", "pushInternal error: key wasn't found or fula is not initialized")
             throw MyError.runtimeError("pushInternal error: key wasn't found or fula is not initialized")
@@ -845,7 +846,7 @@ class FulaModule: NSObject {
             print("ReactNative", "put: valueString = " + valueString)
             do {
             //byte[] codec = convertStringToByte(CodecString)
-            let codec = Long.parseLong(codecString)
+            let codec = Int(codecString)
 
 
             print("ReactNative", "put: codec = " + codec)
@@ -857,7 +858,7 @@ class FulaModule: NSObject {
             resolve(toString(key))
             } catch let error {
             print("ReactNative", "put: error = ", error.localizedDescription)
-            reject("ERR_WNFS", "put", error)
+            reject("ERR_FULA", "put", error)
             }
         }
         }
@@ -865,8 +866,8 @@ class FulaModule: NSObject {
         func putInternal(value: Data, codec: Int) throws -> Data {
         do {
             if(fula != nil) {
-            let key: Data = try fula.put(value, codec)
-            try fula.flush()
+            let key: Data = try fula.Put(value, codec)
+            try fula.Flush()
             return key
             } else {
             print("ReactNative", "putInternal Error: fula is not initialized")
@@ -883,7 +884,7 @@ class FulaModule: NSObject {
         Task {
             print("ReactNative", "setAuth: peerIdString = " + peerIdString)
             do {
-            if (fula != nil && fula.id() != nil && fulaConfig != nil && fulaConfig.getBloxAddr() != nil) {
+            if (fula != nil && fula.Id() != nil && fulaConfig != nil && fulaConfig.getBloxAddr() != nil) {
                 let bloxAddr = fulaConfig.getBloxAddr()
                 print("ReactNative", "setAuth: bloxAddr = '",bloxAddr,"'"," peerIdString = '",peerIdString,"'")
                 let index = bloxAddr.lastIndexOf("/")
@@ -897,7 +898,7 @@ class FulaModule: NSObject {
             resolve(false)
             } catch let error {
             print("get", error.localizedDescription)
-            reject("ERR_WNFS", "setAuth", error)
+            reject("ERR_FULA", "setAuth", error)
             }
         }
         }
@@ -907,14 +908,14 @@ class FulaModule: NSObject {
         Task {
             do {
             if(fula != nil) {
-                try fula.shutdown()
+                try fula.Shutdown()
                 fula = nil
                 client = nil
             }
             resolve(true)
             } catch let error {
             print("ReactNative", "shutdown", error.localizedDescription)
-            reject("ERR_WNFS", "shutdown", error)
+            reject("ERR_FULA", "shutdown", error)
             }
         }
         }
@@ -930,20 +931,20 @@ class FulaModule: NSObject {
         Task {
             print("ReactNative", "createAccount: seedString = ", seedString)
             do {
-            if (fula == nil || fula.id() == nil || fula.id().isEmpty) {
-                reject("ERR_WNFS", "createAccount", MyError.runtimeError("Fula client is not initialized"))
+            if (fula == nil || fula.Id() == nil || fula.Id().isEmpty) {
+                reject("ERR_FULA", "createAccount", MyError.runtimeError("Fula client is not initialized"))
             } else {
 
                 if (!seedString.startsWith("/")) {
-                reject("ERR_WNFS", "createAccount", MyError.runtimeError("seed should start with /"))
+                reject("ERR_FULA", "createAccount", MyError.runtimeError("seed should start with /"))
                 }
-                let result = try fula.seeded(seedString)
+                let result = try fula.Seeded(seedString)
                 let resultString = toString(result)
                 resolve(resultString)
             }
             } catch let error {
             print("createAccount", error.localizedDescription)
-            reject("ERR_WNFS", "createAccount", error)
+            reject("ERR_FULA", "createAccount", error)
             }
         }
         }
@@ -958,7 +959,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("checkAccountExists", error.localizedDescription)
-            reject("ERR_WNFS", "checkAccountExists", error)
+            reject("ERR_FULA", "checkAccountExists", error)
             }
         }
         }
@@ -973,7 +974,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("createPool", error.localizedDescription)
-            reject("ERR_WNFS", "createPool", error)
+            reject("ERR_FULA", "createPool", error)
             }
         }
         }
@@ -988,7 +989,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("listPools", error.localizedDescription)
-            reject("ERR_WNFS", "listPools", error)
+            reject("ERR_FULA", "listPools", error)
             }
         }
         }
@@ -1003,7 +1004,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("joinPool", error.localizedDescription)
-            reject("ERR_WNFS", "joinPool", error)
+            reject("ERR_FULA", "joinPool", error)
             }
         }
         }
@@ -1018,7 +1019,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("cancelPoolJoin", error.localizedDescription)
-            reject("ERR_WNFS", "cancelPoolJoin", error)
+            reject("ERR_FULA", "cancelPoolJoin", error)
             }
         }
         }
@@ -1033,12 +1034,12 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("listPoolJoinRequests", error.localizedDescription)
-            reject("ERR_WNFS", "listPoolJoinRequests", error)
+            reject("ERR_FULA", "listPoolJoinRequests", error)
             }
         }
         }
 
-        @objc(votePoolJoinRequest:withPoolID:withResolver:withRejecter:)
+        @objc(votePoolJoinRequest:withPoolID:withAccountString:withAccept:withResolver:withRejecter:)
         func votePoolJoinRequest(seedString: String, poolID: long, accountString: String, accept: Bool,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
         Task {
             print("ReactNative", "votePoolJoinRequest: seedString = " + seedString + " poolID = " + poolID + " accountString = " + accountString + " accept = " + accept)
@@ -1048,7 +1049,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("votePoolJoinRequest", error.localizedDescription)
-            reject("ERR_WNFS", "votePoolJoinRequest", error)
+            reject("ERR_FULA", "votePoolJoinRequest", error)
             }
         }
         }
@@ -1063,7 +1064,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("leavePool", error.localizedDescription)
-            reject("ERR_WNFS", "leavePool", error)
+            reject("ERR_FULA", "leavePool", error)
             }
         }
         }
@@ -1078,7 +1079,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("newReplicationRequest", error.localizedDescription)
-            reject("ERR_WNFS", "newReplicationRequest", error)
+            reject("ERR_FULA", "newReplicationRequest", error)
             }
         }
         }
@@ -1093,7 +1094,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("newStoreRequest", error.localizedDescription)
-            reject("ERR_WNFS", "newStoreRequest", error)
+            reject("ERR_FULA", "newStoreRequest", error)
             }
         }
         }
@@ -1108,7 +1109,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("listAvailableReplicationRequests", error.localizedDescription)
-            reject("ERR_WNFS", "listAvailableReplicationRequests", error)
+            reject("ERR_FULA", "listAvailableReplicationRequests", error)
             }
         }
         }
@@ -1123,7 +1124,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("removeReplicationRequest", error.localizedDescription)
-            reject("ERR_WNFS", "removeReplicationRequest", error)
+            reject("ERR_FULA", "removeReplicationRequest", error)
             }
         }
         }
@@ -1138,7 +1139,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("removeStorer", error.localizedDescription)
-            reject("ERR_WNFS", "removeStorer", error)
+            reject("ERR_FULA", "removeStorer", error)
             }
         }
         }
@@ -1153,7 +1154,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("removeStoredReplication", error.localizedDescription)
-            reject("ERR_WNFS", "removeStoredReplication", error)
+            reject("ERR_FULA", "removeStoredReplication", error)
             }
         }
         }
@@ -1168,7 +1169,7 @@ class FulaModule: NSObject {
             resolve(resultString)
             } catch let error {
             print("bloxFreeSpace", error.localizedDescription)
-            reject("ERR_WNFS", "bloxFreeSpace", error)
+            reject("ERR_FULA", "bloxFreeSpace", error)
             }
         }
         }
