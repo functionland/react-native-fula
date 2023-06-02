@@ -1,7 +1,7 @@
 import Foundation
 import CommonCrypto
 import WnfsSwift
-import Mobile
+import Pods_FulaModule
 
 
 @objc(FulaModule)
