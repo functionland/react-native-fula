@@ -31,7 +31,7 @@ const App = () => {
         console.log(err.message, err.code);
       });
   };
-  //Key for peerId: 12D3KooWDPZGpr4Jeq144R2KhezH7UHgHqyMXySh8tA5jzUyu2P8
+  //Key for peerId: 12D3KooWFi2PK36Rzi4Bmosj1np2t6i9v3QnbBiNY9hQWuJajnmZ
   const privateKey = [
     183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27, 27,
     17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204, 142, 241,
@@ -39,7 +39,7 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
   const privateKeyString = "\\test";
-  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWQR2XygKM7jhBduhvz2GDJdGEbZL8SZhkeBuXYPn2kRt6';
+  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
   const newClient = async () => {
     try {
       return fula.newClient(

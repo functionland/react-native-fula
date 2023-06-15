@@ -739,17 +739,26 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "writeFile to : path = " + fulaTargetFilename + ", from: " + localFilename);
       try {
-        land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
-        if(config != null) {
-          this.rootConfig = config;
-          this.encrypt_and_store_config();
-          if (this.fula != null) {
-            this.fula.flush();
+        if (this.client != null) {
+          Log.d("ReactNative", "writeFileFromPath started: this.rootConfig.getCid=" + this.rootConfig.getCid()+ ", fulaTargetFilename="+fulaTargetFilename + ", localFilename="+localFilename);
+          land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
+          if(config != null) {
+            this.rootConfig = config;
+            this.encrypt_and_store_config();
+            if (this.fula != null) {
+              this.fula.flush();
+              promise.resolve(config.getCid());
+            } else {
+              Log.d("ReactNative", "writeFile Error: fula is null");
+              promise.reject(new Exception("writeFile Error: fula is null"));
+            }
+          } else {
+            Log.d("ReactNative", "writeFile Error: config is null");
+            promise.reject(new Exception("writeFile Error: config is null"));
           }
-          promise.resolve(config.getCid());
         } else {
-          Log.d("ReactNative", "writeFile Error: config is null");
-          promise.reject(new Exception("writeFile Error: config is null"));
+          Log.d("ReactNative", "writeFile Error: client is null");
+          promise.reject(new Exception("writeFile Error: client is null"));
         }
       } catch (Exception e) {
         Log.d("get", e.getMessage());
