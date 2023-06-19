@@ -3,22 +3,22 @@ import CommonCrypto
 import CryptoSwift
 
 public class Cryptography: NSObject {
-    public static func encryptMsg(message: String, secretKey: Array<UInt8>)
+    func encryptMsg(_ message: String, _ secretKey: Array<UInt8>)
     throws -> String {
         let aes = try! AES(key: secretKey, blockMode: ECB(), padding: .pkcs5)
         let encrypted = try! aes.encrypt(message.bytes)
         return Data(encrypted).base64EncodedString()
     }
     
-    public static func decryptMsg(cipherText: String, secretKey: Array<UInt8>)
+    func decryptMsg(_ cipherText: String, _ secretKey: Array<UInt8>)
     throws -> String {
         let aes = try! AES(key: secretKey, blockMode: ECB(), padding: .pkcs5)
-        let data =  try! cipherText.fromBase64()
-        let encrypted = try! aes.decrypt(message.bytes)
-        return String(bytes: encrypted, encoding: .utf)
+        let data =  cipherText.fromBase64()!
+        let encrypted = try! aes.decrypt(data.bytes)
+        return String(bytes: encrypted, encoding: .utf8)!
     }
     
-    public static func generateKey(salt: Data)
+    func generateKey(salt: Data)
     throws -> Array<UInt8> {
         let password: [UInt8] = Array("".utf8)
         let salt: [UInt8] = salt.bytes
@@ -29,7 +29,7 @@ public class Cryptography: NSObject {
             salt: salt,
             iterations: 4096,
             keyLength: 16, /* AES-128 */
-            variant: .sha256
+            variant: .sha2(SHA2.Variant.sha256)
         ).calculate()
         return key
     }

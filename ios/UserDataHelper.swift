@@ -3,15 +3,15 @@ import Foundation
 public class UserDataHelper: NSObject {
     var defaults: UserDefaults
     
-    init() {
+    override init() {
         defaults = UserDefaults.standard
     }
     
-    public func getValue(key: String) -> String {
+    public func getValue(key: String) -> String? {
         return defaults.string(forKey: key)
     }
     
-    public func getBooleanValue(key: String) -> Bool {
+    public func getBooleanValue(key: String) -> Bool? {
         return defaults.bool(forKey: key)
     }
     
@@ -23,15 +23,17 @@ public class UserDataHelper: NSObject {
         defaults.set(value, forKey: key)
     }
     
-    public func remove(String key) {
+    public func remove( key: String) {
         defaults.removeObject(forKey: key)
     }
 }
 
-// TODO: move these to an utils file.
 extension String {   
     func trim() -> String {
-        return self.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        return self.trimmingCharacters(in: NSCharacterSet.whitespaces)
+    }
+    func fromBase64() -> Data? {
+        return Data(base64Encoded: self)
     }
 }
 extension Data {
@@ -60,6 +62,11 @@ extension Data {
     }
     public func toString() -> String {
         //TODO: make utf8
-
+        return self.toHex()
     }
+
+//    public func fromBase64() -> Data? {
+//        // Finally, decode.
+//        return Data(base64Encoded: self)
+//    }
 }

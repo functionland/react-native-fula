@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		066DC22A29FE50F800DD3EDE /* FulaModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066DC22929FE50F800DD3EDE /* FulaModule.swift */; };
-		7BDF78DEA99897979403EBB8 /* Pods_FulaModule.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0F062C9969F1695CE851813 /* Pods_FulaModule.framework */; };
+		06C6BE5D2A40BEFB002E7C67 /* UserDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0673AB692A122BD00087A7C0 /* UserDataHelper.swift */; };
+		06C6BE5E2A40BEFF002E7C67 /* Cryptography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0673AB682A122B850087A7C0 /* Cryptography.swift */; };
+		6071875F2362712C2271DEDC /* libPods-FulaModule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D631B0B231F1E932653E588 /* libPods-FulaModule.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,8 +32,8 @@
 		0673AB692A122BD00087A7C0 /* UserDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataHelper.swift; sourceTree = "<group>"; };
 		11C0B56A28882C93007D9057 /* FulaModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FulaModule.m; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libFulaModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFulaModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D631B0B231F1E932653E588 /* libPods-FulaModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FulaModule.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		486AC486EC46EA3A8EB84D8A /* Pods-FulaModule.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FulaModule.release.xcconfig"; path = "Target Support Files/Pods-FulaModule/Pods-FulaModule.release.xcconfig"; sourceTree = "<group>"; };
-		A0F062C9969F1695CE851813 /* Pods_FulaModule.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FulaModule.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0E0C0292F59083E55CC31AA /* Pods-FulaModule.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FulaModule.debug.xcconfig"; path = "Target Support Files/Pods-FulaModule/Pods-FulaModule.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -40,7 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BDF78DEA99897979403EBB8 /* Pods_FulaModule.framework in Frameworks */,
+				6071875F2362712C2271DEDC /* libPods-FulaModule.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,7 +74,7 @@
 		6541745631C393994EC117E9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A0F062C9969F1695CE851813 /* Pods_FulaModule.framework */,
+				1D631B0B231F1E932653E588 /* libPods-FulaModule.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -170,6 +172,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06C6BE5E2A40BEFF002E7C67 /* Cryptography.swift in Sources */,
+				06C6BE5D2A40BEFB002E7C67 /* UserDataHelper.swift in Sources */,
 				066DC22A29FE50F800DD3EDE /* FulaModule.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
