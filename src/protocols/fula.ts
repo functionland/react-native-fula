@@ -118,6 +118,14 @@ export const push = (): Promise<string> => {
   return Fula.push();
 };
 
+//This method sends some test data to backedn
+export const testData = (
+  identity: string,
+  bloxAddr: string
+): Promise<string> => {
+  return Fula.testData(identity, bloxAddr);
+};
+
 /**
  * Put stores the given key value onto the local datastore.
 // The key must be a valid ipld.Link and the value must be the valid encoded ipld.Node corresponding

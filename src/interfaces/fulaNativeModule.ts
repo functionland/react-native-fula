@@ -47,6 +47,8 @@ interface FulaNativeModule {
 
   shutdown: () => Promise<void>;
 
+  testData: (identity: string, bloxAddr: string) => Promise<string>;
+
   //Blockchain related functions
   createAccount: (seed: string) => Promise<string>;
   checkAccountExists: (account: string) => Promise<string>;

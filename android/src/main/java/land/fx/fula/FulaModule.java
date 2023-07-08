@@ -13,6 +13,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.codec.binary.Base32;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
@@ -23,6 +24,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -1388,6 +1390,37 @@ public class FulaModule extends ReactContextBaseJavaModule {
         promise.reject(e);
       }
     });
+  }
+
+  @ReactMethod
+  public void testData(String identityString, String bloxAddr, Promise promise) {
+    try {
+      byte[] identity = toByte(identityString);
+      byte[] peerIdByte = this.newClientInternal(identity, "", bloxAddr, "", true, true, true);
+
+      String peerIdReturned = Arrays.toString(peerIdByte);
+      Log.d("ReactNative", "newClient peerIdReturned= " + peerIdReturned);
+      String peerId = this.fula.id();
+      Log.d("ReactNative", "newClient peerId= " + peerId);
+      byte[] bytes = {1, 85, 18, 32, 11, -31, 75, -78, -109, 11, -111, 97, -47, -78, -22, 84, 39, -117, -64, -70, -91, 55, -23, -80, 116, -123, -97, -26, 126, -70, -76, 35, 54, -106, 55, -9};
+
+      byte[] key = this.fula.put(bytes, 85);
+      Log.d("ReactNative", "testData put result string="+Arrays.toString(key));
+
+      byte[] value = this.fula.get(key);
+      Log.d("ReactNative", "testData get result string="+Arrays.toString(value));
+
+      this.fula.push(key);
+      //this.fula.flush();
+
+      byte[] fetchedVal = this.fula.get(key);
+      this.fula.pull(key);
+
+      promise.resolve(Arrays.toString(fetchedVal));
+    } catch (Exception e) {
+      Log.d("ReactNative", "ERROR:" + e.getMessage());
+      promise.reject(e);
+    }
   }
 
 }

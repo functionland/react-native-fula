@@ -133,6 +133,26 @@ const App = () => {
           title={inprogress ? 'Putting & Getting...' : 'Test'}
           onPress={async () => {
             try {
+                    fula
+                      .testData(privateKey.toString(), bloxAddr)
+                      .then((res) => {
+                        console.log('tested');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('test failed');
+                        console.log(e);
+                      });
+
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Write WNFS'}
+          onPress={async () => {
+            try {
               if (initComplete) {
                 console.log('initialization is completed. putting key/value');
                 var path = RNFS.DocumentDirectoryPath + '/test.txt';
