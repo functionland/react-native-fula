@@ -8,7 +8,8 @@ interface FulaNativeModule {
     exchange: string, //set to 'noope' for testing
     autoFlush: boolean, //set to false always unless you know what you are doing. This is to write actions to disk explicitly after each write
     rootCid: string | null, //if you have the latest rootCid you can send it and it generates the private_ref for filesystem
-    useRelay: boolean | null // if true it forces the use of relay
+    useRelay: boolean | null, // if true it forces the use of relay
+    refresh: boolean // if true it forces to refresh the fula object
   ) => Promise<{ peerId: string; rootCid: string; private_ref: string }>;
   newClient: (
     identity: string, //Private key of did identity
@@ -16,12 +17,13 @@ interface FulaNativeModule {
     bloxAddr: string, //Blox multiadddr needs to be manually entered now
     exchange: string, //set to 'noope' for testing
     autoFlush: boolean, //set to false always unless you know what you are doing. This is to write actions to disk explicitly after each write
-    useRelay: boolean | null // if true it forces the use of relay
-    ) => Promise<string>;
+    useRelay: boolean | null, // if true it forces the use of relay
+    refresh: boolean // if true it forces to refresh the fula object
+  ) => Promise<string>;
   isReady: (filesystemCheck: boolean) => Promise<boolean>;
   logout: (identity: string, storePath: string) => Promise<boolean>;
-  checkFailedActions: (retry: boolean) => Promise<boolean>;
-  checkConnection: () => Promise<boolean>;
+  checkFailedActions: (retry: boolean, timeout: number) => Promise<boolean>;
+  checkConnection: (timeout: number) => Promise<boolean>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
   push: () => Promise<string>;
@@ -41,12 +43,66 @@ interface FulaNativeModule {
     localFilename: string
   ) => Promise<string>;
   readFileContent: (path: string) => Promise<string>;
+  setAuth: (peerId: string, allow: boolean) => Promise<boolean>;
 
   shutdown: () => Promise<void>;
+
+  testData: (identity: string, bloxAddr: string) => Promise<string>;
+
+  //Blockchain related functions
+  createAccount: (seed: string) => Promise<string>;
+  checkAccountExists: (account: string) => Promise<string>;
+  createPool: (seed: string, poolName: string) => Promise<string>;
+  listPools: () => Promise<string>;
+  joinPool: (seed: string, poolID: number) => Promise<string>;
+  leavePool: (seed: string, poolID: number) => Promise<string>;
+  cancelPoolJoin: (seed: string, poolID: number) => Promise<string>;
+  listPoolJoinRequests: (poolID: number) => Promise<string>;
+  votePoolJoinRequest: (
+    seed: string,
+    poolID: number,
+    account: string,
+    accept: boolean
+  ) => Promise<string>;
+  newReplicationRequest: (
+    seed: string,
+    poolID: number,
+    replicationFactor: number,
+    cid: string
+  ) => Promise<string>;
+  newStoreRequest: (
+    seed: string,
+    poolID: number,
+    uploader: string,
+    cid: string
+  ) => Promise<string>;
+  listAvailableReplicationRequests: (poolID: number) => Promise<string>;
+  removeReplicationRequest: (
+    seed: string,
+    poolID: number,
+    cid: string
+  ) => Promise<string>;
+  removeStorer: (
+    seed: string,
+    storer: string,
+    poolID: number,
+    cid: string
+  ) => Promise<string>;
+  removeStoredReplication: (
+    seed: string,
+    uploader: string,
+    poolID: number,
+    cid: string
+  ) => Promise<string>;
+
+  //Hardware
+  bloxFreeSpace: () => Promise<string>;
+  wifiRemoveall: () => Promise<string>;
+  reboot: () => Promise<string>;
 }
 
 const LINKING_ERROR =
-  `The package 'react-native-fula' doesn't seem to be linked. Make sure: \n\n` +
+  `The package 'react-native-fula/Fula' doesn't seem to be linked. Make sure: \n\n` +
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo managed workflow\n';

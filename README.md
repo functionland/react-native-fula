@@ -23,7 +23,8 @@ const peerId //returns peerId as string
   bloxAddr: string, //leave empty for testing without a backend node
   exchange: 'noop'|'', //add noop for testing without a backend
   autoFlush: boolean, //Default to false. Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
-  useRelay: boolean //default to true. If true it forces the connection through relay
+  useRelay: boolean, //default to true. If true it forces the connection through relay
+  refresh: boolean? //forces the fula object to be recreated. default is false
 )
 ```
 
@@ -41,7 +42,8 @@ await fula.init(
     bloxAddr: string, //leave empty for testing without a backend node
     exchange: 'noop'|'', //add noop for testing without a backend
     autoFlush: boolean, //Default to false. Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
-    useRelay: boolean //default to true. If true it forces the connection through relay
+    useRelay: boolean, //default to true. If true it forces the connection through relay
+    refresh: boolean? //forces the fula object to be recreated. default is false
 );
 ```
 
@@ -131,7 +133,9 @@ await fula.isReady(
 //checks if client can reach server
 const result //returns true if it can, and false if it cannot
 = 
-await fula.checkConnection();
+await fula.checkConnection(
+    timeout: number? //default to 20. Maximum time in seconds that checkConnection waits before throwing an error
+);
 
 ```
 
@@ -141,7 +145,19 @@ const result //returns true if there are, and false if everything is synced with
 = 
 await fula.checkFailedActions(
     retry: boolean //if true, it tries to sync device with server, if not, it only checks
+    timeout: number? //default to 20. Maximum time in seconds that checkConnection waits before throwing an error
 );
+```
+
+```js
+//Gives access to the blox for a specific peerId. This call must be made from the authorizer only.
+const result //returns true if succesful and false if fails
+= 
+await fula.setAuth(
+    peerId: string, //peer ID of the app that needs access to the blox
+    allow: boolean, // true to allow and false to remove access
+);
+
 ```
 
 ```js

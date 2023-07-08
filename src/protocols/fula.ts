@@ -14,7 +14,8 @@ export const init = (
   exchange: string,
   autoFlush: boolean = false,
   rootCid: string | null = null,
-  useRelay: boolean = true
+  useRelay: boolean = true,
+  refresh: boolean = false
 ): Promise<{ peerId: string; rootCid: string; private_ref: string }> => {
   console.log(
     'init in react-native started',
@@ -25,7 +26,7 @@ export const init = (
     autoFlush,
     useRelay
   );
-  return Fula.init(identity, storePath, bloxAddr, exchange, autoFlush, rootCid, useRelay);
+  return Fula.init(identity, storePath, bloxAddr, exchange, autoFlush, rootCid, useRelay, refresh);
 };
 
 /**
@@ -41,7 +42,8 @@ export const newClient = (
   bloxAddr: string,
   exchange: string,
   autoFlush: boolean = false,
-  useRelay: boolean = true
+  useRelay: boolean = true,
+  refresh: boolean = false
 ): Promise<string> => {
   console.log(
     'newClient in react-native started',
@@ -50,9 +52,10 @@ export const newClient = (
     bloxAddr,
     exchange,
     autoFlush,
-    useRelay
+    useRelay,
+    refresh
   );
-  return Fula.newClient(identity, storePath, bloxAddr, exchange, autoFlush, useRelay);
+  return Fula.newClient(identity, storePath, bloxAddr, exchange, autoFlush, useRelay, refresh);
 };
 
 /**
@@ -71,16 +74,17 @@ export const logout = (
  * Checks if there are any un-synced changes on the device
  */
 export const checkFailedActions = (
-  retry: boolean = false
+  retry: boolean = false,
+  timeout: number = 20
 ): Promise<boolean> => {
-  return Fula.checkFailedActions(retry);
+  return Fula.checkFailedActions(retry, timeout);
 };
 
 /**
  * Checks if there are any un-synced changes on the device
  */
-export const checkConnection = (): Promise<boolean> => {
-  return Fula.checkConnection();
+export const checkConnection = (timeout: number = 20): Promise<boolean> => {
+  return Fula.checkConnection(timeout);
 };
 
 /**
@@ -112,6 +116,14 @@ export const has = (key: Uint8Array): Promise<boolean> => {
  */
 export const push = (): Promise<string> => {
   return Fula.push();
+};
+
+//This method sends some test data to backedn
+export const testData = (
+  identity: string,
+  bloxAddr: string
+): Promise<string> => {
+  return Fula.testData(identity, bloxAddr);
 };
 
 /**
@@ -259,9 +271,23 @@ export const shutdown = (): Promise<void> => {
 };
 
 /**
- * rm removes all files and folders at a given path
- * @param path
- * @returns string: new cid of the root
+ * setAuth adds or removes a peer from the list of peers that are allowed to push to this node.
+ * This can only be called on a peer that is added as an owner of blox by --authorizer parameter
+ * @param peerId, allow
+ * @returns boolean: true if successful or false if not
+ */
+export const setAuth = (
+  peerId: string,
+  allow: boolean
+): Promise<boolean> => {
+  return Fula.setAuth(peerId, allow);
+};
+
+
+/**
+ * isReady checks if the connection is ready to be used.
+ * @param filesystemCheck: also check if the wnfs is ready
+ * @returns boolean: true if ready or false if not
  */
 export const isReady = (filesystemCheck: boolean = true): Promise<boolean> => {
   return Fula.isReady(filesystemCheck);

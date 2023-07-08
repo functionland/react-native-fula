@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
-import { fula } from '@functionland/react-native-fula';
+import { fula, blockchain, chainApi, fxblox } from '@functionland/react-native-fula';
 
 const App = () => {
   const [key, setKey] = React.useState<string>('');
@@ -31,13 +31,15 @@ const App = () => {
         console.log(err.message, err.code);
       });
   };
+  //Key for peerId: 12D3KooWFi2PK36Rzi4Bmosj1np2t6i9v3QnbBiNY9hQWuJajnmZ
   const privateKey = [
     183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27, 27,
     17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204, 142, 241,
     94, 225, 7, 153, 168, 239, 94, 7, 187, 123, 158, 149, 149, 227, 170, 32, 54,
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
-  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWR2EiA8DbULqDAJZCcN2V2Nasmh756R1aLe5t3NniCnAS';
+  const privateKeyString = "\\test";
+  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
   const newClient = async () => {
     try {
       return fula.newClient(
@@ -65,8 +67,21 @@ const App = () => {
     }
   };
   React.useEffect(() => {
+    /*chainApi.init().then((api) => {
+      chainApi.listPools(api).then((pools) => {
+        console.log('pools', pools);
+      }).catch((e) => {
+        console.log('error', e);
+      });
+
+      chainApi.checkJoinRequest(api, 1, "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty").then((poolReq) => {
+        console.log('poolReq', poolReq);
+      }).catch((err) => {
+        console.log('error', err);
+      });
+    });*/
     //fula.logout(privateKey.toString(),'').then((a) => {
-    initFula()
+    /*initFula()
       .then((res) => {
         console.log('OK', res);
         setInitComplete(res);
@@ -89,7 +104,7 @@ const App = () => {
       })
       .catch((e) => {
         console.log('error', e);
-      });
+      });*/
     //});
   }, []);
 
@@ -99,11 +114,46 @@ const App = () => {
         <Text>Put & Get</Text>
 
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Test'}
+          title={inprogress ? 'Putting & Getting...' : 'Init'}
           onPress={async () => {
             try {
               let resinit = await initFula();
               if (resinit) {
+                console.log('init complete');
+                console.log(resinit);
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test'}
+          onPress={async () => {
+            try {
+                    fula
+                      .testData(privateKey.toString(), bloxAddr)
+                      .then((res) => {
+                        console.log('tested');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('test failed');
+                        console.log(e);
+                      });
+
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Write WNFS'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
                 console.log('initialization is completed. putting key/value');
                 var path = RNFS.DocumentDirectoryPath + '/test.txt';
                 RNFS.writeFile(path, 'test', 'utf8')
@@ -237,11 +287,12 @@ const App = () => {
           onPress={async () => {
             try {
               if (initComplete) {
+                console.log('initialization is completed. retrying... first checking connection:');
                 fula.checkConnection().then((r) => {
-                  console.log('connection cehck');
+                  console.log('connection cehck passed');
                   console.log(r);
                   if (r) {
-                    console.log('initialization is completed. retry');
+                    console.log('check connection is completed. retry');
                     fula
                       .checkFailedActions(true)
                       .then((res) => {
@@ -250,6 +301,197 @@ const App = () => {
                       })
                       .catch((e) => {
                         console.log('retry failed');
+                        console.log(e);
+                      });
+                  }
+                }) .catch((e) => {
+                  console.log('connection cehck failed');
+                  console.log(e);
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'New Account'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection cehck');
+                  console.log(r);
+                  if (r) {
+                    console.log('initialization is completed. retry');
+                    blockchain
+                      .createAccount("//81862be6b6ffea2d4b11aee9e6d02499363685171369f8a9088ac979b87eb8cb")
+                      .then((res) => {
+                        console.log('created');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('creation failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Check Account'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log('initialization is completed. check account');
+                    blockchain
+                      .checkAccountExists("5DAfEJDKAeejGCzw7kdvrzkhwyoNLZ1iSsq4LZkYPMMi6pgf")
+                      .then((res) => {
+                        console.log('replicationRequest created');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('replicationRequest creation failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+
+<Button
+          title={inprogress ? 'Putting & Getting...' : 'Get All Pools'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log('initialization is completed. get pools');
+                    blockchain
+                      .listPools()
+                      .then((res) => {
+                        console.log('listpool received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('listpool fetch failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Getting...' : 'Get Blox Free Space'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. get blox free space'
+                    );
+                    blockchain
+                      .bloxFreeSpace()
+                      .then((res) => {
+                        console.log('bloxFreeSpace received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('bloxFreeSpace fetch failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Getting...' : 'Remove all Wifis'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send remove wifis command'
+                    );
+                    fxblox
+                      .wifiRemoveall()
+                      .then((res) => {
+                        console.log('wifiRemoveall received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('wifiRemoveall failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+<Button
+          title={inprogress ? 'Getting...' : 'Reboot'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send reboot command'
+                    );
+                    fxblox
+                      .reboot()
+                      .then((res) => {
+                        console.log('reboot received');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('reboot failed');
                         console.log(e);
                       });
                   }

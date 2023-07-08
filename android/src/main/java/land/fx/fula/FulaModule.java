@@ -13,13 +13,30 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.codec.binary.Base32;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Random;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -44,6 +61,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   fulamobile.Client fula;
 
   Client client;
+  Config fulaConfig;
   String appDir;
   String fulaStorePath;
   String privateForest;
@@ -51,7 +69,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   SharedPreferenceHelper sharedPref;
   SecretKey secretKeyGlobal;
   String identityEncryptedGlobal;
-  static String PRIVATE_KEY_STORE_ID = "PRIVATE_KEY";
+  static String PRIVATE_KEY_STORE_PEERID = "PRIVATE_KEY";
 
   public static class Client implements land.fx.wnfslib.Datastore {
 
@@ -117,9 +135,18 @@ public class FulaModule extends ReactContextBaseJavaModule {
     return input.getBytes(StandardCharsets.UTF_8);
   }
 
+  private byte[] decToByte(@NonNull String input) {
+    String[] parts = input.split(",");
+    byte[] output = new byte[parts.length];
+    for (int i = 0; i < parts.length; i++) {
+      output[i] = Byte.parseByte(parts[i]);
+    }
+    return output;
+  }
+
   @NonNull
   @Contract("_ -> new")
-  private String toString(byte[] input) {
+  public String toString(byte[] input) {
     return new String(input, StandardCharsets.UTF_8);
   }
 
@@ -152,33 +179,38 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void checkConnection(Promise promise) {
+  public void checkConnection(int timeout, Promise promise) {
     Log.d("ReactNative", "checkConnection started");
     ThreadUtils.runOnExecutor(() -> {
       if (this.fula != null) {
         try {
-          boolean connectionStatus = this.checkConnectionInternal();
+          boolean connectionStatus = this.checkConnectionInternal(timeout);
+          Log.d("ReactNative", "checkConnection ended " + connectionStatus);
           promise.resolve(connectionStatus);
         }
         catch (Exception e) {
           Log.d("ReactNative", "checkConnection failed with Error: " + e.getMessage());
           promise.resolve(false);
         }
+      } else {
+        Log.d("ReactNative", "checkConnection failed with Error: " + "fula is null");
+        promise.resolve(false);
       }
     });
   }
 
   @ReactMethod
-  public void newClient(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay, Promise promise) {
+  public void newClient(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay, boolean refresh, Promise promise) {
     Log.d("ReactNative", "newClient started");
     ThreadUtils.runOnExecutor(() -> {
       try {
-        Log.d("ReactNative", "newClient storePath= " + storePath);
+        Log.d("ReactNative", "newClient storePath= " + storePath + " bloxAddr= " + bloxAddr + " exchange= " + exchange + " autoFlush= " + autoFlush + " useRelay= " + useRelay + " refresh= " + refresh);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "newClient identity= " + identityString);
-        this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay);
+        this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay, refresh);
         //String objString = Arrays.toString(obj);
         String peerId = this.fula.id();
+        Log.d("ReactNative", "newClient peerId= " + peerId);
         promise.resolve(peerId);
       } catch (Exception e) {
         Log.d("ReactNative", "newClient failed with Error: " + e.getMessage());
@@ -197,8 +229,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
           if (filesystemCheck) {
             if (this.client != null && this.rootConfig != null && !this.rootConfig.getCid().isEmpty()) {
               initialized = true;
+              Log.d("ReactNative", "isReady is true with filesystem check");
             }
           } else {
+            Log.d("ReactNative", "isReady is true without filesystem check");
             initialized = true;
           }
         }
@@ -211,7 +245,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void init(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootConfig, boolean useRelay, Promise promise) {
+  public void init(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootConfig, boolean useRelay, boolean refresh, Promise promise) {
     Log.d("ReactNative", "init started");
     ThreadUtils.runOnExecutor(() -> {
       try {
@@ -219,7 +253,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "init storePath= " + storePath);
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "init identity= " + identityString);
-        String[] obj = this.initInternal(identity, storePath, bloxAddr, exchange, autoFlush, rootConfig, useRelay);
+        String[] obj = this.initInternal(identity, storePath, bloxAddr, exchange, autoFlush, rootConfig, useRelay, refresh);
         Log.d("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
         resultData.putString("peerId", obj[0]);
         resultData.putString("rootCid", obj[1]);
@@ -248,16 +282,40 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
-  private boolean checkConnectionInternal() throws Exception {
+  private boolean checkConnectionInternal(int timeout) throws Exception {
     try {
-      Log.d("ReactNative", "checkConnectionInternal fstarted");
+      Log.d("ReactNative", "checkConnectionInternal started");
       if (this.fula != null) {
         try {
           Log.d("ReactNative", "connectToBlox started");
-          this.fula.connectToBlox();
-          return true;
-        }
-        catch (Exception e) {
+
+          AtomicBoolean connectionStatus = new AtomicBoolean(false);
+          ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+          Future<?> future = executor.submit(() -> {
+            try {
+              this.fula.connectToBlox();
+              connectionStatus.set(true);
+              Log.d("ReactNative", "checkConnectionInternal succeeded ");
+            } catch (Exception e) {
+              Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
+            }
+          });
+
+          try {
+            future.get(timeout, TimeUnit.SECONDS);
+          } catch (TimeoutException te) {
+            // If the timeout occurs, shut down the executor and return false
+            executor.shutdownNow();
+            return false;
+          } finally {
+            // If the future task is done, we can shut down the executor
+            if (future.isDone()) {
+              executor.shutdown();
+            }
+          }
+
+          return connectionStatus.get();
+        } catch (Exception e) {
           Log.d("ReactNative", "checkConnectionInternal failed with Error: " + e.getMessage());
           return false;
         }
@@ -272,7 +330,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  private void checkFailedActions(boolean retry, Promise promise) throws Exception {
+  private void checkFailedActions(boolean retry, int timeout, Promise promise) throws Exception {
     try {
       if (this.fula != null) {
         if (!retry) {
@@ -286,7 +344,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
           }
         } else {
           Log.d("ReactNative", "checkFailedActions with retry");
-          boolean retryResults = this.retryFailedActionsInternal();
+          boolean retryResults = this.retryFailedActionsInternal(timeout);
           promise.resolve(!retryResults);
         }
       } else {
@@ -298,13 +356,13 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private boolean retryFailedActionsInternal() throws Exception {
+  private boolean retryFailedActionsInternal(int timeout) throws Exception {
     try {
       Log.d("ReactNative", "retryFailedActionsInternal started");
       if (this.fula != null) {
         //Fula is initialized
         try {
-          boolean connectionCheck = this.checkConnectionInternal();
+          boolean connectionCheck = this.checkConnectionInternal(timeout);
           if(connectionCheck) {
             try {
               Log.d("ReactNative", "retryFailedPushes started");
@@ -375,24 +433,50 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @NonNull
-  private byte[] createPeerIdentity(byte[] privateKey) throws Exception {
+  private byte[] createPeerIdentity(byte[] identity) throws GeneralSecurityException, IOException {
     try {
       // 1: First: create public key from provided private key
       // 2: Should read the local keychain store (if it is key-value, key is public key above,
       // 3: if found, decrypt using the private key
       // 4: If not found or decryption not successful, generate an identity
       // 5: then encrypt and store in keychain
-
-      String encryptedKey = sharedPref.getValue(PRIVATE_KEY_STORE_ID);
-      SecretKey secretKey = Cryptography.generateKey(privateKey);
-      if (encryptedKey == null) {
-        byte[] autoGeneratedIdentity = Fulamobile.generateEd25519Key();
-        encryptedKey = Cryptography.encryptMsg(StaticHelper.bytesToBase64(autoGeneratedIdentity), secretKey);
-        sharedPref.add(PRIVATE_KEY_STORE_ID, encryptedKey);
+      byte[] libp2pId;
+      String encryptedLibp2pId = sharedPref.getValue(PRIVATE_KEY_STORE_PEERID);
+      byte[] encryptionPair;
+      SecretKey encryptionSecretKey;
+      try {
+        encryptionSecretKey = Cryptography.generateKey(identity);
+        Log.d("ReactNative", "encryptionSecretKey generated from privateKey");
+      } catch (Exception e) {
+        Log.d("ReactNative", "Failed to generate key for encryption: " + e.getMessage());
+        throw new GeneralSecurityException("Failed to generate key encryption", e);
       }
-      return StaticHelper.base64ToBytes(Cryptography.decryptMsg(encryptedKey, secretKey));
 
-    } catch (Exception e) {
+      if (encryptedLibp2pId == null || !encryptedLibp2pId.startsWith("FULA_ENC_V3:")) {
+        Log.d("ReactNative", "encryptedLibp2pId is not correct. creating new one " + encryptedLibp2pId);
+
+        try {
+          libp2pId = Fulamobile.generateEd25519KeyFromString(toString(identity));
+        } catch (Exception e) {
+          Log.d("ReactNative", "Failed to generate libp2pId: " + e.getMessage());
+          throw new GeneralSecurityException("Failed to generate libp2pId", e);
+        }
+        encryptedLibp2pId = "FULA_ENC_V3:" + Cryptography.encryptMsg(StaticHelper.bytesToBase64(libp2pId), encryptionSecretKey);
+        sharedPref.add(PRIVATE_KEY_STORE_PEERID, encryptedLibp2pId);
+      } else {
+        Log.d("ReactNative", "encryptedLibp2pId is correct. decrypting " + encryptedLibp2pId);
+      }
+
+      try {
+        String decryptedLibp2pId = Cryptography.decryptMsg(encryptedLibp2pId.replace("FULA_ENC_V3:", ""), encryptionSecretKey);
+
+        return StaticHelper.base64ToBytes(decryptedLibp2pId);
+      } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
+        Log.d("ReactNative", "createPeerIdentity decryptMsg failed with Error: " + e.getMessage());
+        throw (e);
+      }
+
+    } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
       Log.d("ReactNative", "createPeerIdentity failed with Error: " + e.getMessage());
       throw (e);
     }
@@ -423,8 +507,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal);
         String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), this.secretKeyGlobal);
 
-        sharedPref.add("cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
-        sharedPref.add("private_ref_encrypted_" + this.identityEncryptedGlobal, private_ref_encrypted);
+        sharedPref.add("FULA_ENC_V3:cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
+        sharedPref.add("FULA_ENC_V3:private_ref_encrypted_" + this.identityEncryptedGlobal, private_ref_encrypted);
         return true;
       } else {
         return false;
@@ -441,14 +525,15 @@ public class FulaModule extends ReactContextBaseJavaModule {
         this.fula.flush();
       }
       SecretKey secretKey = Cryptography.generateKey(identity);
+
       String identity_encrypted = Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
-      sharedPref.remove("cid_encrypted_"+ identity_encrypted);
-      sharedPref.remove("private_ref_encrypted_"+identity_encrypted);
+      sharedPref.remove("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
+      sharedPref.remove("FULA_ENC_V3:private_ref_encrypted_"+identity_encrypted);
 
       //TODO: Should also remove peerid @Mahdi
 
-      sharedPref.remove("cid_encrypted_"+ identity_encrypted);
-      sharedPref.remove("private_ref_encrypted_"+ identity_encrypted);
+      sharedPref.remove("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
+      sharedPref.remove("FULA_ENC_V3:private_ref_encrypted_"+ identity_encrypted);
 
       this.rootConfig = null;
       this.secretKeyGlobal = null;
@@ -468,49 +553,61 @@ public class FulaModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @NonNull
-  private byte[] newClientInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay) throws Exception {
-    try {
-      Config config_ext = new Config();
-      if (storePath == null || storePath.trim().isEmpty()) {
-        config_ext.setStorePath(this.fulaStorePath);
-      } else {
-        config_ext.setStorePath(storePath);
-      }
-      Log.d("ReactNative", "storePath is set: " + config_ext.getStorePath());
-
-      byte[] peerIdentity = this.createPeerIdentity(identity);
-      config_ext.setIdentity(peerIdentity);
-      Log.d("ReactNative", "peerIdentity is set: " + toString(config_ext.getIdentity()));
-      config_ext.setBloxAddr(bloxAddr);
-      Log.d("ReactNative", "bloxAddr is set: " + config_ext.getBloxAddr());
-      config_ext.setExchange(exchange);
-      config_ext.setSyncWrites(autoFlush);
-      if (useRelay) {
-        config_ext.setAllowTransientConnection(true);
-        config_ext.setForceReachabilityPrivate(true);
-      }
-      if (this.fula == null) {
-        Log.d("ReactNative", "Creating a new Fula instance");
-        this.fula = Fulamobile.newClient(config_ext);
-      }
-      if (this.fula != null) {
-        this.fula.flush();
-      }
-      return peerIdentity;
-    } catch (Exception e) {
-      Log.d("ReactNative", "newclientInternal failed with Error: " + e.getMessage());
-      throw (e);
-    }
+  public fulamobile.Client getFulaClient() {
+    return this.fula;
   }
 
   @NonNull
-  private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootCid, boolean useRelay) throws Exception {
+  private byte[] newClientInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, boolean useRelay, boolean refresh) throws GeneralSecurityException, IOException {
+    byte[] peerIdentity = null;
     try {
-      if (this.fula == null) {
-        this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay);
+      fulaConfig = new Config();
+      if (storePath == null || storePath.trim().isEmpty()) {
+        fulaConfig.setStorePath(this.fulaStorePath);
+      } else {
+        fulaConfig.setStorePath(storePath);
       }
-      if(this.client == null) {
+      Log.d("ReactNative", "newClientInternal storePath is set: " + fulaConfig.getStorePath());
+
+      peerIdentity = this.createPeerIdentity(identity);
+      fulaConfig.setIdentity(peerIdentity);
+      Log.d("ReactNative", "peerIdentity is set: " + toString(fulaConfig.getIdentity()));
+      fulaConfig.setBloxAddr(bloxAddr);
+      Log.d("ReactNative", "bloxAddr is set: " + fulaConfig.getBloxAddr());
+      fulaConfig.setExchange(exchange);
+      fulaConfig.setSyncWrites(autoFlush);
+      if (useRelay) {
+        fulaConfig.setAllowTransientConnection(true);
+        fulaConfig.setForceReachabilityPrivate(true);
+      }
+      if (this.fula == null || refresh) {
+        Log.d("ReactNative", "Creating a new Fula instance");
+        try {
+          shutdownInternal();
+          this.fula = Fulamobile.newClient(fulaConfig);
+          if (this.fula != null) {
+            this.fula.flush();
+          }
+        } catch (Exception e) {
+          Log.d("ReactNative", "Failed to create new Fula instance: " + e.getMessage());
+          throw new IOException("Failed to create new Fula instance", e);
+        }
+      }
+    } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
+      Log.d("ReactNative", "newclientInternal failed with Error: " + e.getMessage());
+      throw (e);
+    }
+    return peerIdentity;
+  }
+
+
+  @NonNull
+  private String[] initInternal(byte[] identity, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootCid, boolean useRelay, boolean refresh) throws Exception {
+    try {
+      if (this.fula == null || refresh) {
+        this.newClientInternal(identity, storePath, bloxAddr, exchange, autoFlush, useRelay, refresh);
+      }
+      if(this.client == null || refresh) {
         this.client = new Client(this.fula);
         Log.d("ReactNative", "fula initialized: " + this.fula.id());
       }
@@ -524,8 +621,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "this.rootCid is empty.");
         //Load from keystore
 
-        String cid_encrypted_fetched = sharedPref.getValue("cid_encrypted_"+ identity_encrypted);
-        String private_ref_encrypted_fetched = sharedPref.getValue("private_ref_encrypted_"+identity_encrypted);
+        String cid_encrypted_fetched = sharedPref.getValue("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
+        String private_ref_encrypted_fetched = sharedPref.getValue("FULA_ENC_V3:private_ref_encrypted_"+identity_encrypted);
         Log.d("ReactNative", "Here1");
         String cid = "";
         String private_ref = "";
@@ -644,17 +741,26 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "writeFile to : path = " + fulaTargetFilename + ", from: " + localFilename);
       try {
-        land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
-        if(config != null) {
-          this.rootConfig = config;
-          this.encrypt_and_store_config();
-          if (this.fula != null) {
-            this.fula.flush();
+        if (this.client != null) {
+          Log.d("ReactNative", "writeFileFromPath started: this.rootConfig.getCid=" + this.rootConfig.getCid()+ ", fulaTargetFilename="+fulaTargetFilename + ", localFilename="+localFilename);
+          land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
+          if(config != null) {
+            this.rootConfig = config;
+            this.encrypt_and_store_config();
+            if (this.fula != null) {
+              this.fula.flush();
+              promise.resolve(config.getCid());
+            } else {
+              Log.d("ReactNative", "writeFile Error: fula is null");
+              promise.reject(new Exception("writeFile Error: fula is null"));
+            }
+          } else {
+            Log.d("ReactNative", "writeFile Error: config is null");
+            promise.reject(new Exception("writeFile Error: config is null"));
           }
-          promise.resolve(config.getCid());
         } else {
-          Log.d("ReactNative", "writeFile Error: config is null");
-          promise.reject(new Exception("writeFile Error: config is null"));
+          Log.d("ReactNative", "writeFile Error: client is null");
+          promise.reject(new Exception("writeFile Error: client is null"));
         }
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -946,21 +1052,375 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void setAuth(String peerIdString, boolean allow, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "setAuth: peerIdString = " + peerIdString);
+      try {
+        if (this.fula != null && this.fula.id() != null && this.fulaConfig != null && this.fulaConfig.getBloxAddr() != null) {
+          String bloxAddr = this.fulaConfig.getBloxAddr();
+          Log.d("ReactNative", "setAuth: bloxAddr = '" + bloxAddr+"'"+ " peerIdString = '" + peerIdString+"'");
+          int index = bloxAddr.lastIndexOf("/");
+          String bloxPeerId = bloxAddr.substring(index + 1);
+          this.fula.setAuth(bloxPeerId, peerIdString, allow);
+          promise.resolve(true);
+        } else {
+          Log.d("ReactNative", "setAuth error: fula is not initialized");
+          throw new Exception("fula is not initialized");
+        }
+        promise.resolve(false);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  private void shutdownInternal() throws Exception {
+    try {
+      if(this.fula != null) {
+        this.fula.shutdown();
+        this.fula = null;
+        this.client = null;
+      }
+    } catch (Exception e) {
+      Log.d("ReactNative", "shutdownInternal"+ e.getMessage());
+      throw (e);
+    }
+  }
+
+  @ReactMethod
   public void shutdown(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       try {
-        if(this.fula != null) {
-          this.fula.shutdown();
-          this.fula = null;
-          this.client = null;
-        }
+        shutdownInternal();
         promise.resolve(true);
       } catch (Exception e) {
         promise.reject(e);
         Log.d("ReactNative", "shutdown"+ e.getMessage());
       }
     });
+  }
 
+  ///////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////
+  //////////////////////ANYTHING BELOW IS FOR BLOCKCHAIN/////
+  ///////////////////////////////////////////////////////////
+  @ReactMethod
+  public void createAccount(String seedString, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "createAccount: seedString = " + seedString);
+      try {
+        if (this.fula == null || this.fula.id() == null || this.fula.id().isEmpty()) {
+          promise.reject(new Error("Fula client is not initialized"));
+        } else {
+
+          if (!seedString.startsWith("/")) {
+            promise.reject(new Error("seed should start with /"));
+          }
+          byte[] result = this.fula.seeded(seedString);
+          String resultString = toString(result);
+          promise.resolve(resultString);
+        }
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void checkAccountExists(String accountString, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "checkAccountExists: accountString = " + accountString);
+      try {
+        byte[] result = this.fula.accountExists(accountString);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void createPool(String seedString, String poolName, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "createPool: seedString = " + seedString + "; poolName = " + poolName);
+      try {
+        byte[] result = this.fula.poolCreate(seedString, poolName);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void listPools(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "listPools");
+      try {
+        byte[] result = this.fula.poolList();
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void joinPool(String seedString, long poolID, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "joinPool: seedString = " + seedString + "; poolID = " + poolID);
+      try {
+        byte[] result = this.fula.poolJoin(seedString, poolID);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void cancelPoolJoin(String seedString, long poolID, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "cancelPoolJoin: seedString = " + seedString + "; poolID = " + poolID);
+      try {
+        byte[] result = this.fula.poolCancelJoin(seedString, poolID);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void listPoolJoinRequests(long poolID, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "listPoolJoinRequests: poolID = " + poolID);
+      try {
+        byte[] result = this.fula.poolRequests(poolID);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void votePoolJoinRequest(String seedString, long poolID, String accountString, boolean accept, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "votePoolJoinRequest: seedString = " + seedString + "; poolID = " + poolID + "; accountString = " + accountString + "; accept = " + accept);
+      try {
+        byte[] result = this.fula.poolVote(seedString, poolID, accountString, accept);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void leavePool(String seedString, long poolID, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "leavePool: seedString = " + seedString + "; poolID = " + poolID);
+      try {
+        byte[] result = this.fula.poolLeave(seedString, poolID);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void newReplicationRequest(String seedString, long poolID, long replicationFactor, String cid, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "newReplicationRequest: seedString = " + seedString + "; poolID = " + poolID + "; replicationFactor = " + replicationFactor + "; cid = " + cid);
+      try {
+        byte[] result = this.fula.manifestUpload(seedString, poolID, replicationFactor, cid);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void newStoreRequest(String seedString, long poolID, String uploader, String cid, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "newStoreRequest: seedString = " + seedString + "; poolID = " + poolID + "; uploader = " + uploader + "; cid = " + cid);
+      try {
+        byte[] result = this.fula.manifestStore(seedString, poolID, uploader, cid);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void listAvailableReplicationRequests(long poolID, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "listAvailableReplicationRequests: poolID = " + poolID);
+      try {
+        byte[] result = this.fula.manifestAvailable(poolID);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void removeReplicationRequest(String seedString, long poolID, String cid, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "newReplicationRequest: seedString = " + seedString + "; poolID = " + poolID + "; cid = " + cid);
+      try {
+        byte[] result = this.fula.manifestRemove(seedString, poolID,  cid);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void removeStorer(String seedString, String storage, long poolID, String cid, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "removeStorer: seedString = " + seedString + "; storage = " + storage + "; poolID = " + poolID + "; cid = " + cid);
+      try {
+        byte[] result = this.fula.manifestRemoveStorer(seedString, storage, poolID, cid);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void removeStoredReplication(String seedString, String uploader, long poolID, String cid, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "removeStoredReplication: seedString = " + seedString + "; uploader = " + uploader + "; poolID = " + poolID + "; cid = " + cid);
+      try {
+        byte[] result = this.fula.manifestRemoveStored(seedString, uploader, poolID, cid);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("get", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  ////////////////////////////////////////////////////////////////
+  ///////////////// Blox Hardware Methods ////////////////////////
+  ////////////////////////////////////////////////////////////////
+
+  @ReactMethod
+  public void bloxFreeSpace(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "bloxFreeSpace");
+      try {
+        byte[] result = this.fula.bloxFreeSpace();
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void wifiRemoveall(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "wifiRemoveall");
+      try {
+        byte[] result = this.fula.wifiRemoveall();
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void reboot(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "reboot");
+      try {
+        byte[] result = this.fula.reboot();
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void testData(String identityString, String bloxAddr, Promise promise) {
+    try {
+      byte[] identity = toByte(identityString);
+      byte[] peerIdByte = this.newClientInternal(identity, "", bloxAddr, "", true, true, true);
+
+      String peerIdReturned = Arrays.toString(peerIdByte);
+      Log.d("ReactNative", "newClient peerIdReturned= " + peerIdReturned);
+      String peerId = this.fula.id();
+      Log.d("ReactNative", "newClient peerId= " + peerId);
+      byte[] bytes = {1, 85, 18, 32, 11, -31, 75, -78, -109, 11, -111, 97, -47, -78, -22, 84, 39, -117, -64, -70, -91, 55, -23, -80, 116, -123, -97, -26, 126, -70, -76, 35, 54, -106, 55, -9};
+
+      byte[] key = this.fula.put(bytes, 85);
+      Log.d("ReactNative", "testData put result string="+Arrays.toString(key));
+
+      byte[] value = this.fula.get(key);
+      Log.d("ReactNative", "testData get result string="+Arrays.toString(value));
+
+      this.fula.push(key);
+      //this.fula.flush();
+
+      byte[] fetchedVal = this.fula.get(key);
+      this.fula.pull(key);
+
+      promise.resolve(Arrays.toString(fetchedVal));
+    } catch (Exception e) {
+      Log.d("ReactNative", "ERROR:" + e.getMessage());
+      promise.reject(e);
+    }
   }
 
 }
