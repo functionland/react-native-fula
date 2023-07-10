@@ -23,6 +23,7 @@ interface FulaNativeModule {
   isReady: (filesystemCheck: boolean) => Promise<boolean>;
   logout: (identity: string, storePath: string) => Promise<boolean>;
   checkFailedActions: (retry: boolean, timeout: number) => Promise<boolean>;
+  listFailedActions: (cids: string[]) => Promise<string[]>;
   checkConnection: (timeout: number) => Promise<boolean>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;

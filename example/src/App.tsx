@@ -2,15 +2,18 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
 import { fula, blockchain, chainApi, fxblox } from '@functionland/react-native-fula';
+import { listFailedActions } from '../../.history/src/protocols/fula_20230710112519';
 
 const App = () => {
   const [key, setKey] = React.useState<string>('');
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
+  const [newRootCid, setNewRootCid] = React.useState<string>('');
 
   const [initComplete, setInitComplete] = React.useState<
     { peerId: string; rootCid: string; private_ref: string } | {}
   >({});
+
   var RNFS = require('react-native-fs');
   const readFile = () => {
     RNFS.readDir(RNFS.DocumentDirectoryPath)
@@ -121,6 +124,7 @@ const App = () => {
               if (resinit) {
                 console.log('init complete');
                 console.log(resinit);
+                setNewRootCid(resinit.rootCid);
               } else {
                 console.log('wait for init to complete');
               }
@@ -135,6 +139,46 @@ const App = () => {
             try {
                     fula
                       .testData(privateKey.toString(), bloxAddr)
+                      .then((res) => {
+                        console.log('tested');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('test failed');
+                        console.log(e);
+                      });
+
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test List Failed links for a one'}
+          onPress={async () => {
+            try {
+              console.log("checking: " + newRootCid);
+                    fula
+                      .listFailedActions([newRootCid])
+                      .then((res) => {
+                        console.log('tested');
+                        console.log(res);
+                      })
+                      .catch((e) => {
+                        console.log('test failed');
+                        console.log(e);
+                      });
+
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test List Failed links for all'}
+          onPress={async () => {
+            try {
+                    fula
+                      .listFailedActions()
                       .then((res) => {
                         console.log('tested');
                         console.log(res);

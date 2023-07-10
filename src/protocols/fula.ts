@@ -81,6 +81,13 @@ export const checkFailedActions = (
 };
 
 /**
+ * Lists the cids that failed to be sent to backend and are kept only locally
+ */
+export const listFailedActions = (cids: string[] = []): Promise<string[]> => {
+  return Fula.listFailedActions(cids);
+};
+
+/**
  * Checks if there are any un-synced changes on the device
  */
 export const checkConnection = (timeout: number = 20): Promise<boolean> => {

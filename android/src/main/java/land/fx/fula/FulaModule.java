@@ -11,9 +11,12 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.ReadableArray;
+
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.codec.binary.Base32;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
@@ -24,7 +27,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.ArrayList;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -37,9 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
-
-import org.json.JSONObject;
-import org.json.JSONArray;
 
 import fulamobile.Config;
 import fulamobile.Fulamobile;
@@ -330,7 +330,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  private void checkFailedActions(boolean retry, int timeout, Promise promise) throws Exception {
+  public void checkFailedActions(boolean retry, int timeout, Promise promise) throws Exception {
     try {
       if (this.fula != null) {
         if (!retry) {
@@ -355,6 +355,57 @@ public class FulaModule extends ReactContextBaseJavaModule {
       throw (e);
     }
   }
+
+  @ReactMethod
+  private void listFailedActions(ReadableArray cids, Promise promise) throws Exception {
+    try {
+      if (this.fula != null) {
+        Log.d("ReactNative", "listFailedActions");
+        fulamobile.StringIterator failedLinks = this.fula.listFailedPushesAsString();
+        ArrayList<String> failedLinksList = new ArrayList<>();
+        while (failedLinks.hasNext()) {
+          failedLinksList.add(failedLinks.next());
+        }
+        if (cids.size() > 0) {
+          // If cids array is provided, filter the failedLinksList
+          ArrayList<String> cidsList = new ArrayList<>();
+          for (int i = 0; i < cids.size(); i++) {
+            cidsList.add(cids.getString(i));
+          }
+          cidsList.retainAll(failedLinksList); // Keep only the elements in both cidsList and failedLinksList
+          if (!cidsList.isEmpty()) {
+            // If there are any matching cids, return them
+            WritableArray cidsArray = Arguments.createArray();
+            for (String cid : cidsList) {
+              cidsArray.pushString(cid);
+            }
+            promise.resolve(cidsArray);
+          } else {
+            // If there are no matching cids, return false
+            promise.resolve(false);
+          }
+        } else if (!failedLinksList.isEmpty()) {
+          // If cids array is not provided, return the whole list
+          Log.d("ReactNative", "listFailedActions found: "+ failedLinksList);
+          WritableArray failedLinksArray = Arguments.createArray();
+          for (String link : failedLinksList) {
+            failedLinksArray.pushString(link);
+          }
+          promise.resolve(failedLinksArray);
+        } else {
+          promise.resolve(false);
+        }
+      } else {
+        throw new Exception("listFailedActions: Fula is not initialized");
+      }
+    } catch (Exception e) {
+      Log.d("ReactNative", "listFailedActions failed with Error: " + e.getMessage());
+      throw (e);
+    }
+  }
+
+
+
 
   private boolean retryFailedActionsInternal(int timeout) throws Exception {
     try {
@@ -412,22 +463,22 @@ public class FulaModule extends ReactContextBaseJavaModule {
               return true;
             }*/
           } else {
-            Log.d("ReactNative", "retryFailedActions failed because blox is offline");
+            Log.d("ReactNative", "retryFailedActionsInternal failed because blox is offline");
             //Blox Offline
             return false;
           }
         }
         catch (Exception e) {
-          Log.d("ReactNative", "retryFailedActions failed with Error: " + e.getMessage());
+          Log.d("ReactNative", "retryFailedActionsInternal failed with Error: " + e.getMessage());
           return false;
         }
       } else {
-        Log.d("ReactNative", "retryFailedActions failed because fula is not initialized");
+        Log.d("ReactNative", "retryFailedActionsInternal failed because fula is not initialized");
         //Fula is not initialized
         return false;
       }
     } catch (Exception e) {
-      Log.d("ReactNative", "retryFailedActions failed with Error: " + e.getMessage());
+      Log.d("ReactNative", "retryFailedActionsInternal failed with Error: " + e.getMessage());
       throw (e);
     }
   }

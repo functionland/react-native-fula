@@ -1,6 +1,6 @@
 # react-native-fula
 
-This package is a bridge to use the [Fula protocols](https://github.com/functionland/go-fula) in the react-native. It uses [WNFS](https://github.com/wnfs-wg/rs-wnfs) to create the Merkle dag from files and folders and transfer the DAG using Graphsync to the nodes. 
+This package is a bridge to use the [Fula protocols](https://github.com/functionland/go-fula) in the react-native. It uses [WNFS](https://github.com/wnfs-wg/rs-wnfs) to create the Merkle dag from files and folders and transfer the DAG using Graphsync to the nodes.
 
 ## Installation
 
@@ -34,9 +34,9 @@ const peerId //returns peerId as string
     peerId, //returns peerId of the created libp2p instance in form of a string of bytes
     cid, //return the root cid of the WNFS merkle DAG in form of a string
     private_ref //return the keys needed to decode hte encrypted WNFS tree in form of a string of object
-] 
-= 
-await fula.init( 
+]
+=
+await fula.init(
     identity: string, //bytes of the privateKey of did identity in string format
     storePath: string, // leave empty to use the default temp one
     bloxAddr: string, //leave empty for testing without a backend node
@@ -50,7 +50,7 @@ await fula.init(
 ```js
 //Creates a Folder
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
-= 
+=
 await fula.mkdir(
     path: string // This is the Fula path to create a folder and always starts with "root/" and should not start or end with a slash e.g "root/pictures"
 );
@@ -59,7 +59,7 @@ await fula.mkdir(
 ```js
 //Write a local file on the device to the Fula tree (upload). It keeps the original file modification date.
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
-= 
+=
 await fula.writeFile(
     fulaTargetFilename: string, //path to the file on the tree. It should include the filename and extension and start from the "root/". e.g. "root/pictures/cat.jpg"
     localFilename: string //path to the local file. e.g the file that needs to be uploaded
@@ -70,7 +70,7 @@ await fula.writeFile(
 ```js
 //reads a file on fula tree to a local file on the device (download). It is stream so does not affect memory for large files.
 const localFilePath //returns the path to the local file and includes the filename
-= 
+=
 await fula.readFile(
     fulaTargetFilename: string, //path to the file on the tree. It should include the filename and extension and start from the "root/". e.g. "root/pictures/cat.jpg"
     localFilename: string //path to the local file. It should include the filename and extension. e.g. "/temp/cat.jpg"
@@ -80,7 +80,7 @@ await fula.readFile(
 ```js
 //shows all files and folders under the specified path on Fula
 const fileList //returns all the files and folders in a string separated by \n
-= 
+=
 await fula.ls(
     path: string, //path to the folder on the tree. It always starts from the "root". e.g. "root" or "root/pictures"
 );
@@ -90,7 +90,7 @@ await fula.ls(
 ```js
 //removes all files and folders at the specified path on Fula
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
-= 
+=
 await fula.rm(
     path: string, //path to the file or folder on the tree. It always starts from the "root". e.g. "root/pictures" or "root/pictures/cat.jpg"
 );
@@ -100,7 +100,7 @@ await fula.rm(
 ```js
 //copies the specified file or folder at sourcePath to the filename at targetPath. the path itself(apart from filename) must exist
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
-= 
+=
 await fula.cp(
     sourcePath: string, //path to the file or folder on the tree. It always starts from the "root". e.g. "root/pictures" or "root/pictures/cat.jpg"
     targetPath: string, //path to the file or folder on the tree. It always starts from the "root". e.g. "root/pictures2" or "root/pictures2/cat.jpg"
@@ -111,7 +111,7 @@ await fula.cp(
 ```js
 //moves the specified file or folder at sourcePath to the filename at targetPath. the path itself(apart from filename) must exist
 const cid //returns the cid of the new root. Note that on every write action the root cid changes.
-= 
+=
 await fula.mv(
     sourcePath: string, //path to the file or folder on the tree. It always starts from the "root". e.g. "root/pictures" or "root/pictures/cat.jpg"
     targetPath: string, //path to the file or folder on the tree. It always starts from the "root". e.g. "root/pictures2" or "root/pictures2/cat.jpg"
@@ -122,7 +122,7 @@ await fula.mv(
 ```js
 //checks if fula is ready (initialized through newClient or init)
 const result //returns true if succesful and false if fails
-= 
+=
 await fula.isReady(
     filesystemCheck: boolean //Default is true. If true it checks if both WNFS and Fula are ready. If false it only checks fula
 );
@@ -132,7 +132,7 @@ await fula.isReady(
 ```js
 //checks if client can reach server
 const result //returns true if it can, and false if it cannot
-= 
+=
 await fula.checkConnection(
     timeout: number? //default to 20. Maximum time in seconds that checkConnection waits before throwing an error
 );
@@ -142,7 +142,7 @@ await fula.checkConnection(
 ```js
 //checks if there are any un-synced actions on the client
 const result //returns true if there are, and false if everything is synced with server
-= 
+=
 await fula.checkFailedActions(
     retry: boolean //if true, it tries to sync device with server, if not, it only checks
     timeout: number? //default to 20. Maximum time in seconds that checkConnection waits before throwing an error
@@ -150,9 +150,18 @@ await fula.checkFailedActions(
 ```
 
 ```js
+//lists any cids that are failed to be pushed to backend and only exist on client device
+const result //returns an array of cids or false if no cid is found
+=
+await fula.listFailedActions(
+    cids: string[] //if [], it returns all failed cids, and if provided, it only return the failed cids that are in the array of cids provided as input
+);
+```
+
+```js
 //Gives access to the blox for a specific peerId. This call must be made from the authorizer only.
 const result //returns true if succesful and false if fails
-= 
+=
 await fula.setAuth(
     peerId: string, //peer ID of the app that needs access to the blox
     allow: boolean, // true to allow and false to remove access
@@ -168,7 +177,7 @@ await fula.shutdown();
 ```js
 //removes all Fula related data and information (Except the encrypted filesystem) at the specified storage local path
 const result //returns true if succesful and false if fails
-= 
+=
 await fula.logout(
     identity: string, //bytes of the privateKey of did identity in string format
     storePath: string, // leave empty to use the default temp one
