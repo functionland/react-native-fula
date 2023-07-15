@@ -64,7 +64,6 @@ public class FulaModule extends ReactContextBaseJavaModule {
   Config fulaConfig;
   String appDir;
   String fulaStorePath;
-  String privateForest;
   land.fx.wnfslib.Config rootConfig;
   SharedPreferenceHelper sharedPref;
   SecretKey secretKeyGlobal;
@@ -94,10 +93,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
     @NonNull
     @Override
-    public byte[] put(@NonNull byte[] data, long codec) {
+    public byte[] put(@NonNull byte[] cid, byte[] data) {
       try {
+        long codec = (long)cid[1] & 0xFF;
+        byte[] put_cid = this.internalClient.put(data, codec);
         //Log.d("ReactNative", "data="+ Arrays.toString(data) +" ;codec="+codec);
-        return this.internalClient.put(data, codec);
+        return put_cid;
       } catch (Exception e) {
         Log.d("ReactNative", "put Error="+e.getMessage());
         e.printStackTrace();
@@ -534,32 +535,26 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   private void createNewRootConfig(FulaModule.Client iClient, byte[] identity) throws Exception {
-    this.privateForest = Fs.createPrivateForest(iClient);
-    Log.d("ReactNative", "privateForest is created: " + this.privateForest);
-    this.rootConfig = Fs.createRootDir(iClient, this.privateForest, identity);
+    this.rootConfig = Fs.init(iClient, identity);
+    Log.d("ReactNative", "rootConfig is created " + this.rootConfig.getCid());
     if (this.fula != null) {
       this.fula.flush();
     }
-    Log.d("ReactNative", "new rootConfig is created: cid=" + this.rootConfig.getCid()+" & private_ref="+this.rootConfig.getPrivate_ref());
-
     this.encrypt_and_store_config();
   }
 
-  private String getPrivateRef(FulaModule.Client iClient, byte[] wnfsKey, String rootCid) throws Exception {
+  private void reloadFS(FulaModule.Client iClient, byte[] wnfsKey, String rootCid) throws Exception {
     Log.d("ReactNative", "getPrivateRef called: rootCid=" + rootCid);
-    String privateRef = Fs.getPrivateRef(iClient, wnfsKey, rootCid);
-    Log.d("ReactNative", "getPrivateRef completed: privateRef=" + privateRef);
-    return privateRef;
+    Fs.loadWithWNFSKey(iClient, wnfsKey, rootCid);
+    Log.d("ReactNative", "getPrivateRef completed");
   }
 
   private boolean encrypt_and_store_config() throws Exception {
     try {
       if(this.identityEncryptedGlobal != null && !this.identityEncryptedGlobal.isEmpty()) {
         String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal);
-        String private_ref_encrypted = Cryptography.encryptMsg(this.rootConfig.getPrivate_ref(), this.secretKeyGlobal);
 
         sharedPref.add("FULA_ENC_V3:cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
-        sharedPref.add("FULA_ENC_V3:private_ref_encrypted_" + this.identityEncryptedGlobal, private_ref_encrypted);
         return true;
       } else {
         return false;
@@ -579,12 +574,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
       String identity_encrypted = Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
       sharedPref.remove("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
-      sharedPref.remove("FULA_ENC_V3:private_ref_encrypted_"+identity_encrypted);
 
       //TODO: Should also remove peerid @Mahdi
 
       sharedPref.remove("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
-      sharedPref.remove("FULA_ENC_V3:private_ref_encrypted_"+ identity_encrypted);
 
       this.rootConfig = null;
       this.secretKeyGlobal = null;
@@ -668,83 +661,47 @@ public class FulaModule extends ReactContextBaseJavaModule {
       this.identityEncryptedGlobal = identity_encrypted;
       this.secretKeyGlobal = secretKey;
 
-      if (this.rootConfig == null || this.rootConfig.getCid().isEmpty() || this.rootConfig.getPrivate_ref().isEmpty()) {
+      if ( this.rootConfig == null || this.rootConfig.getCid().isEmpty() ) {
         Log.d("ReactNative", "this.rootCid is empty.");
         //Load from keystore
 
         String cid_encrypted_fetched = sharedPref.getValue("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
-        String private_ref_encrypted_fetched = sharedPref.getValue("FULA_ENC_V3:private_ref_encrypted_"+identity_encrypted);
         Log.d("ReactNative", "Here1");
         String cid = "";
-        String private_ref = "";
         if(cid_encrypted_fetched != null && !cid_encrypted_fetched.isEmpty()) {
           Log.d("ReactNative", "decrypting cid="+cid_encrypted_fetched+" with secret="+secretKey.toString());
           cid = Cryptography.decryptMsg(cid_encrypted_fetched, secretKey);
         }
-        if(private_ref_encrypted_fetched != null && !private_ref_encrypted_fetched.isEmpty()) {
-          Log.d("ReactNative", "decrypting private_ref="+private_ref_encrypted_fetched+" with secret="+secretKey.toString());
-          private_ref = Cryptography.decryptMsg(private_ref_encrypted_fetched, secretKey);
-        }
+
         Log.d("ReactNative", "Here2");
-        //Log.d("ReactNative", "Attempted to fetch cid from keystore; cid="+cid+" & private_ref="+private_ref);
-        if((cid == null || cid.isEmpty()) || (private_ref == null || private_ref.isEmpty()) ){
-          Log.d("ReactNative", "cid or PrivateRef was not found");
+        //Log.d("ReactNative", "Attempted to fetch cid from keystore; cid="+cid);
+        if(cid == null || cid.isEmpty()) {
+          Log.d("ReactNative", "cid was not found");
           if(rootCid != null && !rootCid.isEmpty()){
             Log.d("ReactNative", "Re-setting cid from input: "+rootCid);
             cid = rootCid;
           }
-          if((private_ref == null || private_ref.isEmpty()) && (cid != null && !cid.isEmpty())){
-            Log.d("ReactNative", "Re-fetching privateRef from wnfs: cid="+cid);
-            private_ref = this.getPrivateRef(this.client, identity, cid);
-            Log.d("ReactNative", "Re-fetching privateRef from wnfs: "+private_ref);
-          }
-          if(cid == null || cid.isEmpty() || private_ref == null || private_ref.isEmpty()) {
+          if(cid == null || cid.isEmpty()) {
             Log.d("ReactNative", "Tried to recover cid and privateRef but was not successful. Creating new ones");
             this.createNewRootConfig(this.client, identity);
-          } else {
-            Log.d("ReactNative", "Tried to recover cid and privateRef and was successful. cid:"+cid+" & private_ref="+private_ref);
-            this.rootConfig = new land.fx.wnfslib.Config(cid, private_ref);
-            this.encrypt_and_store_config();
           }
-        } else if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
-          Log.d("ReactNative", "Found cid and private ref in keychain store");
-          if(cid != null && !cid.isEmpty() && private_ref != null && !private_ref.isEmpty()) {
-            Log.d("ReactNative", "Recovered cid and private ref from keychain store. cid="+cid+" & private_ref="+private_ref);
-            this.rootConfig = new land.fx.wnfslib.Config(cid, private_ref);
-          } else{
-            Log.d("ReactNative", "Found but Could not recover cid and private_ref from keychain store");
-            this.createNewRootConfig(this.client, identity);
-          }
-        } else{
-          Log.d("ReactNative", "This cid and private_ref generation should never happen!!!");
-          //Create new root and store cid and private_ref
-          this.createNewRootConfig(this.client, identity);
+        } else {
+          Log.d("ReactNative", "Recovered cid and private ref from keychain store. cid="+cid);
+          this.rootConfig = new land.fx.wnfslib.Config(cid);
+          this.reloadFS(this.client, identity, cid);
+          this.encrypt_and_store_config();
         }
-
 
         Log.d("ReactNative", "creating rootConfig completed");
 
-        /*
-        byte[] testbyte = convertStringToByte("-104,40,24,-93,24,100,24,114,24,111,24,111,24,116,24,-126,24,-126,0,0,24,-128,24,103,24,118,24,101,24,114,24,115,24,105,24,111,24,110,24,101,24,48,24,46,24,49,24,46,24,48,24,105,24,115,24,116,24,114,24,117,24,99,24,116,24,117,24,114,24,101,24,100,24,104,24,97,24,109,24,116");
-        long testcodec = 85;
-        byte[] testputcid = this.client.put(testbyte, testcodec);
-        Log.d("ReactNative", "client.put test done"+ Arrays.toString(testputcid));
-        byte[] testfetchedcid = convertStringToByte("1,113,18,32,-6,-63,-128,79,-102,-89,57,77,-8,67,-98,8,-81,40,-87,123,122,29,-52,-124,-60,-53,100,105,125,123,-5,-99,41,106,-124,-64");
-        byte[] testfetchedbytes = this.client.get(testfetchedcid);
-        Log.d("ReactNative", "client.get test done"+ Arrays.toString(testfetchedbytes));
-        */
-
-
-        Log.d("ReactNative", "rootConfig is created: cid=" + this.rootConfig.getCid()+ "& private_ref="+this
-          .rootConfig.getPrivate_ref());
+        Log.d("ReactNative", "rootConfig is created: cid=" + this.rootConfig.getCid());
       } else {
-        Log.d("ReactNative", "rootConfig existed: cid=" + this.rootConfig.getCid()+ " & private_ref="+this.rootConfig.getPrivate_ref());
+        Log.d("ReactNative", "rootConfig existed: cid=" + this.rootConfig.getCid());
       }
       String peerId = this.fula.id();
       String[] obj = new String[3];
       obj[0] = peerId;
       obj[1] = this.rootConfig.getCid();
-      obj[2] = this.rootConfig.getPrivate_ref();
       Log.d("ReactNative", "initInternal is completed successfully");
       if (this.fula != null) {
         this.fula.flush();
@@ -761,7 +718,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "mkdir: path = " + path);
       try {
-        land.fx.wnfslib.Config config = Fs.mkdir(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        land.fx.wnfslib.Config config = Fs.mkdir(this.client, this.rootConfig.getCid(), path);
         if(config != null) {
           this.rootConfig = config;
           this.encrypt_and_store_config();
@@ -794,7 +751,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       try {
         if (this.client != null) {
           Log.d("ReactNative", "writeFileFromPath started: this.rootConfig.getCid=" + this.rootConfig.getCid()+ ", fulaTargetFilename="+fulaTargetFilename + ", localFilename="+localFilename);
-          land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
+          land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), fulaTargetFilename, localFilename);
           if(config != null) {
             this.rootConfig = config;
             this.encrypt_and_store_config();
@@ -827,7 +784,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "writeFile: path = " + path);
       try {
         byte[] content = this.convertStringToByte(contentString);
-        land.fx.wnfslib.Config config = Fs.writeFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path, content);
+        land.fx.wnfslib.Config config = Fs.writeFile(this.client, this.rootConfig.getCid(), path, content);
         this.rootConfig = config;
         this.encrypt_and_store_config();
         if (this.fula != null) {
@@ -846,9 +803,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "ls: path = " + path);
       try {
-        byte[] res = Fs.ls(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        byte[] res = Fs.ls(this.client, this.rootConfig.getCid(), path);
 
-        //JSONArray jsonArray = new JSONArray(res);
         String s = new String(res, StandardCharsets.UTF_8);
         Log.d("ReactNative", "ls: res = " + s);
         promise.resolve(s);
@@ -864,7 +820,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "rm: path = " + path);
       try {
-        land.fx.wnfslib.Config config = Fs.rm(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        land.fx.wnfslib.Config config = Fs.rm(this.client, this.rootConfig.getCid(), path);
         if(config != null) {
           this.rootConfig = config;
           this.encrypt_and_store_config();
@@ -888,7 +844,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "rm: sourcePath = " + sourcePath);
       try {
-        land.fx.wnfslib.Config config = Fs.cp(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), sourcePath, targetPath);
+        land.fx.wnfslib.Config config = Fs.cp(this.client, this.rootConfig.getCid(), sourcePath, targetPath);
         if(config != null) {
           this.rootConfig = config;
           this.encrypt_and_store_config();
@@ -912,7 +868,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "rm: sourcePath = " + sourcePath);
       try {
-        land.fx.wnfslib.Config config = Fs.mv(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), sourcePath, targetPath);
+        land.fx.wnfslib.Config config = Fs.mv(this.client, this.rootConfig.getCid(), sourcePath, targetPath);
         if(config != null) {
           this.rootConfig = config;
           this.encrypt_and_store_config();
@@ -943,7 +899,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "readFile: fulaTargetFilename = " + fulaTargetFilename);
       try {
-        String path = Fs.readFilestreamToPath(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), fulaTargetFilename, localFilename);
+        String path = Fs.readFilestreamToPath(this.client, this.rootConfig.getCid(), fulaTargetFilename, localFilename);
         promise.resolve(path);
       } catch (Exception e) {
         Log.d("get", e.getMessage());
@@ -957,7 +913,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "readFileContent: path = " + path);
       try {
-        byte[] res = Fs.readFile(this.client, this.rootConfig.getCid(), this.rootConfig.getPrivate_ref(), path);
+        byte[] res = Fs.readFile(this.client, this.rootConfig.getCid(), path);
         String resString = toString(res);
         promise.resolve(resString);
       } catch (Exception e) {

@@ -63,7 +63,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'com.github.functionland:fula-build-aar:1.13.0' // From jitpack.io
-    implementation 'com.github.functionland:wnfs-build-aar:v1.4.1' // From jitpack.io
+    implementation 'com.github.functionland:wnfs-build-aar:v1.7.2' // From jitpack.io
     implementation 'commons-io:commons-io:20030203.000550'
     implementation 'commons-codec:commons-codec:1.15'
     // implementation files('mobile.aar')
