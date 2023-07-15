@@ -255,10 +255,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
         byte[] identity = toByte(identityString);
         Log.d("ReactNative", "init identity= " + identityString);
         String[] obj = this.initInternal(identity, storePath, bloxAddr, exchange, autoFlush, rootConfig, useRelay, refresh);
-        Log.d("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]");
+        Log.d("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + " ]");
         resultData.putString("peerId", obj[0]);
         resultData.putString("rootCid", obj[1]);
-        resultData.putString("private_ref", obj[2]);
         promise.resolve(resultData);
       } catch (Exception e) {
         Log.d("ReactNative", "init failed with Error: " + e.getMessage());
@@ -513,7 +512,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
           Log.d("ReactNative", "Failed to generate libp2pId: " + e.getMessage());
           throw new GeneralSecurityException("Failed to generate libp2pId", e);
         }
-        encryptedLibp2pId = "FULA_ENC_V3:" + Cryptography.encryptMsg(StaticHelper.bytesToBase64(libp2pId), encryptionSecretKey);
+        encryptedLibp2pId = "FULA_ENC_V3:" + Cryptography.encryptMsg(StaticHelper.bytesToBase64(libp2pId), encryptionSecretKey, null);
         sharedPref.add(PRIVATE_KEY_STORE_PEERID, encryptedLibp2pId);
       } else {
         Log.d("ReactNative", "encryptedLibp2pId is correct. decrypting " + encryptedLibp2pId);
@@ -544,19 +543,22 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   private void reloadFS(FulaModule.Client iClient, byte[] wnfsKey, String rootCid) throws Exception {
-    Log.d("ReactNative", "getPrivateRef called: rootCid=" + rootCid);
+    Log.d("ReactNative", "reloadFS called: rootCid=" + rootCid);
     Fs.loadWithWNFSKey(iClient, wnfsKey, rootCid);
-    Log.d("ReactNative", "getPrivateRef completed");
+    Log.d("ReactNative", "reloadFS completed");
   }
 
   private boolean encrypt_and_store_config() throws Exception {
     try {
       if(this.identityEncryptedGlobal != null && !this.identityEncryptedGlobal.isEmpty()) {
-        String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal);
+        Log.d("ReactNative", "encrypt_and_store_config started");
+
+        String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal, null);
 
         sharedPref.add("FULA_ENC_V3:cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
         return true;
       } else {
+        Log.d("ReactNative", "encrypt_and_store_config failed because identityEncryptedGlobal is empty");
         return false;
       }
     } catch (Exception e) {
@@ -571,8 +573,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
         this.fula.flush();
       }
       SecretKey secretKey = Cryptography.generateKey(identity);
-
-      String identity_encrypted = Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
+      byte[] iv = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B };
+      String identity_encrypted = Cryptography.encryptMsg(Arrays.toString(identity), secretKey, iv);
       sharedPref.remove("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
 
       //TODO: Should also remove peerid @Mahdi
@@ -657,7 +659,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       }
 
       SecretKey secretKey = Cryptography.generateKey(identity);
-      String identity_encrypted =Cryptography.encryptMsg(Arrays.toString(identity), secretKey);
+      Log.d("ReactNative", "secretKey generated: " + secretKey.toString());
+      byte[] iv = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B };
+      String identity_encrypted =Cryptography.encryptMsg(Arrays.toString(identity), secretKey, iv);
+      Log.d("ReactNative", "identity_encrypted generated: " + identity_encrypted + " for identity: " + Arrays.toString(identity));
       this.identityEncryptedGlobal = identity_encrypted;
       this.secretKeyGlobal = secretKey;
 
@@ -682,7 +687,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
             cid = rootCid;
           }
           if(cid == null || cid.isEmpty()) {
-            Log.d("ReactNative", "Tried to recover cid and privateRef but was not successful. Creating new ones");
+            Log.d("ReactNative", "Tried to recover cid but was not successful. Creating new ones");
             this.createNewRootConfig(this.client, identity);
           }
         } else {
@@ -699,7 +704,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "rootConfig existed: cid=" + this.rootConfig.getCid());
       }
       String peerId = this.fula.id();
-      String[] obj = new String[3];
+      String[] obj = new String[2];
       obj[0] = peerId;
       obj[1] = this.rootConfig.getCid();
       Log.d("ReactNative", "initInternal is completed successfully");
