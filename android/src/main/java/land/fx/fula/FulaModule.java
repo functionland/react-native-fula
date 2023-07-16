@@ -756,7 +756,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       try {
         if (this.client != null) {
           Log.d("ReactNative", "writeFileFromPath started: this.rootConfig.getCid=" + this.rootConfig.getCid()+ ", fulaTargetFilename="+fulaTargetFilename + ", localFilename="+localFilename);
-          land.fx.wnfslib.Config config = Fs.writeFileFromPath(this.client, this.rootConfig.getCid(), fulaTargetFilename, localFilename);
+          land.fx.wnfslib.Config config = Fs.writeFileStreamFromPath(this.client, this.rootConfig.getCid(), fulaTargetFilename, localFilename);
           if(config != null) {
             this.rootConfig = config;
             this.encrypt_and_store_config();
