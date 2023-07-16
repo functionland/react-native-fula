@@ -23,11 +23,13 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.GCMParameterSpec;
 
 public class Cryptography {
-  public static String encryptMsg(String message, SecretKey secret)
+  public static String encryptMsg(String message, SecretKey secret, byte[] iv)
     throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
     Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-    byte[] iv = new byte[12]; // Ensure this is randomly generated for each encryption.
-    new SecureRandom().nextBytes(iv);
+    if (iv == null || iv.length == 0) {
+      iv = new byte[12]; // Ensure this is randomly generated for each encryption.
+      new SecureRandom().nextBytes(iv);
+    }
     GCMParameterSpec spec = new GCMParameterSpec(128, iv);
     cipher.init(Cipher.ENCRYPT_MODE, secret, spec);
     byte[] cipherText = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));

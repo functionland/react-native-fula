@@ -1,8 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 
-import { fula, blockchain, chainApi, fxblox } from '@functionland/react-native-fula';
-import { listFailedActions } from '../../.history/src/protocols/fula_20230710112519';
+import {
+  fula,
+  blockchain,
+  chainApi,
+  fxblox,
+} from '@functionland/react-native-fula';
 
 const App = () => {
   const [key, setKey] = React.useState<string>('');
@@ -17,20 +21,20 @@ const App = () => {
   var RNFS = require('react-native-fs');
   const readFile = () => {
     RNFS.readDir(RNFS.DocumentDirectoryPath)
-      .then((result) => {
+      .then((result: { path: any; }[]) => {
         console.log('GOT RESULT', result);
         return Promise.all([RNFS.stat(result[0].path), result[0].path]);
       })
-      .then((statResult) => {
+      .then((statResult: any[]) => {
         if (statResult[0].isFile()) {
           return RNFS.readFile(statResult[1], 'utf8');
         }
         return 'no file';
       })
-      .then((contents) => {
+      .then((contents: any) => {
         console.log(contents);
       })
-      .catch((err) => {
+      .catch((err: { message: any; code: any; }) => {
         console.log(err.message, err.code);
       });
   };
@@ -41,29 +45,13 @@ const App = () => {
     94, 225, 7, 153, 168, 239, 94, 7, 187, 123, 158, 149, 149, 227, 170, 32, 54,
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
-  const privateKeyString = "\\test";
-  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
-  const newClient = async () => {
-    try {
-      return fula.newClient(
-        privateKey.toString(),
-        '',
-        bloxAddr,
-        ''
-      );
-    } catch (e) {
-      console.log(e);
-      return Promise.reject(e);
-    }
-  };
+
+  const bloxAddr =
+    '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
+
   const initFula = async () => {
     try {
-      return fula.init(
-        privateKey.toString(),
-        '',
-        bloxAddr,
-        ''
-      );
+      return fula.init(privateKey.toString(), '', bloxAddr, '');
     } catch (e) {
       console.log(e);
       return Promise.reject(e);
@@ -137,57 +125,62 @@ const App = () => {
           title={inprogress ? 'Putting & Getting...' : 'Test'}
           onPress={async () => {
             try {
-                    fula
-                      .testData(privateKey.toString(), bloxAddr)
-                      .then((res) => {
-                        console.log('tested');
-                        console.log(res);
-                      })
-                      .catch((e) => {
-                        console.log('test failed');
-                        console.log(e);
-                      });
-
+              fula
+                .testData(privateKey.toString(), bloxAddr)
+                .then((res: any) => {
+                  console.log('tested');
+                  console.log(res);
+                })
+                .catch((e: any) => {
+                  console.log('test failed');
+                  console.log(e);
+                });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
         />
 
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Test List Failed links for a one'}
+          title={
+            inprogress
+              ? 'Putting & Getting...'
+              : 'Test List Failed links for a one'
+          }
           onPress={async () => {
             try {
-              console.log("checking: " + newRootCid);
-                    fula
-                      .listFailedActions([newRootCid])
-                      .then((res) => {
-                        console.log('tested');
-                        console.log(res);
-                      })
-                      .catch((e) => {
-                        console.log('test failed');
-                        console.log(e);
-                      });
-
+              console.log('checking: ' + newRootCid);
+              fula
+                .listFailedActions([newRootCid])
+                .then((res: any) => {
+                  console.log('tested');
+                  console.log(res);
+                })
+                .catch((e: any) => {
+                  console.log('test failed');
+                  console.log(e);
+                });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
         />
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Test List Failed links for all'}
+          title={
+            inprogress
+              ? 'Putting & Getting...'
+              : 'Test List Failed links for all'
+          }
           onPress={async () => {
             try {
-                    fula
-                      .listFailedActions()
-                      .then((res) => {
-                        console.log('tested');
-                        console.log(res);
-                      })
-                      .catch((e) => {
-                        console.log('test failed');
-                        console.log(e);
-                      });
-
+              fula
+                .listFailedActions()
+                .then((res: any) => {
+                  console.log('tested');
+                  console.log(res);
+                })
+                .catch((e: any) => {
+                  console.log('test failed');
+                  console.log(e);
+                });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
@@ -201,18 +194,19 @@ const App = () => {
                 console.log('initialization is completed. putting key/value');
                 var path = RNFS.DocumentDirectoryPath + '/test.txt';
                 RNFS.writeFile(path, 'test', 'utf8')
-                  .then((success) => {
+                  .then((success: any) => {
                     console.log(
                       'FILE WRITTEN in ' +
                         RNFS.DocumentDirectoryPath +
                         '/test.txt'
                     );
+                    console.log(success);
                     fula
                       .writeFile(
                         'root/test.txt',
                         RNFS.DocumentDirectoryPath + '/test.txt'
                       )
-                      .then((res) => {
+                      .then((res: any) => {
                         console.log('upload completed');
                         console.log(res);
                         fula
@@ -220,31 +214,13 @@ const App = () => {
                             'root/test.txt',
                             RNFS.DocumentDirectoryPath + '/test2.txt'
                           )
-                          .then((res) => {
-                            console.log('read completed');
+                          .then((res2: any) => {
+                            console.log('read completed ' + res2);
                             readFile();
-                            /*fula
-                              .mv('root/test.txt', 'root/testmv.txt')
-                              .then((resmv) => {
-                                console.log('mv complete');
-                                console.log(resmv);
-                                fula
-                                  .cp('root/testmv.txt', 'root/testcp.txt')
-                                  .then((rescp) => {
-                                    console.log('cp complete');
-                                    console.log(rescp);
-
-                                    fula.ls('root').then((res2) => {
-                                      console.log('ls2 complete');
-                                      console.log(res2);
-                                      fula.shutdown();
-                                    });
-                                  });
-                              });*/
                           });
                       });
                   })
-                  .catch((err) => {
+                  .catch((err: { message: any; }) => {
                     console.log(err.message);
                   });
               } else {
@@ -263,18 +239,19 @@ const App = () => {
                 console.log('initialization is completed. retry');
                 var path = RNFS.DocumentDirectoryPath + '/test_r.txt';
                 RNFS.writeFile(path, 'test_r', 'utf8')
-                  .then((success) => {
+                  .then((success: any) => {
                     console.log(
                       'FILE WRITTEN in ' +
                         RNFS.DocumentDirectoryPath +
                         '/test_r.txt'
                     );
+                    console.log(success);
                     fula
                       .writeFile(
                         'root/test_r.txt',
                         RNFS.DocumentDirectoryPath + '/test_r.txt'
                       )
-                      .then((res) => {
+                      .then((res: any) => {
                         console.log('upload completed');
                         console.log(res);
                         fula
@@ -282,40 +259,22 @@ const App = () => {
                             'root/test_r.txt',
                             RNFS.DocumentDirectoryPath + '/test_r2.txt'
                           )
-                          .then((res) => {
-                            console.log('read completed');
+                          .then((res2: any) => {
+                            console.log('read completed ' + res2);
                             readFile();
                             fula
                               .checkFailedActions()
-                              .then((f) => {
+                              .then((f: any) => {
                                 console.log('failed actions');
                                 console.log(f);
                               })
-                              .catch((e) => {
+                              .catch((e: any) => {
                                 console.log(e);
                               });
-                            /*fula
-                              .mv('root/test.txt', 'root/testmv.txt')
-                              .then((resmv) => {
-                                console.log('mv complete');
-                                console.log(resmv);
-                                fula
-                                  .cp('root/testmv.txt', 'root/testcp.txt')
-                                  .then((rescp) => {
-                                    console.log('cp complete');
-                                    console.log(rescp);
-
-                                    fula.ls('root').then((res2) => {
-                                      console.log('ls2 complete');
-                                      console.log(res2);
-                                      fula.shutdown();
-                                    });
-                                  });
-                              });*/
                           });
                       });
                   })
-                  .catch((err) => {
+                  .catch((err: { message: any; }) => {
                     console.log(err.message);
                   });
               } else {
@@ -331,27 +290,32 @@ const App = () => {
           onPress={async () => {
             try {
               if (initComplete) {
-                console.log('initialization is completed. retrying... first checking connection:');
-                fula.checkConnection().then((r) => {
-                  console.log('connection cehck passed');
-                  console.log(r);
-                  if (r) {
-                    console.log('check connection is completed. retry');
-                    fula
-                      .checkFailedActions(true)
-                      .then((res) => {
-                        console.log('retried');
-                        console.log(res);
-                      })
-                      .catch((e) => {
-                        console.log('retry failed');
-                        console.log(e);
-                      });
-                  }
-                }) .catch((e) => {
-                  console.log('connection cehck failed');
-                  console.log(e);
-                });
+                console.log(
+                  'initialization is completed. retrying... first checking connection:'
+                );
+                fula
+                  .checkConnection()
+                  .then((r: any) => {
+                    console.log('connection cehck passed');
+                    console.log(r);
+                    if (r) {
+                      console.log('check connection is completed. retry');
+                      fula
+                        .checkFailedActions(true)
+                        .then((res: any) => {
+                          console.log('retried');
+                          console.log(res);
+                        })
+                        .catch((e: any) => {
+                          console.log('retry failed');
+                          console.log(e);
+                        });
+                    }
+                  })
+                  .catch((e: any) => {
+                    console.log('connection cehck failed');
+                    console.log(e);
+                  });
               } else {
                 console.log('wait for init to complete');
               }
@@ -360,24 +324,25 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
 
-
         <Button
           title={inprogress ? 'Putting & Getting...' : 'New Account'}
           onPress={async () => {
             try {
               if (initComplete) {
-                fula.checkConnection().then((r) => {
+                fula.checkConnection().then((r: any) => {
                   console.log('connection cehck');
                   console.log(r);
                   if (r) {
                     console.log('initialization is completed. retry');
                     blockchain
-                      .createAccount("//81862be6b6ffea2d4b11aee9e6d02499363685171369f8a9088ac979b87eb8cb")
-                      .then((res) => {
+                      .createAccount(
+                        '//81862be6b6ffea2d4b11aee9e6d02499363685171369f8a9088ac979b87eb8cb'
+                      )
+                      .then((res: any) => {
                         console.log('created');
                         console.log(res);
                       })
-                      .catch((e) => {
+                      .catch((e: any) => {
                         console.log('creation failed');
                         console.log(e);
                       });
@@ -396,18 +361,20 @@ const App = () => {
           onPress={async () => {
             try {
               if (initComplete) {
-                fula.checkConnection().then((r) => {
+                fula.checkConnection().then((r: any) => {
                   console.log('connection check');
                   console.log(r);
                   if (r) {
                     console.log('initialization is completed. check account');
                     blockchain
-                      .checkAccountExists("5DAfEJDKAeejGCzw7kdvrzkhwyoNLZ1iSsq4LZkYPMMi6pgf")
-                      .then((res) => {
+                      .checkAccountExists(
+                        '5DAfEJDKAeejGCzw7kdvrzkhwyoNLZ1iSsq4LZkYPMMi6pgf'
+                      )
+                      .then((res: any) => {
                         console.log('replicationRequest created');
                         console.log(res);
                       })
-                      .catch((e) => {
+                      .catch((e: any) => {
                         console.log('replicationRequest creation failed');
                         console.log(e);
                       });
@@ -421,24 +388,23 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
 
-
-<Button
+        <Button
           title={inprogress ? 'Putting & Getting...' : 'Get All Pools'}
           onPress={async () => {
             try {
               if (initComplete) {
-                fula.checkConnection().then((r) => {
+                fula.checkConnection().then((r: any) => {
                   console.log('connection check');
                   console.log(r);
                   if (r) {
                     console.log('initialization is completed. get pools');
                     blockchain
                       .listPools()
-                      .then((res) => {
+                      .then((res: any) => {
                         console.log('listpool received');
                         console.log(res);
                       })
-                      .catch((e) => {
+                      .catch((e: any) => {
                         console.log('listpool fetch failed');
                         console.log(e);
                       });
@@ -457,7 +423,7 @@ const App = () => {
           onPress={async () => {
             try {
               if (initComplete) {
-                fula.checkConnection().then((r) => {
+                fula.checkConnection().then((r: any) => {
                   console.log('connection check');
                   console.log(r);
                   if (r) {
@@ -466,11 +432,11 @@ const App = () => {
                     );
                     blockchain
                       .bloxFreeSpace()
-                      .then((res) => {
+                      .then((res: any) => {
                         console.log('bloxFreeSpace received');
                         console.log(res);
                       })
-                      .catch((e) => {
+                      .catch((e: any) => {
                         console.log('bloxFreeSpace fetch failed');
                         console.log(e);
                       });
@@ -489,7 +455,7 @@ const App = () => {
           onPress={async () => {
             try {
               if (initComplete) {
-                fula.checkConnection().then((r) => {
+                fula.checkConnection().then((r: any) => {
                   console.log('connection check');
                   console.log(r);
                   if (r) {
@@ -498,11 +464,11 @@ const App = () => {
                     );
                     fxblox
                       .wifiRemoveall()
-                      .then((res) => {
+                      .then((res: any) => {
                         console.log('wifiRemoveall received');
                         console.log(res);
                       })
-                      .catch((e) => {
+                      .catch((e: any) => {
                         console.log('wifiRemoveall failed');
                         console.log(e);
                       });
@@ -516,12 +482,12 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
 
-<Button
+        <Button
           title={inprogress ? 'Getting...' : 'Reboot'}
           onPress={async () => {
             try {
               if (initComplete) {
-                fula.checkConnection().then((r) => {
+                fula.checkConnection().then((r: any) => {
                   console.log('connection check');
                   console.log(r);
                   if (r) {
@@ -530,11 +496,11 @@ const App = () => {
                     );
                     fxblox
                       .reboot()
-                      .then((res) => {
+                      .then((res: any) => {
                         console.log('reboot received');
                         console.log(res);
                       })
-                      .catch((e) => {
+                      .catch((e: any) => {
                         console.log('reboot failed');
                         console.log(e);
                       });
