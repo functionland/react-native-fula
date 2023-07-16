@@ -16,7 +16,7 @@ export const init = (
   rootCid: string | null = null,
   useRelay: boolean = true,
   refresh: boolean = false
-): Promise<{ peerId: string; rootCid: string; private_ref: string }> => {
+): Promise<{ peerId: string; rootCid: string }> => {
   console.log(
     'init in react-native started',
     identity,
@@ -26,7 +26,16 @@ export const init = (
     autoFlush,
     useRelay
   );
-  return Fula.init(identity, storePath, bloxAddr, exchange, autoFlush, rootCid, useRelay, refresh);
+  return Fula.init(
+    identity,
+    storePath,
+    bloxAddr,
+    exchange,
+    autoFlush,
+    rootCid,
+    useRelay,
+    refresh
+  );
 };
 
 /**
@@ -55,7 +64,15 @@ export const newClient = (
     useRelay,
     refresh
   );
-  return Fula.newClient(identity, storePath, bloxAddr, exchange, autoFlush, useRelay, refresh);
+  return Fula.newClient(
+    identity,
+    storePath,
+    bloxAddr,
+    exchange,
+    autoFlush,
+    useRelay,
+    refresh
+  );
 };
 
 /**
@@ -283,13 +300,9 @@ export const shutdown = (): Promise<void> => {
  * @param peerId, allow
  * @returns boolean: true if successful or false if not
  */
-export const setAuth = (
-  peerId: string,
-  allow: boolean
-): Promise<boolean> => {
+export const setAuth = (peerId: string, allow: boolean): Promise<boolean> => {
   return Fula.setAuth(peerId, allow);
 };
-
 
 /**
  * isReady checks if the connection is ready to be used.
