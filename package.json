@@ -1,6 +1,6 @@
 {
   "name": "@functionland/react-native-fula",
-  "version": "1.12.1",
+  "version": "1.13.1",
   "description": "This package is a bridge to use the Fula libp2p protocols in the react-native which is using wnfs",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
