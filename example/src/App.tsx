@@ -139,6 +139,29 @@ const App = () => {
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+        <Button
+          //12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx
+          title={
+            inprogress
+              ? 'Putting & Getting...'
+              : 'set auth'
+          }
+          onPress={async () => {
+            try {
+              fula
+                .setAuth('12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx', true)
+                .then((res: any) => {
+                  console.log('tested');
+                  console.log(res);
+                })
+                .catch((e: any) => {
+                  console.log('test failed');
+                  console.log(e);
+                });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
 
         <Button
           title={
@@ -189,21 +212,23 @@ const App = () => {
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Write WNFS'}
           onPress={async () => {
+            const unixTimestamp: number = Math.floor(Date.now() / 1000);
             try {
               if (initComplete) {
                 console.log('initialization is completed. putting key/value');
                 var path = RNFS.DocumentDirectoryPath + '/test.txt';
-                RNFS.writeFile(path, 'test', 'utf8')
+                RNFS.writeFile(path, 'test ' + unixTimestamp, 'utf8')
                   .then((success: any) => {
                     console.log(
                       'FILE WRITTEN in ' +
                         RNFS.DocumentDirectoryPath +
-                        '/test.txt'
+                        '/test.txt with ' +
+                        unixTimestamp
                     );
                     console.log(success);
                     fula
                       .writeFile(
-                        'root/test.txt',
+                        'root/test_' + unixTimestamp + '.txt',
                         RNFS.DocumentDirectoryPath + '/test.txt'
                       )
                       .then((res: any) => {
@@ -211,8 +236,11 @@ const App = () => {
                         console.log(res);
                         fula
                           .readFile(
-                            'root/test.txt',
-                            RNFS.DocumentDirectoryPath + '/test2.txt'
+                            'root/test_' + unixTimestamp + '.txt',
+                            RNFS.DocumentDirectoryPath +
+                              '/test_' +
+                              unixTimestamp +
+                              '.txt'
                           )
                           .then((res2: any) => {
                             console.log('read completed ' + res2);
@@ -226,6 +254,25 @@ const App = () => {
               } else {
                 console.log('wait for init to complete');
               }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'List' : 'List'}
+          onPress={async () => {
+            try {
+              fula
+                .ls('root')
+                .then((res: any) => {
+                  console.log('tested');
+                  console.log(res);
+                })
+                .catch((e: any) => {
+                  console.log('test failed');
+                  console.log(e);
+                });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
