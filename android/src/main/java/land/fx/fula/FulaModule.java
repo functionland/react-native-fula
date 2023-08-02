@@ -26,6 +26,7 @@ import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.ArrayList;
 
@@ -62,6 +63,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   Client client;
   Config fulaConfig;
+
+  String appName;
   String appDir;
   String fulaStorePath;
   land.fx.wnfslib.Config rootConfig;
@@ -110,6 +113,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   public FulaModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    appName = reactContext.getPackageName();
     appDir = reactContext.getFilesDir().toString();
     fulaStorePath = appDir + "/fula";
     File storeDir = new File(fulaStorePath);
@@ -119,9 +123,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
       success = storeDir.mkdirs();
     }
     if (success) {
-      Log.d(NAME, "Fula store folder created");
+      Log.d("ReactNative", "Fula store folder created for " + appName + " at " + fulaStorePath);
     } else {
-      Log.d(NAME, "Unable to create fula store folder!");
+      Log.d("ReactNative", "Unable to create fula store folder for " + appName + " at " + fulaStorePath);
     }
   }
 
@@ -503,7 +507,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
         throw new GeneralSecurityException("Failed to generate key encryption", e);
       }
 
-      if (encryptedLibp2pId == null || !encryptedLibp2pId.startsWith("FULA_ENC_V3:")) {
+      if (encryptedLibp2pId == null || !encryptedLibp2pId.startsWith("FULA_" +
+        "ENC_V4:")) {
         Log.d("ReactNative", "encryptedLibp2pId is not correct. creating new one " + encryptedLibp2pId);
 
         try {
@@ -512,14 +517,14 @@ public class FulaModule extends ReactContextBaseJavaModule {
           Log.d("ReactNative", "Failed to generate libp2pId: " + e.getMessage());
           throw new GeneralSecurityException("Failed to generate libp2pId", e);
         }
-        encryptedLibp2pId = "FULA_ENC_V3:" + Cryptography.encryptMsg(StaticHelper.bytesToBase64(libp2pId), encryptionSecretKey, null);
+        encryptedLibp2pId = "FULA_ENC_V4:" + Cryptography.encryptMsg(StaticHelper.bytesToBase64(libp2pId), encryptionSecretKey, null);
         sharedPref.add(PRIVATE_KEY_STORE_PEERID, encryptedLibp2pId);
       } else {
         Log.d("ReactNative", "encryptedLibp2pId is correct. decrypting " + encryptedLibp2pId);
       }
 
       try {
-        String decryptedLibp2pId = Cryptography.decryptMsg(encryptedLibp2pId.replace("FULA_ENC_V3:", ""), encryptionSecretKey);
+        String decryptedLibp2pId = Cryptography.decryptMsg(encryptedLibp2pId.replace("FULA_ENC_V4:", ""), encryptionSecretKey);
 
         return StaticHelper.base64ToBytes(decryptedLibp2pId);
       } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
@@ -534,7 +539,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   private void createNewRootConfig(FulaModule.Client iClient, byte[] identity) throws Exception {
-    this.rootConfig = Fs.init(iClient, identity);
+    byte[] hash32 = getSHA256Hash(identity);
+    this.rootConfig = Fs.init(iClient, hash32);
     Log.d("ReactNative", "rootConfig is created " + this.rootConfig.getCid());
     if (this.fula != null) {
       this.fula.flush();
@@ -542,9 +548,24 @@ public class FulaModule extends ReactContextBaseJavaModule {
     this.encrypt_and_store_config();
   }
 
+  public static byte[] getSHA256Hash(byte[] input) throws NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance("SHA-256");
+    return md.digest(input);
+  }
+
+  private static String bytesToHex(byte[] bytes) {
+      StringBuilder result = new StringBuilder();
+      for (byte b : bytes) {
+          result.append(String.format("%02x", b));
+      }
+      return result.toString();
+  }
+
   private void reloadFS(FulaModule.Client iClient, byte[] wnfsKey, String rootCid) throws Exception {
     Log.d("ReactNative", "reloadFS called: rootCid=" + rootCid);
-    Fs.loadWithWNFSKey(iClient, wnfsKey, rootCid);
+    byte[] hash32 = getSHA256Hash(wnfsKey);
+    Log.d("ReactNative", "wnfsKey=" + bytesToHex(wnfsKey) + "; hash32 = " + bytesToHex(hash32));
+    Fs.loadWithWNFSKey(iClient, hash32, rootCid);
     Log.d("ReactNative", "reloadFS completed");
   }
 
@@ -555,7 +576,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
         String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal, null);
 
-        sharedPref.add("FULA_ENC_V3:cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
+        sharedPref.add("FULA_ENC_V4:cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
         return true;
       } else {
         Log.d("ReactNative", "encrypt_and_store_config failed because identityEncryptedGlobal is empty");
@@ -575,11 +596,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
       SecretKey secretKey = Cryptography.generateKey(identity);
       byte[] iv = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B };
       String identity_encrypted = Cryptography.encryptMsg(Arrays.toString(identity), secretKey, iv);
-      sharedPref.remove("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
+      sharedPref.remove("FULA_ENC_V4:cid_encrypted_"+ identity_encrypted);
 
       //TODO: Should also remove peerid @Mahdi
 
-      sharedPref.remove("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
+      sharedPref.remove("FULA_ENC_V4:cid_encrypted_"+ identity_encrypted);
 
       this.rootConfig = null;
       this.secretKeyGlobal = null;
@@ -670,7 +691,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "this.rootCid is empty.");
         //Load from keystore
 
-        String cid_encrypted_fetched = sharedPref.getValue("FULA_ENC_V3:cid_encrypted_"+ identity_encrypted);
+        String cid_encrypted_fetched = sharedPref.getValue("FULA_ENC_V4:cid_encrypted_"+ identity_encrypted);
         Log.d("ReactNative", "Here1");
         String cid = "";
         if(cid_encrypted_fetched != null && !cid_encrypted_fetched.isEmpty()) {
@@ -904,6 +925,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "readFile: fulaTargetFilename = " + fulaTargetFilename);
       try {
+        Log.d("ReactNative", "readFile: localFilename = " + localFilename + " fulaTargetFilename = " + fulaTargetFilename + " cid = " + this.rootConfig.getCid() + " client = " + this.client);
         String path = Fs.readFilestreamToPath(this.client, this.rootConfig.getCid(), fulaTargetFilename, localFilename);
         promise.resolve(path);
       } catch (Exception e) {
