@@ -712,7 +712,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
             this.createNewRootConfig(this.client, identity);
           }
         } else {
-          Log.d("ReactNative", "Recovered cid and private ref from keychain store. cid="+cid);
+          Log.d("ReactNative", "Recovered cid and private ref from keychain store. cid="+cid +" and cid from input was: "+rootCid);
           this.rootConfig = new land.fx.wnfslib.Config(cid);
           this.reloadFS(this.client, identity, cid);
           this.encrypt_and_store_config();
@@ -742,7 +742,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void mkdir(String path, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "mkdir: path = " + path);
+      Log.d("ReactNative", "mkdir started with: path = " + path + " rootConfig.getCid() = " + this.rootConfig.getCid());
       try {
         land.fx.wnfslib.Config config = Fs.mkdir(this.client, this.rootConfig.getCid(), path);
         if(config != null) {
@@ -751,7 +751,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
           if (this.fula != null) {
             this.fula.flush();
           }
-          promise.resolve(config.getCid());
+          String rootCid = this.rootConfig.getCid();
+          Log.d("ReactNative", "mkdir completed successfully with rootCid = " + rootCid);
+          promise.resolve(rootCid);
         } else {
           Log.d("ReactNative", "mkdir Error: config is null");
           promise.reject(new Exception("mkdir Error: config is null"));
@@ -783,7 +785,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
             this.encrypt_and_store_config();
             if (this.fula != null) {
               this.fula.flush();
-              promise.resolve(config.getCid());
+              String rootCid = this.rootConfig.getCid();
+              Log.d("ReactNative", "writeFileFromPath completed: this.rootConfig.getCid=" + rootCid);
+              promise.resolve(rootCid);
             } else {
               Log.d("ReactNative", "writeFile Error: fula is null");
               promise.reject(new Exception("writeFile Error: fula is null"));
@@ -844,7 +848,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void rm(String path, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "rm: path = " + path);
+      Log.d("ReactNative", "rm: path = " + path + ", beginning rootCid=" + this.rootConfig.getCid());
       try {
         land.fx.wnfslib.Config config = Fs.rm(this.client, this.rootConfig.getCid(), path);
         if(config != null) {
@@ -853,7 +857,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
           if (this.fula != null) {
             this.fula.flush();
           }
-          promise.resolve(config.getCid());
+          String rootCid = config.getCid();
+          Log.d("ReactNative", "rm: returned rootCid = " + rootCid);
+          promise.resolve(rootCid);
         } else {
             Log.d("ReactNative", "rm Error: config is null");
             promise.reject(new Exception("rm Error: config is null"));
@@ -925,7 +931,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "readFile: fulaTargetFilename = " + fulaTargetFilename);
       try {
-        Log.d("ReactNative", "readFile: localFilename = " + localFilename + " fulaTargetFilename = " + fulaTargetFilename + " cid = " + this.rootConfig.getCid() + " client = " + this.client);
+        Log.d("ReactNative", "readFile: localFilename = " + localFilename + " fulaTargetFilename = " + fulaTargetFilename + " beginning rootCid = " + this.rootConfig.getCid());
         String path = Fs.readFilestreamToPath(this.client, this.rootConfig.getCid(), fulaTargetFilename, localFilename);
         promise.resolve(path);
       } catch (Exception e) {
