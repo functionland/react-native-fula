@@ -1,28 +1,28 @@
 PODS:
   - CryptoSwift (1.7.1)
-  - Fula (0.1.1)
-  - WnfsBindings (0.1.6)
-  - WnfsSwift (0.1.6):
-    - WnfsBindings (= 0.1.6)
+  - Fula (1.0.0)
+  - Wnfs (1.0.1):
+    - WnfsBindings (= 1.0.0)
+  - WnfsBindings (1.0.0)
 
 DEPENDENCIES:
   - CryptoSwift (~> 1.7.1)
-  - Fula (= 0.1.1)
-  - WnfsSwift (~> 0.1.6)
+  - Fula (= 1.0.0)
+  - Wnfs (~> 1.0.1)
 
 SPEC REPOS:
   trunk:
     - CryptoSwift
     - Fula
+    - Wnfs
     - WnfsBindings
-    - WnfsSwift
 
 SPEC CHECKSUMS:
   CryptoSwift: d3d18dc357932f7e6d580689e065cf1f176007c1
-  Fula: 0060246395ecafd350a19da372256a428b294cf0
-  WnfsBindings: 14a2a54584a591e08fefd1ab3c1d609b54240530
-  WnfsSwift: 36d20a9aeb221c5e548ecd4dd1764672d91c90ee
+  Fula: a7b468e11348ba96ba565d142cb0ed7187b0e583
+  Wnfs: e16bb3574fe1955577ad584e09ad63ac056c92a4
+  WnfsBindings: 5de82db102dcd23b989cc6a4854de1ab68c930be
 
-PODFILE CHECKSUM: da9df70ab3c6ce74089e0555012876abebd46ae8
+PODFILE CHECKSUM: 6258b039a3b62c44839b5f713d9ceb162337bb55
 
 COCOAPODS: 1.12.0

@@ -7,38 +7,59 @@ public class UserDataHelper: NSObject {
         defaults = UserDefaults.standard
     }
     
-    public func getValue(key: String) -> String? {
+    public func getValue(_ key: String) -> String? {
         return defaults.string(forKey: key)
     }
     
-    public func getBooleanValue(key: String) -> Bool? {
+    public func getBooleanValue(_ key: String) -> Bool? {
         return defaults.bool(forKey: key)
     }
     
-    public func  add(key: String, value: String) {
+    public func  add(_ key: String, _ value: String) {
         defaults.set(value, forKey: key)
     }
     
-    public func add( key: String, boolean value: Bool) {
+    public func add(_ key: String, _ value: Bool) {
         defaults.set(value, forKey: key)
     }
     
-    public func remove( key: String) {
+    public func remove(_ key: String) {
         defaults.removeObject(forKey: key)
     }
 }
 
-extension String {   
+public extension String {
     func trim() -> String {
         return self.trimmingCharacters(in: NSCharacterSet.whitespaces)
     }
     func fromBase64() -> Data? {
         return Data(base64Encoded: self)
     }
+
+    func toUint8Array() -> Array<UInt8> {
+        return Array(self.utf8)
+    }
 }
-extension Data {
+
+public extension Array<UInt8> {
+    func toString() -> String {
+        //TODO: make utf8
+        return Data(self).toHex()
+    }
+    func toData() -> Data {
+        return Data(self)
+    }
+}
+
+public func toData(ptr: UnsafePointer<UInt8>?, size: Int) -> Data? {
+    // This will clone input c bytes to a swift Data class.
+    let buffer = UnsafeBufferPointer(start: ptr, count: size)
+    return Data(buffer: buffer)
+}
+
+public extension Data {
     /// Fast convert to hex by reserving memory (instead of mapping and join).
-    public func toHex(uppercase: Bool = false) -> String {
+    func toHex(uppercase: Bool = false) -> String {
         // Constants (Hex has 2 characters for each Byte).
         let size = self.count * 2;
         let degitToCharMap = Array((
@@ -60,13 +81,17 @@ extension Data {
         return String(utf16CodeUnitsNoCopy: buffer,
                       count: size, freeWhenDone: true)
     }
-    public func toString() -> String {
+    func toString() -> String {
         //TODO: make utf8
         return self.toHex()
     }
 
-//    public func fromBase64() -> Data? {
-//        // Finally, decode.
-//        return Data(base64Encoded: self)
-//    }
+    func toUint8Array() -> Array<UInt8> {
+        return Array(self)
+    }
+
+    func fromBase64() -> Data? {
+        // Finally, decode.
+        return Data(base64Encoded: self)
+    }
 }

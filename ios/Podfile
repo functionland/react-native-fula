@@ -6,7 +6,7 @@ target 'FulaModule' do
 #  use_frameworks!
 
   # Pods for FulaModule
-  pod "Fula", '0.1.1'
-  pod "WnfsSwift",  '~> 0.1.6'
+  pod "Fula", '1.0.0'
+  pod "Wnfs",  '~> 1.0.1'
   pod 'CryptoSwift', '~> 1.7.1'
 end

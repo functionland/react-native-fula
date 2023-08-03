@@ -19,7 +19,7 @@ RCT_EXTERN_METHOD(isReady:(Bool)withFilesystemCheck
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(init:(String)IdentityString
+RCT_EXTERN_METHOD(initFula:(String)IdentityString
                   withStorePath: (String)storePath
                   withBloxAddr: (String)bloxAddr
                   withExchange: (String)exchange
@@ -104,8 +104,7 @@ RCT_EXTERN_METHOD(setAuth:(String)peerIdString
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(shutdown:
-                  withResolver:(RCTPromiseResolveBlock)resolve
+RCT_EXTERN_METHOD(shutdown:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(createAccount:(String)seedString
@@ -121,8 +120,7 @@ RCT_EXTERN_METHOD(createPool:(String)seedString
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(listPools:
-                  withResolver:(RCTPromiseResolveBlock)resolve
+RCT_EXTERN_METHOD(listPools:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(joinPool:(String)seedString
@@ -190,8 +188,7 @@ RCT_EXTERN_METHOD(removeStoredReplication:(String)seedString
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 
-RCT_EXTERN_METHOD(bloxFreeSpace:
-                  withResolver:(RCTPromiseResolveBlock)resolve
+RCT_EXTERN_METHOD(bloxFreeSpace:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 + (BOOL)requiresMainQueueSetup
