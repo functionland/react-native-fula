@@ -51,27 +51,35 @@ interface FulaNativeModule {
   testData: (identity: string, bloxAddr: string) => Promise<string>;
 
   //Blockchain related functions
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   createAccount: (seed: string) => Promise<string>;
   checkAccountExists: (account: string) => Promise<string>;
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   createPool: (seed: string, poolName: string) => Promise<string>;
   listPools: () => Promise<string>;
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   joinPool: (seed: string, poolID: number) => Promise<string>;
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   leavePool: (seed: string, poolID: number) => Promise<string>;
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   cancelPoolJoin: (seed: string, poolID: number) => Promise<string>;
   listPoolJoinRequests: (poolID: number) => Promise<string>;
   votePoolJoinRequest: (
+    // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
     seed: string,
     poolID: number,
     account: string,
     accept: boolean
   ) => Promise<string>;
   newReplicationRequest: (
+    // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
     seed: string,
     poolID: number,
     replicationFactor: number,
     cid: string
   ) => Promise<string>;
   newStoreRequest: (
+    // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
     seed: string,
     poolID: number,
     uploader: string,
@@ -79,17 +87,20 @@ interface FulaNativeModule {
   ) => Promise<string>;
   listAvailableReplicationRequests: (poolID: number) => Promise<string>;
   removeReplicationRequest: (
+    // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
     seed: string,
     poolID: number,
     cid: string
   ) => Promise<string>;
   removeStorer: (
+    // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
     seed: string,
     storer: string,
     poolID: number,
     cid: string
   ) => Promise<string>;
   removeStoredReplication: (
+    // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
     seed: string,
     uploader: string,
     poolID: number,

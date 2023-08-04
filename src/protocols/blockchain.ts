@@ -5,8 +5,10 @@ import type * as BType from '../types/blockchain';
 createAccount: This function takes a seed argument, which is used to create an account. The seed must start with "/". The function returns a promise of an object that contains the seed and the account that was created.
 */
 export const createAccount = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string //seed that is used to create the account. It must start with "/"
 ): Promise<BType.SeededResponse> => {
+  // SBP-M1 review: seed phrase exposed in logs, remove this.
   console.log('createAccount in react-native started', seed);
   let res = Fula.createAccount(seed)
     .then((res) => {
@@ -57,9 +59,11 @@ export const checkAccountExists = (
 createPool: This function takes two arguments: seed and poolName. The seed is used to identify the account that is creating the pool, and the poolName is the name of the pool being created. The function returns a promise of an object that contains the owner of the pool and the poolID of the created pool.
 */
 export const createPool = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   poolName: string
 ): Promise<BType.PoolCreateResponse> => {
+  // SBP-M1 review: seed phrase exposed in logs, remove this.
   console.log('createPool in react-native started', seed, poolName);
   let res = Fula.createPool(seed, poolName)
     .then((res) => {
@@ -109,9 +113,11 @@ export const listPools = (): Promise<BType.PoolListResponse> => {
     */
 
 export const joinPool = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   poolID: number
 ): Promise<BType.PoolJoinResponse> => {
+  // SBP-M1 review: seed phrase exposed in logs, remove this.
   console.log('joinPool in react-native started', seed, poolID);
   let res = Fula.joinPool(seed, poolID)
     .then((res) => {
@@ -137,9 +143,11 @@ export const joinPool = (
       */
 
 export const leavePool = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   poolID: number
 ): Promise<BType.PoolLeaveResponse> => {
+  // SBP-M1 review: seed phrase exposed in logs, remove this.
   console.log('leavePool in react-native started', seed, poolID);
   let res = Fula.leavePool(seed, poolID)
     .then((res) => {
@@ -161,9 +169,11 @@ export const leavePool = (
 };
 
 export const cancelPoolJoin = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   poolID: number
 ): Promise<BType.PoolCancelJoinResponse> => {
+  // SBP-M1 review: seed phrase exposed in logs, remove this.
   console.log('cancelPoolJoin in react-native started', seed, poolID);
   let res = Fula.cancelPoolJoin(seed, poolID)
     .then((res) => {
@@ -214,11 +224,13 @@ accept is a boolean value that indicates whether to accept or reject the join re
 It returns a promise of BType.PoolVoteResponse which includes the account and poolID
 */
 export const votePoolJoinRequest = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   poolID: number,
   account: string,
   accept: boolean
 ): Promise<BType.PoolVoteResponse> => {
+  // SBP-M1 review: seed phrase exposed in logs, remove this.
   console.log(
     'votePoolJoinRequest in react-native started',
     seed,
@@ -255,6 +267,7 @@ cid is the content identifier of the content to be replicated.
 It returns a promise of BType.ManifestUploadResponse which includes the uploader, storage, ManifestMetadata, and poolID
           */
 export const newReplicationRequest = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   poolID: number,
   replicationFactor: number,
@@ -296,6 +309,7 @@ cid is the content identifier of the content to be stored.
 It returns a promise of BType.ManifestUploadResponse which includes the uploader, storage, ManifestMetadata, and poolID
 */
 export const newStoreRequest = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   poolID: number,
   uploader: string,
@@ -368,6 +382,7 @@ cid is the content ID of the replication request being removed
 It returns a promise of BType.ManifestUploadResponse which is the removed replication request, including the uploader, storage, ManifestMetadata, and poolID
 */
 export const removeReplicationRequest = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   poolID: number,
   cid: string
@@ -407,6 +422,7 @@ cid is the content ID of the replication request for which the storer is being r
 It returns a promise of BType.ManifestUploadResponse which is the replication request, including the uploader, storage, ManifestMetadata, and poolID after the storer has been removed.
 */
 export const removeStorer = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   storer: string,
   poolID: number,
@@ -448,6 +464,7 @@ cid is the content ID of the replication request for which the stored replicatio
 It returns a promise of BType.ManifestUploadResponse which is the replication request, including the uploader, storage, ManifestMetadata, and poolID after the stored replication has been removed.
 */
 export const removeStoredReplication = (
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   seed: string,
   uploader: string,
   poolID: number,

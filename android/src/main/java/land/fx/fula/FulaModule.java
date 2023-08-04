@@ -1148,6 +1148,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   //////////////////////ANYTHING BELOW IS FOR BLOCKCHAIN/////
   ///////////////////////////////////////////////////////////
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void createAccount(String seedString, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "createAccount: seedString = " + seedString);
@@ -1186,6 +1187,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void createPool(String seedString, String poolName, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "createPool: seedString = " + seedString + "; poolName = " + poolName);
@@ -1216,6 +1218,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void joinPool(String seedString, long poolID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "joinPool: seedString = " + seedString + "; poolID = " + poolID);
@@ -1231,6 +1234,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void cancelPoolJoin(String seedString, long poolID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "cancelPoolJoin: seedString = " + seedString + "; poolID = " + poolID);
@@ -1261,6 +1265,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void votePoolJoinRequest(String seedString, long poolID, String accountString, boolean accept, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "votePoolJoinRequest: seedString = " + seedString + "; poolID = " + poolID + "; accountString = " + accountString + "; accept = " + accept);
@@ -1276,6 +1281,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void leavePool(String seedString, long poolID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "leavePool: seedString = " + seedString + "; poolID = " + poolID);
@@ -1291,6 +1297,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void newReplicationRequest(String seedString, long poolID, long replicationFactor, String cid, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "newReplicationRequest: seedString = " + seedString + "; poolID = " + poolID + "; replicationFactor = " + replicationFactor + "; cid = " + cid);
@@ -1306,6 +1313,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void newStoreRequest(String seedString, long poolID, String uploader, String cid, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "newStoreRequest: seedString = " + seedString + "; poolID = " + poolID + "; uploader = " + uploader + "; cid = " + cid);
@@ -1336,6 +1344,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void removeReplicationRequest(String seedString, long poolID, String cid, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "newReplicationRequest: seedString = " + seedString + "; poolID = " + poolID + "; cid = " + cid);
@@ -1351,6 +1360,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void removeStorer(String seedString, String storage, long poolID, String cid, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "removeStorer: seedString = " + seedString + "; storage = " + storage + "; poolID = " + poolID + "; cid = " + cid);
@@ -1366,6 +1376,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
   public void removeStoredReplication(String seedString, String uploader, long poolID, String cid, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "removeStoredReplication: seedString = " + seedString + "; uploader = " + uploader + "; poolID = " + poolID + "; cid = " + cid);

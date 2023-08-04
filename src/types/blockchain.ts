@@ -1,3 +1,4 @@
+// SBP-M1 review: create seed on device and store securely, then use PolkadotJS API to sign an extrinsic which can then be submitted to the node/api. The seed should never leave the device. Remove the seed from here.
     export interface SeededResponse {
     seed: string;
     account: string;
