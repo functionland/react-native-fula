@@ -10,12 +10,12 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => "10.0" }
+  s.platforms    = { :ios => "13.0" }
   s.source       = { :git => "https://github.com/functionland/react-native-fula.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm}"
   s.dependency "React-Core"
-  s.dependency 'Mobile','~> 0.0.3'
-  s.dependency "WnfsSwift",  "0.1.6"
+  s.dependency 'Fula','~> 1.0.0'
+  s.dependency "Wnfs",  "1.0.0"
   s.dependency 'CryptoSwift', '~> 1.7.1'
 end

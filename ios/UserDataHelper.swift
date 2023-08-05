@@ -43,8 +43,7 @@ public extension String {
 
 public extension Array<UInt8> {
     func toString() -> String {
-        //TODO: make utf8
-        return Data(self).toHex()
+        return Data(self).toString()
     }
     func toData() -> Data {
         return Data(self)
@@ -82,8 +81,7 @@ public extension Data {
                       count: size, freeWhenDone: true)
     }
     func toString() -> String {
-        //TODO: make utf8
-        return self.toHex()
+        return String(data: self, encoding: .utf8)
     }
 
     func toUint8Array() -> Array<UInt8> {
