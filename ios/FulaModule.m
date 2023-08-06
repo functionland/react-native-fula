@@ -2,8 +2,7 @@
 
 @interface RCT_EXTERN_MODULE(FulaModule, NSObject)
 
-RCT_EXTERN_METHOD(checkConnection:
-                  withResolver:(RCTPromiseResolveBlock)resolve
+RCT_EXTERN_METHOD(checkConnection:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(newClient:(String)IdentityString
@@ -15,7 +14,7 @@ RCT_EXTERN_METHOD(newClient:(String)IdentityString
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(isReady:(Bool)withFilesystemCheck
+RCT_EXTERN_METHOD(isReady:(Bool)filesystemCheck
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
@@ -90,8 +89,7 @@ RCT_EXTERN_METHOD(has:(String)keyString
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(push:
-                  withResolver:(RCTPromiseResolveBlock)resolve
+RCT_EXTERN_METHOD(push:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(put:(String)valueString

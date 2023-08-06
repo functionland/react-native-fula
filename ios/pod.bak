@@ -9,4 +9,5 @@ target 'FulaModule' do
   pod "Fula", '1.0.0'
   pod "Wnfs",  '~> 1.0.1'
   pod 'CryptoSwift', '~> 1.7.1'
+  pod "React-Core"
 end

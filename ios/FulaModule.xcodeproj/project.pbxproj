@@ -10,7 +10,6 @@
 		066DC22A29FE50F800DD3EDE /* FulaModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066DC22929FE50F800DD3EDE /* FulaModule.swift */; };
 		06C6BE5D2A40BEFB002E7C67 /* UserDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0673AB692A122BD00087A7C0 /* UserDataHelper.swift */; };
 		06C6BE5E2A40BEFF002E7C67 /* Cryptography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0673AB682A122B850087A7C0 /* Cryptography.swift */; };
-		6071875F2362712C2271DEDC /* libPods-FulaModule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D631B0B231F1E932653E588 /* libPods-FulaModule.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,9 +31,6 @@
 		0673AB692A122BD00087A7C0 /* UserDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataHelper.swift; sourceTree = "<group>"; };
 		11C0B56A28882C93007D9057 /* FulaModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FulaModule.m; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libFulaModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFulaModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		1D631B0B231F1E932653E588 /* libPods-FulaModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FulaModule.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		486AC486EC46EA3A8EB84D8A /* Pods-FulaModule.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FulaModule.release.xcconfig"; path = "Target Support Files/Pods-FulaModule/Pods-FulaModule.release.xcconfig"; sourceTree = "<group>"; };
-		B0E0C0292F59083E55CC31AA /* Pods-FulaModule.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FulaModule.debug.xcconfig"; path = "Target Support Files/Pods-FulaModule/Pods-FulaModule.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,7 +38,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6071875F2362712C2271DEDC /* libPods-FulaModule.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,23 +62,12 @@
 				134814211AA4EA7D00B7C361 /* Products */,
 				066DC22829FE50F700DD3EDE /* FulaModule-Bridging-Header.h */,
 				E0FCC2F04F834E2B6110D43C /* Pods */,
-				6541745631C393994EC117E9 /* Frameworks */,
 			);
-			sourceTree = "<group>";
-		};
-		6541745631C393994EC117E9 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				1D631B0B231F1E932653E588 /* libPods-FulaModule.a */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E0FCC2F04F834E2B6110D43C /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				B0E0C0292F59083E55CC31AA /* Pods-FulaModule.debug.xcconfig */,
-				486AC486EC46EA3A8EB84D8A /* Pods-FulaModule.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -95,7 +79,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "FulaModule" */;
 			buildPhases = (
-				9E6E177F871C99A728AFB58C /* [CP] Check Pods Manifest.lock */,
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
 				58B511D91A9E6C8500147676 /* CopyFiles */,
@@ -141,31 +124,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		9E6E177F871C99A728AFB58C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FulaModule-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		58B511D71A9E6C8500147676 /* Sources */ = {
@@ -228,6 +186,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SYSTEM_HEADER_SEARCH_PATHS = "$(inherited)/** ${PODS_ROOT}/** ${SRCROOT}/../../../ios/Pods/Headers/**";
 			};
 			name = Debug;
 		};
@@ -270,13 +229,13 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SYSTEM_HEADER_SEARCH_PATHS = "${SRCROOT}/../../../ios/Pods/Header/** $(inherited)/** ${PODS_ROOT}/**";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B0E0C0292F59083E55CC31AA /* Pods-FulaModule.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (
@@ -299,7 +258,6 @@
 		};
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 486AC486EC46EA3A8EB84D8A /* Pods-FulaModule.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (

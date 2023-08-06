@@ -110,7 +110,7 @@ class FulaModule: NSObject {
         return convertIntToByte(keyInt)
     }
 
-        @objc(checkConnection:withResolver:withRejecter:)
+        @objc(checkConnection:withRejecter:)
         func checkConnection(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
             Task {
                 print("ReactNative", "checkConnection started")
@@ -148,7 +148,7 @@ class FulaModule: NSObject {
             }
         }
 
-        @objc(isReady:withFilesystemCheck:withResolver:withRejecter:)
+        @objc(isReady:withResolver:withRejecter:)
         func isReady(filesystemCheck: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void{
             print("ReactNative", "isReady started")
             var initialized = false
@@ -227,7 +227,7 @@ class FulaModule: NSObject {
             }
         }
 
-        @objc(checkFailedActions:withRetry:withResolver:withRejecter:)
+        @objc(checkFailedActions:withResolver:withRejecter:)
         func checkFailedActions(retry: Bool, resolve:RCTPromiseResolveBlock, reject:RCTPromiseRejectBlock) -> Void{
             do {
                 if (fula != nil) {
@@ -784,7 +784,7 @@ class FulaModule: NSObject {
         }
     }
 
-    @objc(push:withResolver:withRejecter:)
+    @objc(push:withRejecter:)
     func push(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
             print("ReactNative", "push started")
             do {
@@ -812,6 +812,7 @@ class FulaModule: NSObject {
         }
     }
 
+    // FIXME: unused codecString arg
     @objc(put:withCodecString:withResolver:withRejecter:)
     func put(valueString: String, codecString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
 
@@ -819,7 +820,7 @@ class FulaModule: NSObject {
             print("ReactNative", "put: valueString = " + valueString)
             do {
                 //byte[] codec = convertStringToByte(CodecString)
-                let codec = Int(codecString)
+                let codec = CODEC_DAG_CBOR
 
 
                 print("ReactNative", "put: codec = ", codec)
@@ -836,6 +837,7 @@ class FulaModule: NSObject {
 
     }
 
+    // FIXME: unused codec arg
     func putInternal(value: Data, codec: Int) throws -> Data {
         do {
             if(fula != nil) {
@@ -976,7 +978,7 @@ class FulaModule: NSObject {
     }
 
     @objc(cancelPoolJoin:withPoolID:withResolver:withRejecter:)
-    func cancelPoolJoin(seedString: String, poolID: long,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+    func cancelPoolJoin(seedString: String, poolID: Int,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
             print("ReactNative", "cancelPoolJoin: seedString = " + seedString + " poolID = " + poolID)
             do {
                 let result = try fula?.poolCancelJoin(seedString, poolID: poolID)
@@ -1018,7 +1020,7 @@ class FulaModule: NSObject {
     }
 
     @objc(leavePool:withPoolID:withResolver:withRejecter:)
-    func leavePool(seedString: String, poolID: long,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+    func leavePool(seedString: String, poolID: Int,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
             print("ReactNative", "leavePool: seedString = " + seedString + " poolID = " + poolID)
             do {
                 let result = try fula!.poolLeave(seedString, poolID: poolID)
@@ -1088,7 +1090,7 @@ class FulaModule: NSObject {
     }
 
     @objc(removeStorer:withStorage:withPoolID:withCid:withResolver:withRejecter:)
-    func removeStorer(seedString: String, storage: String, poolID: int, cid: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+    func removeStorer(seedString: String, storage: String, poolID: Int, cid: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
             print("ReactNative", "removeStorer: seedString = " + seedString + " storage = " + storage + " poolID = " + poolID + " cid = " + cid)
             do {
                 let result = try fula!.manifestRemoveStorer(seedString, storage, poolID, cid)
@@ -1115,7 +1117,7 @@ class FulaModule: NSObject {
 
     }
 
-    @objc(bloxFreeSpace:withResolver:withRejecter:)
+    @objc(bloxFreeSpace:withRejecter:)
     func bloxFreeSpace( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
             print("ReactNative", "bloxFreeSpace")
             do {

@@ -11,10 +11,26 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => "13.0" }
-  s.source       = { :git => "https://github.com/functionland/react-native-fula.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/functionland/react-native-fula.git", :tag => "v#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm}"
   s.dependency "React-Core"
+
+  # Don't install the dependencies when we run `pod install` in the old architecture.
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
+    s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
+    s.pod_target_xcconfig    = {
+        "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
+        "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+    }
+
+    s.dependency "React-Codegen"
+    s.dependency "RCT-Folly"
+    s.dependency "RCTRequired"
+    s.dependency "RCTTypeSafety"
+    s.dependency "ReactCommon/turbomodule/core"
+  end
+
   s.dependency 'Fula','~> 1.0.0'
   s.dependency "Wnfs",  "1.0.0"
   s.dependency 'CryptoSwift', '~> 1.7.1'
