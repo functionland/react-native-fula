@@ -573,8 +573,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     try {
       if(this.identityEncryptedGlobal != null && !this.identityEncryptedGlobal.isEmpty()) {
         Log.d("ReactNative", "encrypt_and_store_config started");
-
-        String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal, null);
+        // Convert the SecretKey to a byte array
+        byte[] secretKeyBytes = this.secretKeyGlobal.getEncoded();
+        String cid_encrypted = this.fula.storeWithIdentityAndEncrypt(this.identityEncryptedGlobal, this.appName, this.rootConfig.getCid(), secretKeyBytes);
+        //String cid_encrypted = Cryptography.encryptMsg(this.rootConfig.getCid(), this.secretKeyGlobal, null);
 
         sharedPref.add("FULA_ENC_V4:cid_encrypted_" + this.identityEncryptedGlobal, cid_encrypted);
         return true;
@@ -691,12 +693,14 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "this.rootCid is empty.");
         //Load from keystore
 
-        String cid_encrypted_fetched = sharedPref.getValue("FULA_ENC_V4:cid_encrypted_"+ identity_encrypted);
+        // Convert the SecretKey to a byte array
+        byte[] secretKeyBytes = secretKey.getEncoded();
+        String cid_fetched = this.fula.getByIdentityAndDecrypt(this.identityEncryptedGlobal, this.appName, secretKeyBytes);
         Log.d("ReactNative", "Here1");
         String cid = "";
-        if(cid_encrypted_fetched != null && !cid_encrypted_fetched.isEmpty()) {
-          Log.d("ReactNative", "decrypting cid="+cid_encrypted_fetched+" with secret="+secretKey.toString());
-          cid = Cryptography.decryptMsg(cid_encrypted_fetched, secretKey);
+        if(cid_fetched != null && !cid_fetched.isEmpty()) {
+          Log.d("ReactNative", "cid_fetched="+cid_fetched+" with secret="+secretKey.toString()+" and appName="+this.appName+" and identity="+this.identityEncryptedGlobal);
+          cid = cid_fetched;
         }
 
         Log.d("ReactNative", "Here2");
