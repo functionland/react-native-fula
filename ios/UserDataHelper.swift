@@ -81,7 +81,7 @@ public extension Data {
                       count: size, freeWhenDone: true)
     }
     func toString() -> String {
-        return String(data: self, encoding: .utf8)
+        return String(data: self, encoding: .utf8)!
     }
 
     func toUint8Array() -> Array<UInt8> {

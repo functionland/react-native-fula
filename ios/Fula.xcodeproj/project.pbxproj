@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		066DC22A29FE50F800DD3EDE /* FulaModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066DC22929FE50F800DD3EDE /* FulaModule.swift */; };
-		06C6BE5D2A40BEFB002E7C67 /* UserDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0673AB692A122BD00087A7C0 /* UserDataHelper.swift */; };
-		06C6BE5E2A40BEFF002E7C67 /* Cryptography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0673AB682A122B850087A7C0 /* Cryptography.swift */; };
+		060162ED2A84149500A6E464 /* Cryptography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060162EC2A84149500A6E464 /* Cryptography.swift */; };
+		060162EF2A8414AD00A6E464 /* UserDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060162EE2A8414AD00A6E464 /* UserDataHelper.swift */; };
+		F4FF95D7245B92E800C19C63 /* Fula.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* Fula.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,12 +25,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		066DC22829FE50F700DD3EDE /* FulaModule-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FulaModule-Bridging-Header.h"; sourceTree = "<group>"; };
-		066DC22929FE50F800DD3EDE /* FulaModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulaModule.swift; sourceTree = "<group>"; };
-		0673AB682A122B850087A7C0 /* Cryptography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cryptography.swift; sourceTree = "<group>"; };
-		0673AB692A122BD00087A7C0 /* UserDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataHelper.swift; sourceTree = "<group>"; };
-		11C0B56A28882C93007D9057 /* FulaModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FulaModule.m; sourceTree = "<group>"; };
-		134814201AA4EA6300B7C361 /* libFulaModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFulaModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		060162EC2A84149500A6E464 /* Cryptography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cryptography.swift; sourceTree = "<group>"; };
+		060162EE2A8414AD00A6E464 /* UserDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataHelper.swift; sourceTree = "<group>"; };
+		134814201AA4EA6300B7C361 /* libFula.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFula.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3E7B5891CC2AC0600A0062D /* Fula.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Fula.mm; sourceTree = "<group>"; };
+		F4FF95D5245B92E700C19C63 /* Fula-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Fula-Bridging-Header.h"; sourceTree = "<group>"; };
+		F4FF95D6245B92E800C19C63 /* Fula.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fula.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,7 +47,7 @@
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				134814201AA4EA6300B7C361 /* libFulaModule.a */,
+				134814201AA4EA6300B7C361 /* libFula.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -55,29 +55,21 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				0673AB692A122BD00087A7C0 /* UserDataHelper.swift */,
-				0673AB682A122B850087A7C0 /* Cryptography.swift */,
-				066DC22929FE50F800DD3EDE /* FulaModule.swift */,
-				11C0B56A28882C93007D9057 /* FulaModule.m */,
+				060162EE2A8414AD00A6E464 /* UserDataHelper.swift */,
+				060162EC2A84149500A6E464 /* Cryptography.swift */,
+				F4FF95D6245B92E800C19C63 /* Fula.swift */,
+				B3E7B5891CC2AC0600A0062D /* Fula.mm */,
+				F4FF95D5245B92E700C19C63 /* Fula-Bridging-Header.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
-				066DC22829FE50F700DD3EDE /* FulaModule-Bridging-Header.h */,
-				E0FCC2F04F834E2B6110D43C /* Pods */,
 			);
-			sourceTree = "<group>";
-		};
-		E0FCC2F04F834E2B6110D43C /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		58B511DA1A9E6C8500147676 /* FulaModule */ = {
+		58B511DA1A9E6C8500147676 /* Fula */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "FulaModule" */;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Fula" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
@@ -87,9 +79,9 @@
 			);
 			dependencies = (
 			);
-			name = FulaModule;
+			name = Fula;
 			productName = RCTDataManager;
-			productReference = 134814201AA4EA6300B7C361 /* libFulaModule.a */;
+			productReference = 134814201AA4EA6300B7C361 /* libFula.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -103,11 +95,10 @@
 				TargetAttributes = {
 					58B511DA1A9E6C8500147676 = {
 						CreatedOnToolsVersion = 6.1.1;
-						LastSwiftMigration = 1420;
 					};
 				};
 			};
-			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "FulaModule" */;
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Fula" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -120,7 +111,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				58B511DA1A9E6C8500147676 /* FulaModule */,
+				58B511DA1A9E6C8500147676 /* Fula */,
 			);
 		};
 /* End PBXProject section */
@@ -130,9 +121,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06C6BE5E2A40BEFF002E7C67 /* Cryptography.swift in Sources */,
-				06C6BE5D2A40BEFB002E7C67 /* UserDataHelper.swift in Sources */,
-				066DC22A29FE50F800DD3EDE /* FulaModule.swift in Sources */,
+				060162EF2A8414AD00A6E464 /* UserDataHelper.swift in Sources */,
+				060162ED2A84149500A6E464 /* Cryptography.swift in Sources */,
+				F4FF95D7245B92E800C19C63 /* Fula.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +158,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -182,11 +174,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				SYSTEM_HEADER_SEARCH_PATHS = "$(inherited)/** ${PODS_ROOT}/** ${SRCROOT}/../../../ios/Pods/Headers/**";
 			};
 			name = Debug;
 		};
@@ -218,6 +209,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -226,10 +218,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SYSTEM_HEADER_SEARCH_PATHS = "${SRCROOT}/../../../ios/Pods/Header/** $(inherited)/** ${PODS_ROOT}/**";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -237,20 +228,17 @@
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_CONFIGURATION_BUILD_DIR}/CryptoSwift/CryptoSwift.modulemap\" -Xcc -fmodule-map-file=\"${PODS_CONFIGURATION_BUILD_DIR}/Wnfs/Wnfs.modulemap\" -Xfrontend -warn-long-expression-type-checking=100";
-				PRODUCT_NAME = FulaModule;
+				PRODUCT_NAME = Fula;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "FulaModule-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Fula-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -259,19 +247,17 @@
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = FulaModule;
+				PRODUCT_NAME = Fula;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "FulaModule-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Fula-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -279,7 +265,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "FulaModule" */ = {
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Fula" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511ED1A9E6C8500147676 /* Debug */,
@@ -288,7 +274,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "FulaModule" */ = {
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Fula" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,
