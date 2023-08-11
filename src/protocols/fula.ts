@@ -26,7 +26,7 @@ export const init = (
     autoFlush,
     useRelay
   );
-  return Fula.init(
+  return Fula.initFula(
     identity,
     storePath,
     bloxAddr,

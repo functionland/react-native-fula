@@ -57,10 +57,11 @@ class FulaModule: NSObject {
         }
     }
     override init() {
-        if let appDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+
+        self.appDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let fulaStoreURL = appDir.appendingPathComponent("/fula")
             
-            fulaStorePath = fulaStoreURL.path
+            self.fulaStorePath = fulaStoreURL.path
             let fileManager = FileManager.default
             var success = true
             if !fileManager.fileExists(atPath: fulaStorePath) {
@@ -78,7 +79,8 @@ class FulaModule: NSObject {
                 print("Unable to create fula store folder!")
                 
             }
-        }
+                   super.init()
+        
     }
     func convertConfigToJson(config: Cid) -> String {
         return String(format: "{\"cid\": \"%@\"}", config)
@@ -112,12 +114,12 @@ class FulaModule: NSObject {
 
     @objc(checkConnection:withRejecter:)
     func checkConnection(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
-        Task {
+
             print("ReactNative", "checkConnection started")
 
             if (fula != nil) {
                 do {
-                    try await checkConnectionInternal()
+                    try checkConnectionInternal()
                     resolve(true)
                 }
                 catch let error {
@@ -125,27 +127,24 @@ class FulaModule: NSObject {
                     resolve(false)
                 }
             }
-        }
+        
     }
 
-    @objc(newClient:withStorePath:withBloxAddr:withExchange:withAutoFlush:withUseRelay:withResolver:withRejecter:)
-    func newClient(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
-        Task {
-            print("ReactNative", "newClient started")
-
+    @objc(newClient:withStorePath:withBloxAddr:withExchange:withAutoFlush:withUseRelay:withRefresh:withResolver:withRejecter:)
+    func newClient(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool, refresh: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
+            print("ReactNative", "newClient storePath= " , storePath , " bloxAddr= " , bloxAddr , " exchange= " , exchange , " autoFlush= " , autoFlush , " useRelay= " , useRelay , " refresh= " , refresh);
             do {
-
                 print("ReactNative", "newClient storePath= ", storePath)
                 let identity = toByte(identityString)
                 print("ReactNative", "newClient identity= ", identityString)
-                try newClientInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, useRelay: useRelay)
+                try newClientInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, useRelay: useRelay, refresh: refresh)
                 let peerId = fula?.id_()
                 resolve(peerId)
             } catch let error {
                 print("ReactNative", "newClient failed with Error: ", error.localizedDescription)
                 reject("ERR_FULA", "Can't create client", error)
             }
-        }
+        
     }
 
     @objc(isReady:withResolver:withRejecter:)
@@ -171,9 +170,8 @@ class FulaModule: NSObject {
 
     //TODO: we should consider refactor the name of this \
     // function to be compatible with the android version.
-    @objc(initFula:withStorePath:withBloxAddr:withExchange:withAutoFlush:withrootCid:withUseRelay:withResolver:withRejecter:)
-    func initFula(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, rootCid: String, useRelay: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-
+    @objc(initFula:withStorePath:withBloxAddr:withExchange:withAutoFlush:withRootConfig:withUseRelay:withRefresh:withResolver:withRejecter:)
+    func initFula(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, rootConfig: String, useRelay: Bool, refresh: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
         print("ReactNative", "init started")
         do {
 
@@ -181,12 +179,12 @@ class FulaModule: NSObject {
             print("ReactNative", "init storePath= ", storePath)
             let identity = self.toByte(identityString)
             print("ReactNative", "init identity= ", identityString)
-            let obj = try initInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, _rootCid: rootCid, useRelay: useRelay)
+            let obj = try initInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, _rootCid: rootConfig, useRelay: useRelay, refresh: refresh)
             print("ReactNative", "init object created: [ " + obj[0] + ", " + obj[1] + ", " + obj[2] + " ]")
             resultData["peerId"] = obj[0]
             resultData["rootCid"] = obj[1]
             resultData["wnfs_key"] = obj[2]
-            resolve(resultData)
+            resolve(resultData as NSDictionary)
 
         } catch let error {
             print("ReactNative", "init failed with Error: ", error.localizedDescription)
@@ -197,7 +195,7 @@ class FulaModule: NSObject {
 
     @objc(logout:withStorePath:withResolver:withRejecter:)
     func logout(identityString: String, storePath: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void{
-        Task {
+
             print("ReactNative", "logout started")
             do {
                 let identity = toByte(identityString)
@@ -209,10 +207,10 @@ class FulaModule: NSObject {
                 print("ReactNative", "logout failed with Error: ", error.localizedDescription)
                 reject("ERR_FULA", "logout failed", error)
             }
-        }
+        
     }
 
-    func checkConnectionInternal() async throws  {
+    func checkConnectionInternal() throws  {
         print("ReactNative", "checkConnectionInternal started")
         if (fula != nil) {
             do {
@@ -242,10 +240,10 @@ class FulaModule: NSObject {
                     }
                 } else {
                     print("ReactNative", "checkFailedActions with retry")
-                    Task{
-                        let retryResults = try await retryFailedActionsInternal()
+
+                        let retryResults = try retryFailedActionsInternal()
                         resolve(!retryResults)
-                    }
+                    
                 }
             } else {
                 reject("ERR_FULA", "Fula is not initialized", nil)
@@ -256,12 +254,12 @@ class FulaModule: NSObject {
         }
     }
 
-    func retryFailedActionsInternal() async throws -> Bool {
+    func retryFailedActionsInternal()  throws -> Bool {
         print("ReactNative", "retryFailedActionsInternal started")
         if (fula != nil) {
             //Fula is initialized
             do {
-                try await checkConnectionInternal()
+                try checkConnectionInternal()
 
                 do {
                     print("ReactNative", "retryFailedPushes started")
@@ -319,19 +317,22 @@ class FulaModule: NSObject {
     }
 
     func createNewrootCid(identity: Data) throws -> Void {
-        rootCid = try wnfs?.Init(wnfsKey: identity)
+        let hash32 = identity.sha256()
+        rootCid = try wnfs?.Init(wnfsKey: hash32)
         wnfsKey = identity
         print("ReactNative", "privateForest is created: ", rootCid!)
         if (fula != nil) {
             try fula?.flush()
         }
-        print("ReactNative", "rootCid is created: cid=", rootCid!, " & wnfs_key=", identity)
+        print("ReactNative", "rootCid is created: cid=", rootCid!, " ; wnfs_key=", identity, "; hash32=", hash32)
         try encryptAndStoreConfig()
     }
 
     func loadWnfs(_ wnfsKey: Data , _ _rootCid: String) throws {
         print("ReactNative", "loadWnfs called: rootCid=", _rootCid)
-        try wnfs?.LoadWithWNFSKey(wnfsKey: wnfsKey, cid: _rootCid)
+        let hash32 = wnfsKey.sha256()
+        print("ReactNative", "wnfsKey=" , wnfsKey.toHex() , "; hash32 = " , hash32.toHex());
+        try wnfs?.LoadWithWNFSKey(wnfsKey: hash32, cid: _rootCid)
         rootCid = _rootCid
         if (fula != nil) {
             try fula?.flush()
@@ -393,7 +394,7 @@ class FulaModule: NSObject {
         return fula
     }
 
-    func newClientInternal(identity: Data, storePath: String?, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool) throws -> Data {
+    func newClientInternal(identity: Data, storePath: String?, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool, refresh: Bool) throws -> Data {
         do {
             fulaConfig = FulamobileConfig()
             if (storePath == nil || storePath!.isEmpty) {
@@ -414,12 +415,18 @@ class FulaModule: NSObject {
                 fulaConfig!.allowTransientConnection = true
                 fulaConfig!.forceReachabilityPrivate = true
             }
-            if (fula == nil) {
-                print("ReactNative", "Creating a Fula instance")
+            if (fula == nil || refresh) {
+                print("ReactNative", "Creating a new Fula instance");
+                do {
+                try shutdownInternal();
                 fula = FulamobileClient(fulaConfig)
-            }
-            if (fula != nil) {
-                try fula?.flush()
+                if (fula != nil) {
+                    try fula?.flush();
+                }
+                } catch let error {
+                print("ReactNative", "Failed to create new Fula instance: " , error.localizedDescription);
+                throw MyError.runtimeError("Failed to create new Fula instance")
+                }
             }
             return peerIdentity
         } catch let error {
@@ -428,13 +435,13 @@ class FulaModule: NSObject {
         }
     }
 
-    func initInternal(identity: Data, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, _rootCid: String, useRelay: Bool) throws -> [String] {
+    func initInternal(identity: Data, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, _rootCid: String, useRelay: Bool, refresh: Bool) throws -> [String] {
 
         do {
-            if (fula == nil) {
-                try newClientInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, useRelay: useRelay)
+            if (fula == nil || refresh) {
+                try newClientInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, useRelay: useRelay, refresh: refresh)
             }
-            if(client == nil) {
+            if(client == nil || refresh) {
                 client = Client(clientInput: fula!)
                 wnfs = Wnfs(putFn: { cid, data in
                     guard let c = self.client else {
@@ -461,27 +468,28 @@ class FulaModule: NSObject {
 
                 let cid_encrypted_fetched = userDataHelper.getValue("cid_encrypted_"+identity_encrypted)
                 print("ReactNative", "Here1")
-                var cid: Array<UInt8>
+                var cid: Array<UInt8>? = nil
                 if(cid_encrypted_fetched != nil && !cid_encrypted_fetched!.isEmpty) {
                     print("ReactNative", "decrypting cid="+cid_encrypted_fetched!+" with secret="+secretKey.toString())
                     cid = try Cryptography.decryptMsg(cid_encrypted_fetched!, secretKey)
                 }
                 print("ReactNative", "Here2")
                 //print("ReactNative", "Attempted to fetch cid from keystore cid="+cid+" & wnfs_key="+wnfs_key)
-                if(cid.isEmpty){
+                if(cid == nil || cid!.isEmpty){
                     print("ReactNative", "cid or wnfs key was not found")
                     if(!_rootCid.isEmpty){
                         print("ReactNative", "Re-setting cid from input: "+_rootCid)
                         cid = _rootCid.toUint8Array()
                     }
-                    if(cid.isEmpty){
+
+                } 
+                if(cid == nil || cid!.isEmpty){
                         print("ReactNative", "Tried to recover cid and privateRef but was not successful. Creating ones")
                         try createNewrootCid(identity: identity)
-                    }
                 } else {
                     print("ReactNative", "Found cid and wnfs key in keychain store")
-                    print("ReactNative", "Recovered cid and private ref from keychain store. cid=",cid," & wnfs_key=",identity)
-                    try loadWnfs(identity, cid.toString())
+                    print("ReactNative", "Recovered cid and private ref from keychain store. cid=",cid!," & wnfs_key=",identity)
+                    try loadWnfs(identity, cid!.toString())
                 }
                 print("ReactNative", "creating/reloading rootCid completed")
 
@@ -702,7 +710,7 @@ class FulaModule: NSObject {
 
     @objc(readFileContent:withResolver:withRejecter:)
     func readFileContent(path: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        Task {
+
             print("ReactNative", "readFileContent: path = " + path)
             do {
                 let res = try wnfs?.ReadFile(cid: rootCid!, remotePath: path)
@@ -714,12 +722,12 @@ class FulaModule: NSObject {
                 print("readFileContent", error.localizedDescription)
                 reject("ERR_WNFS", "readFileContent", error)
             }
-        }
+        
     }
 
     @objc(get:withResolver:withRejecter:)
     func get(keyString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        Task {
+
             print("ReactNative", "get: keyString = " + keyString)
             do {
                 let key: Data = convertStringToByte(keyString).toData()
@@ -730,7 +738,7 @@ class FulaModule: NSObject {
                 print("get", error.localizedDescription)
                 reject("ERR_FULA", "get", error)
             }
-        }
+        
     }
 
     func getInternal(_ key: Data) throws -> Data {
@@ -749,7 +757,7 @@ class FulaModule: NSObject {
 
     @objc(has:withResolver:withRejecter:)
     func has(keyString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        Task {
+
             print("ReactNative", "has: keyString = " + keyString)
             do {
                 let key: Data = convertStringToByte(keyString).toData()
@@ -759,7 +767,7 @@ class FulaModule: NSObject {
                 print("has", error.localizedDescription)
                 reject("ERR_FULA", "has", error)
             }
-        }
+        
     }
 
     func hasInternal(_ key: Data) throws -> Bool {
@@ -775,9 +783,9 @@ class FulaModule: NSObject {
         }
     }
 
-    func pullInternal(key: Data) throws -> Data {
+    func pullInternal(key: Data) throws -> Void {
         do {
-            return try fula!.pull(key)
+            try fula!.pull(key)
         } catch let error {
             print("pullInternal", error.localizedDescription)
             throw error
@@ -841,7 +849,7 @@ class FulaModule: NSObject {
     func putInternal(value: Data, codec: Int) throws -> Data {
         do {
             if(fula != nil) {
-                let key: Data = try fula!.put(value, codec: FulaModule.CODEC_DAG_CBOR)
+                let key: Data = try fula!.put(value, codec: Int64(FulaModule.CODEC_DAG_CBOR))
                 try fula?.flush()
                 return key
             } else {

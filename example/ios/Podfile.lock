@@ -382,7 +382,7 @@ PODS:
     - Fula (~> 1.0.0)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - Wnfs (= 1.0.0)
+    - Wnfs (= 1.1.1)
   - React-NativeModulesApple (0.72.3):
     - hermes-engine
     - React-callinvoker
@@ -493,10 +493,12 @@ PODS:
     - React-jsi (= 0.72.3)
     - React-logger (= 0.72.3)
     - React-perflogger (= 0.72.3)
+  - RNFS (2.20.0):
+    - React-Core
   - SocketRocket (0.6.1)
-  - Wnfs (1.0.0):
-    - WnfsBindings (= 1.0.0)
-  - WnfsBindings (1.0.0)
+  - Wnfs (1.1.1):
+    - WnfsBindings (= 1.1.0)
+  - WnfsBindings (1.1.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -565,6 +567,7 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNFS (from `../node_modules/react-native-fs`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -668,6 +671,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -707,7 +712,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
-  react-native-fula: 851c73b645c82d1a7bc60d4f11cb7184cc2d8eae
+  react-native-fula: f7df65e1d0931640568e9e19eb048ce40fd348f9
   React-NativeModulesApple: c57f3efe0df288a6532b726ad2d0322a9bf38472
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
@@ -725,9 +730,10 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 837c1bebd2f84572db17698cd702ceaf585b0d9a
   React-utils: bcb57da67eec2711f8b353f6e3d33bd8e4b2efa3
   ReactCommon: 3ccb8fb14e6b3277e38c73b0ff5e4a1b8db017a9
+  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  Wnfs: 77086e6dfe7f7fa8ea5fd00b59696152cba95d22
-  WnfsBindings: 5de82db102dcd23b989cc6a4854de1ab68c930be
+  Wnfs: e3020bb0c212642a605625424ed263c8ac280e44
+  WnfsBindings: 10742440a02c258dd9c065d8f29f24e7029955c3
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 

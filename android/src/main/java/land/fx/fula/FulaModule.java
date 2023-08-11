@@ -250,7 +250,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void init(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootConfig, boolean useRelay, boolean refresh, Promise promise) {
+  public void initFula(String identityString, String storePath, String bloxAddr, String exchange, boolean autoFlush, String rootConfig, boolean useRelay, boolean refresh, Promise promise) {
     Log.d("ReactNative", "init started");
     ThreadUtils.runOnExecutor(() -> {
       try {
