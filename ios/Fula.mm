@@ -2,7 +2,8 @@
 
 @interface RCT_EXTERN_MODULE(FulaModule, NSObject)
 
-RCT_EXTERN_METHOD(checkConnection:(RCTPromiseResolveBlock)resolve
+RCT_EXTERN_METHOD(checkConnection: (NSNumber *) timeout
+                  withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(newClient:(NSString *)IdentityString
@@ -44,7 +45,6 @@ RCT_EXTERN_METHOD(mkdir:(NSString *)path
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(writeFile:(NSString *)fulaTargetFilename
-                  withFulaTargetFilename:(NSString *) fulaTargetFilename
                   withLocalFilename: (NSString *) localFilename
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)

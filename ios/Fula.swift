@@ -1,4 +1,5 @@
 import Foundation
+import Foundation.NSDate // for TimeInterval
 import CommonCrypto
 import Wnfs
 import Fula
@@ -112,22 +113,27 @@ class FulaModule: NSObject {
         return convertIntToByte(keyInt)
     }
 
-    @objc(checkConnection:withRejecter:)
-    func checkConnection(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
-
+    @objc(checkConnection:withResolver:withRejecter:)
+    func checkConnection(timeout: Int, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)   {
             print("ReactNative", "checkConnection started")
-
             if (fula != nil) {
                 do {
-                    try checkConnectionInternal()
-                    resolve(true)
+                    // FIXME: run with timeout
+                    // Task  {
+                    //     try await withTimeout(seconds: TimeInterval(timeout))  { [weak self] in
+                    //     guard let weakSelf = self else { return false }
+                    //     try weakSelf.checkConnectionInternal()
+                    //     callback(BOOL(true))
+                    //     }
+                    // }
+                    resolve(try self.checkConnectionInternal())
                 }
                 catch let error {
                     print("ReactNative", "checkConnection failed with Error: ", error.localizedDescription)
+                    // callback(BOOL(false))
                     resolve(false)
                 }
             }
-        
     }
 
     @objc(newClient:withStorePath:withBloxAddr:withExchange:withAutoFlush:withUseRelay:withRefresh:withResolver:withRejecter:)
@@ -886,19 +892,24 @@ class FulaModule: NSObject {
     }
 
     @objc(shutdown:withRejecter:)
-    func shutdown( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+    func shutdown( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         do {
-            if(fula != nil) {
-                try fula?.shutdown()
-                fula = nil
-                client = nil
-            }
+            try shutdownInternal()
             resolve(true)
         } catch let error {
             print("ReactNative", "shutdown", error.localizedDescription)
             reject("ERR_FULA", "shutdown", error)
         }
 
+    }
+
+    func shutdownInternal() throws {
+        if(fula != nil) {
+            try fula?.shutdown()
+            fula = nil
+            client = nil
+            wnfs = nil
+        }
     }
 
     ///////////////////////////////////////////////////////////
