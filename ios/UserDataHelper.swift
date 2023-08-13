@@ -74,11 +74,15 @@ public extension String {
     func toUint8Array() -> Array<UInt8> {
         return Array(self.utf8)
     }
+
+    func toData() -> Data {
+        return self.data(using: .utf8)!
+    }
 }
 
 public extension Array<UInt8> {
-    func toString() -> String {
-        return Data(self).toString()
+    func toHex() -> String {
+        return Data(self).toHex()
     }
     func toData() -> Data {
         return Data(self)
@@ -115,8 +119,9 @@ public extension Data {
         return String(utf16CodeUnitsNoCopy: buffer,
                       count: size, freeWhenDone: true)
     }
-    func toString() -> String {
-        return String(data: self, encoding: .utf8)!
+
+    func toUTF8String() -> String? {
+        return String(data: self, encoding: .utf8)
     }
 
     func toUint8Array() -> Array<UInt8> {

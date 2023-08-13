@@ -39,7 +39,7 @@ class FulaModule: NSObject {
         
         func get(_ cid: Data) throws -> Data {
             do {
-                print(String(format: "ReactNative get cid: %s", cid.toString()))
+                print(String(format: "ReactNative get cid: %s", cid.toHex()))
                 return try internalClient.get(cid)
             } catch let error {
                 throw error
@@ -48,13 +48,12 @@ class FulaModule: NSObject {
         
         func put(_ cid: Data, _ data: Data) throws -> Void {
             do {
-                print(String(format: "ReactNative put data: %s", data.toString()))
-                try internalClient.put(data, codec: 113)
+                print(String(format: "ReactNative put(%s) data: %s", cid.toHex(), data.toHex()))
+                try internalClient.put(data, codec: 0xFF & Int64(cid[1]))
             } catch let error {
-                print("ReactNative put Error")
+                print("ReactNative put: ", error.localizedDescription)
                 throw error
             }
-            print("ReactNative Error put")
         }
     }
     override init() {
@@ -95,9 +94,6 @@ class FulaModule: NSObject {
         return input.data(using: .utf8)!
     }
 
-    func toString(_ input: Data) -> String {
-        return String(data: input, encoding: .utf8)!
-    }
 
     func stringArrToIntArr(_ s: Array<String>) -> Array<Int> {
         return s.map { Int($0)!}
@@ -239,7 +235,7 @@ class FulaModule: NSObject {
                     print("ReactNative", "checkFailedActions without retry")
                     let failedLinks = try fula!.listFailedPushes()
                     if (failedLinks.hasNext()) {
-                        print("ReactNative", "checkFailedActions found: ", try failedLinks.next().toString())
+                        print("ReactNative", "checkFailedActions found: ", try failedLinks.next().toHex())
                         resolve(true)
                     } else {
                         resolve(false)
@@ -324,13 +320,14 @@ class FulaModule: NSObject {
 
     func createNewrootCid(identity: Data) throws -> Void {
         let hash32 = identity.sha256()
-        rootCid = try wnfs?.Init(wnfsKey: hash32)
-        wnfsKey = identity
-        print("ReactNative", "privateForest is created: ", rootCid!)
+        print("ReactNative", "wnfsKey=" , identity.toHex() , "; hash32 = " , hash32.toHex());
         if (fula != nil) {
             try fula?.flush()
         }
-        print("ReactNative", "rootCid is created: cid=", rootCid!, " ; wnfs_key=", identity, "; hash32=", hash32)
+        rootCid = try wnfs?.Init(wnfsKey: hash32)
+        print("ReactNative", "privateForest is created: ", rootCid!)
+        wnfsKey = identity
+        print("ReactNative", "rootCid is created: cid=", rootCid!, " ; wnfs_key=", wnfsKey!.toHex(), "; hash32=", hash32)
         try encryptAndStoreConfig()
     }
 
@@ -412,7 +409,7 @@ class FulaModule: NSObject {
 
             let peerIdentity = try createPeerIdentity(privateKey: identity)
             fulaConfig!.identity = peerIdentity
-            print("ReactNative", "peerIdentity is set: " + fulaConfig!.identity!.toString())
+            print("ReactNative", "peerIdentity is set: " + fulaConfig!.identity!.toHex())
             fulaConfig!.bloxAddr = bloxAddr
             print("ReactNative", "bloxAddr is set: " + fulaConfig!.bloxAddr)
             fulaConfig!.exchange = exchange
@@ -446,6 +443,7 @@ class FulaModule: NSObject {
         do {
             if (fula == nil || refresh) {
                 try newClientInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, useRelay: useRelay, refresh: refresh)
+                print("ReactNative", "fula initialized: " + fula!.id_())
             }
             if(client == nil || refresh) {
                 client = Client(clientInput: fula!)
@@ -460,7 +458,7 @@ class FulaModule: NSObject {
                     }
                     return try c.get(cid)
                 })
-                print("ReactNative", "fula initialized: " + fula!.id_())
+                print("ReactNative", "wnfs initialized")
             }
 
             let secretKey = try Cryptography.generateKey(identity)
@@ -476,7 +474,7 @@ class FulaModule: NSObject {
                 print("ReactNative", "Here1")
                 var cid: Array<UInt8>? = nil
                 if(cid_encrypted_fetched != nil && !cid_encrypted_fetched!.isEmpty) {
-                    print("ReactNative", "decrypting cid="+cid_encrypted_fetched!+" with secret="+secretKey.toString())
+                    print("ReactNative", "decrypting cid="+cid_encrypted_fetched!+" with secret="+secretKey.toHex())
                     cid = try Cryptography.decryptMsg(cid_encrypted_fetched!, secretKey)
                 }
                 print("ReactNative", "Here2")
@@ -490,12 +488,12 @@ class FulaModule: NSObject {
 
                 } 
                 if(cid == nil || cid!.isEmpty){
-                        print("ReactNative", "Tried to recover cid and privateRef but was not successful. Creating ones")
+                        print("ReactNative", "Tried to recover cid but was not successful. Creating ones")
                         try createNewrootCid(identity: identity)
                 } else {
                     print("ReactNative", "Found cid and wnfs key in keychain store")
                     print("ReactNative", "Recovered cid and private ref from keychain store. cid=",cid!," & wnfs_key=",identity)
-                    try loadWnfs(identity, cid!.toString())
+                    try loadWnfs(identity, cid!.toData().toUTF8String()!)
                 }
                 print("ReactNative", "creating/reloading rootCid completed")
 
@@ -510,15 +508,15 @@ class FulaModule: NSObject {
                  */
 
 
-                print("ReactNative", "rootCid is created: cid=" , rootCid!,"& wnfs_key=",wnfsKey!.toString())
+                print("ReactNative", "rootCid is created: cid=" , rootCid!,"& wnfs_key=",wnfsKey!.toHex())
             } else {
-                print("ReactNative", "rootCid existed: cid=" , rootCid!," & wnfs_key=",wnfsKey!.toString())
+                print("ReactNative", "rootCid existed: cid=" , rootCid!," & wnfs_key=",wnfsKey!.toHex())
             }
             let peerId = fula!.id_()
             var obj = [String]()
             obj.append(peerId)
             obj.append(rootCid!)
-            obj.append(wnfsKey!.toString())
+            obj.append(wnfsKey!.toHex())
             print("ReactNative", "initInternal is completed successfully")
             if (fula != nil) {
                 try fula?.flush()
@@ -611,7 +609,7 @@ class FulaModule: NSObject {
             let res =  try wnfs?.Ls(cid: rootCid!, remotePath: path)
 
             //JSONArray jsonArray = new JSONArray(res)
-            guard let s = res?.toString() else {
+            guard let s = res?.toUTF8String() else {
                 throw MyError.runtimeError("converting bytes to utf8 string")
             }
             print("ReactNative", "ls: res = " + s)
@@ -719,8 +717,9 @@ class FulaModule: NSObject {
 
             print("ReactNative", "readFileContent: path = " + path)
             do {
+                // FIXME: dhouldn't we output an NSData object instead?
                 let res = try wnfs?.ReadFile(cid: rootCid!, remotePath: path)
-                guard let resString = res?.toString() else{
+                guard let resString = res?.toUTF8String() else{
                     throw MyError.runtimeError("converting bytes to utf8 string")
                 }
                 resolve(resString)
@@ -738,7 +737,7 @@ class FulaModule: NSObject {
             do {
                 let key: Data = convertStringToByte(keyString).toData()
                 let value = try getInternal(key)
-                let valueString: String = toString(value)
+                let valueString: String = value.toUTF8String()!
                 resolve(valueString)
             } catch let error {
                 print("get", error.localizedDescription)
@@ -749,10 +748,10 @@ class FulaModule: NSObject {
 
     func getInternal(_ key: Data) throws -> Data {
         do {
-            print("ReactNative", "getInternal: key.toString() = " + toString(key))
-            print("ReactNative", "getInternal: key.toString().bytes = " + key.toString())
+            print("ReactNative", "getInternal: key.toUTF8String() = " , key.toUTF8String()!)
+            print("ReactNative", "getInternal: key.toHex().bytes = " , key.toHex())
             let value = try fula!.get(key)
-            print("ReactNative", "getInternal: value.toString() = " + toString(value))
+            print("ReactNative", "getInternal: value.toHex() = " , value.toHex())
             return value
         } catch let error {
             print("ReactNative", "getInternal: error = " + error.localizedDescription)
@@ -838,12 +837,12 @@ class FulaModule: NSObject {
 
 
             print("ReactNative", "put: codec = ", codec)
-            let value = toByte(valueString)
+            let value = valueString.toData()
 
-            print("ReactNative", "put: value.toString() = " + toString(value))
+            print("ReactNative", "put: value.toHex() = " , value.toHex())
             let key = try putInternal(value: value, codec: codec)
-            print("ReactNative", "put: key.toString() = " + toString(key))
-            resolve(toString(key))
+            print("ReactNative", "put: key.toHex() = " , key.toUTF8String()!)
+            resolve(key.toUTF8String()!)
         } catch let error {
             print("ReactNative", "put: error = ", error.localizedDescription)
             reject("ERR_FULA", "put", error)
@@ -930,7 +929,7 @@ class FulaModule: NSObject {
                     reject("ERR_FULA", "createAccount", MyError.runtimeError("seed should start with /"))
                 }
                 let result = try fula!.seeded(seedString)
-                let resultString = toString(result)
+                let resultString = result.toUTF8String()!
                 resolve(resultString)
             }
         } catch let error {
@@ -945,7 +944,7 @@ class FulaModule: NSObject {
         print("ReactNative", "checkAccountExists: accountString = ", accountString)
         do {
             let result = try fula!.accountExists(accountString)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("checkAccountExists", error.localizedDescription)
@@ -959,7 +958,7 @@ class FulaModule: NSObject {
         print("ReactNative", "createPool: seedString = " + seedString + " poolName = " + poolName)
         do {
             let result = try fula!.poolCreate(seedString, poolName: poolName)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("createPool", error.localizedDescription)
@@ -973,7 +972,7 @@ class FulaModule: NSObject {
         print("ReactNative", "listPools")
         do {
             let result = try fula!.poolList()
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("listPools", error.localizedDescription)
@@ -987,7 +986,7 @@ class FulaModule: NSObject {
         print("ReactNative", "joinPool: seedString = ",seedString," poolID = ",poolID)
         do {
             let result = try fula!.poolJoin(seedString, poolID: poolID)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("joinPool", error.localizedDescription)
@@ -1001,7 +1000,7 @@ class FulaModule: NSObject {
         print("ReactNative", "cancelPoolJoin: seedString = " , seedString , " poolID = " , poolID)
         do {
             let result = try fula!.poolCancelJoin(seedString, poolID: poolID)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("cancelPoolJoin", error.localizedDescription)
@@ -1015,7 +1014,7 @@ class FulaModule: NSObject {
         print("ReactNative", "listPoolJoinRequests: poolID = ", poolID)
         do {
             let result = try fula!.poolRequests(poolID)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("listPoolJoinRequests", error.localizedDescription)
@@ -1029,7 +1028,7 @@ class FulaModule: NSObject {
         print("ReactNative", "votePoolJoinRequest: seedString = ", seedString ," poolID = ", poolID, " accountString = ", accountString , " accept = ", accept)
         do {
             let result = try fula!.poolVote(seedString, poolID: Int(poolID), account: accountString, voteValue: accept)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("votePoolJoinRequest", error.localizedDescription)
@@ -1043,7 +1042,7 @@ class FulaModule: NSObject {
         print("ReactNative", "leavePool: seedString = " , seedString , " poolID = " , poolID)
         do {
             let result = try fula!.poolLeave(seedString, poolID: poolID)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("leavePool", error.localizedDescription)
@@ -1057,7 +1056,7 @@ class FulaModule: NSObject {
         print("ReactNative", "newReplicationRequest: seedString = " , seedString , " poolID = " , poolID , " replicationFactor = " , replicationFactor , " cid = " , cid)
         do {
             let result = try fula!.manifestUpload(seedString, poolID: poolID, replicationFactor: replicationFactor, uri: cid)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("newReplicationRequest", error.localizedDescription)
@@ -1071,7 +1070,7 @@ class FulaModule: NSObject {
         print("ReactNative", "newStoreRequest: seedString = " + seedString + " poolID = " , poolID , " uploader = " , uploader , " cid = " , cid)
         do {
             let result = try fula!.manifestStore(seedString, poolID: poolID, uploader: uploader, cid: cid)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("newStoreRequest", error.localizedDescription)
@@ -1085,7 +1084,7 @@ class FulaModule: NSObject {
         print("ReactNative", "listAvailableReplicationRequests: poolID = ", poolID)
         do {
             let result = try fula!.manifestAvailable(poolID)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("listAvailableReplicationRequests", error.localizedDescription)
@@ -1099,7 +1098,7 @@ class FulaModule: NSObject {
         print("ReactNative", "newReplicationRequest: seedString = " , seedString , " poolID = " , poolID , " cid = " , cid)
         do {
             let result = try fula!.manifestRemove(seedString, poolID: poolID,  cid: cid)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("removeReplicationRequest", error.localizedDescription)
@@ -1113,7 +1112,7 @@ class FulaModule: NSObject {
         print("ReactNative", "removeStorer: seedString = " , seedString , " storage = " , storage , " poolID = " , poolID , " cid = " , cid)
         do {
             let result = try fula!.manifestRemoveStorer(seedString, storage: storage, poolID: poolID, cid: cid)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("removeStorer", error.localizedDescription)
@@ -1127,7 +1126,7 @@ class FulaModule: NSObject {
         print("ReactNative", "removeStoredReplication: seedString = " , seedString , " uploader = " , uploader , " poolID = " , poolID , " cid = " , cid)
         do {
             let result = try fula!.manifestRemoveStored(seedString, uploader: uploader, poolID: poolID, cid: cid)
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("removeStoredReplication", error.localizedDescription)
@@ -1141,7 +1140,7 @@ class FulaModule: NSObject {
         print("ReactNative", "bloxFreeSpace")
         do {
             let result = try fula!.bloxFreeSpace()
-            let resultString = toString(result)
+            let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("bloxFreeSpace", error.localizedDescription)
