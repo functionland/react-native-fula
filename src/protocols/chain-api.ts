@@ -74,6 +74,10 @@ export const listPools = async (
     if (api === undefined) {
       api = await init();
     }
+    // Type guard to assure TypeScript that api is not undefined
+    if (!api || !api.query || !api.query.pool || !api.query.pool.lastPoolId || !api.query.pool.pools) {
+      throw new Error('Failed to initialize api or api.query.pool');
+    }
     const pools: BType.PoolListResponse = { pools: [] };
     const lastPoolId = await api.query.pool.lastPoolId();
     let finalReturnedId: number = Number(lastPoolId.toHuman());
@@ -110,6 +114,10 @@ export const checkJoinRequest = async (
   try {
     if (api === undefined) {
       api = await init();
+    }
+    // Type guard to assure TypeScript that api is not undefined
+    if (!api || !api.query || !api.query.pool || !api.query.pool.poolRequests) {
+      throw new Error('Failed to initialize api or api.query.pool');
     }
 
     const poolRequest = await api.query.pool.poolRequests(poolId, accountId);
