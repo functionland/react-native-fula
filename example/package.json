@@ -1,23 +1,28 @@
 {
-  "name": "react-native-fula-example",
-  "description": "Example app for react-native-fula",
+  "name": "FulaExample",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start"
+    "start": "react-native start",
+    "pods": "pod-install --quiet"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-native": "^0.71.0-rc.4",
+    "react": "18.2.0",
+    "react-native": "0.72.3",
     "react-native-fs": "^2.20.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/plugin-proposal-export-namespace-from": "^7.16.7",
-    "@babel/runtime": "^7.12.5",
-    "babel-plugin-module-resolver": "^4.0.0",
-    "metro-react-native-babel-preset": "^0.73.6"
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@react-native/eslint-config": "^0.72.2",
+    "@react-native/metro-config": "^0.72.9",
+    "metro-react-native-babel-preset": "0.76.7",
+    "babel-plugin-module-resolver": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16"
   }
 }

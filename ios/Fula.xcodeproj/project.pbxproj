@@ -6,6 +6,12 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		060162ED2A84149500A6E464 /* Cryptography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060162EC2A84149500A6E464 /* Cryptography.swift */; };
+		060162EF2A8414AD00A6E464 /* UserDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060162EE2A8414AD00A6E464 /* UserDataHelper.swift */; };
+		F4FF95D7245B92E800C19C63 /* Fula.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* Fula.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -19,9 +25,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		11C0B56928882C93007D9057 /* FulaModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FulaModule.h; sourceTree = "<group>"; };
-		11C0B56A28882C93007D9057 /* FulaModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FulaModule.m; sourceTree = "<group>"; };
-		134814201AA4EA6300B7C361 /* libFulaModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFulaModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		060162EC2A84149500A6E464 /* Cryptography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cryptography.swift; sourceTree = "<group>"; };
+		060162EE2A8414AD00A6E464 /* UserDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataHelper.swift; sourceTree = "<group>"; };
+		134814201AA4EA6300B7C361 /* libFula.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFula.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3E7B5891CC2AC0600A0062D /* Fula.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Fula.mm; sourceTree = "<group>"; };
+		F4FF95D5245B92E700C19C63 /* Fula-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Fula-Bridging-Header.h"; sourceTree = "<group>"; };
+		F4FF95D6245B92E800C19C63 /* Fula.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fula.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,7 +47,7 @@
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				134814201AA4EA6300B7C361 /* libFulaModule.a */,
+				134814201AA4EA6300B7C361 /* libFula.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -46,8 +55,11 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				11C0B56928882C93007D9057 /* FulaModule.h */,
-				11C0B56A28882C93007D9057 /* FulaModule.m */,
+				060162EE2A8414AD00A6E464 /* UserDataHelper.swift */,
+				060162EC2A84149500A6E464 /* Cryptography.swift */,
+				F4FF95D6245B92E800C19C63 /* Fula.swift */,
+				B3E7B5891CC2AC0600A0062D /* Fula.mm */,
+				F4FF95D5245B92E700C19C63 /* Fula-Bridging-Header.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,9 +67,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		58B511DA1A9E6C8500147676 /* FulaModule */ = {
+		58B511DA1A9E6C8500147676 /* Fula */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "FulaModule" */;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Fula" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
@@ -67,9 +79,9 @@
 			);
 			dependencies = (
 			);
-			name = FulaModule;
+			name = Fula;
 			productName = RCTDataManager;
-			productReference = 134814201AA4EA6300B7C361 /* libFulaModule.a */;
+			productReference = 134814201AA4EA6300B7C361 /* libFula.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -86,7 +98,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "FulaModule" */;
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Fula" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -99,7 +111,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				58B511DA1A9E6C8500147676 /* FulaModule */,
+				58B511DA1A9E6C8500147676 /* Fula */,
 			);
 		};
 /* End PBXProject section */
@@ -109,6 +121,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				060162EF2A8414AD00A6E464 /* UserDataHelper.swift in Sources */,
+				060162ED2A84149500A6E464 /* Cryptography.swift in Sources */,
+				F4FF95D7245B92E800C19C63 /* Fula.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +158,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -193,6 +209,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -219,8 +236,11 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = FulaModule;
+				PRODUCT_NAME = Fula;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Fula-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -235,15 +255,17 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = FulaModule;
+				PRODUCT_NAME = Fula;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Fula-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "FulaModule" */ = {
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Fula" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511ED1A9E6C8500147676 /* Debug */,
@@ -252,7 +274,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "FulaModule" */ = {
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Fula" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,
