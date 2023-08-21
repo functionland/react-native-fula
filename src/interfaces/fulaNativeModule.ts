@@ -1,7 +1,7 @@
 import { NativeModules, Platform } from 'react-native';
 
 interface FulaNativeModule {
-  init: (
+  initFula: (
     identity: string, //Private key of did identity
     storePath: string, //You can leave empty
     bloxAddr: string, //Blox multiadddr needs to be manually entered now
