@@ -12,7 +12,7 @@ RCT_EXTERN_METHOD(newClient:(NSString *)IdentityString
                   withExchange: (NSString *)exchange
                   withAutoFlush: (BOOL)autoFlash
                   withUseRelay: (BOOL)useRelay
-                  withUseRefresh: (BOOL)refresh
+                  withRefresh: (BOOL)refresh
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
