@@ -103,7 +103,30 @@ const App = () => {
     <View style={styles.container}>
       <View style={styles.section}>
         <Text>Put & Get</Text>
-
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'newclient'}
+          onPress={async () => {
+            try {
+              await fula.shutdown();
+              let clientinit = await fula.newClient(
+                privateKey.toString()
+                , ''
+                , bloxAddr
+                , bloxAddr? '' : 'noop'
+                , true
+                ,true
+                , true
+              );
+              if (clientinit) {
+                console.log('newClient complete');
+                console.log(clientinit);
+              } else {
+                console.log('wait for newClient to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Init'}
           onPress={async () => {
