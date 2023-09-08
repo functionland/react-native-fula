@@ -21,7 +21,7 @@ const App = () => {
   var RNFS = require('react-native-fs');
   const readFile = () => {
     RNFS.readDir(RNFS.DocumentDirectoryPath)
-      .then((result: { path: any; }[]) => {
+      .then((result: { path: any }[]) => {
         console.log('GOT RESULT', result);
         return Promise.all([RNFS.stat(result[0].path), result[0].path]);
       })
@@ -34,7 +34,7 @@ const App = () => {
       .then((contents: any) => {
         console.log(contents);
       })
-      .catch((err: { message: any; code: any; }) => {
+      .catch((err: { message: any; code: any }) => {
         console.log(err.message, err.code);
       });
   };
@@ -109,13 +109,13 @@ const App = () => {
             try {
               await fula.shutdown();
               let clientinit = await fula.newClient(
-                privateKey.toString()
-                , ''
-                , bloxAddr
-                , bloxAddr? '' : 'noop'
-                , true
-                ,true
-                , true
+                privateKey.toString(),
+                '',
+                bloxAddr,
+                bloxAddr ? '' : 'noop',
+                true,
+                true,
+                true
               );
               if (clientinit) {
                 console.log('newClient complete');
@@ -164,15 +164,14 @@ const App = () => {
         />
         <Button
           //12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx
-          title={
-            inprogress
-              ? 'Putting & Getting...'
-              : 'set auth'
-          }
+          title={inprogress ? 'Putting & Getting...' : 'set auth'}
           onPress={async () => {
             try {
               fula
-                .setAuth('12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx', true)
+                .setAuth(
+                  '12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx',
+                  true
+                )
                 .then((res: any) => {
                   console.log('tested');
                   console.log(res);
@@ -271,7 +270,7 @@ const App = () => {
                           });
                       });
                   })
-                  .catch((err: { message: any; }) => {
+                  .catch((err: { message: any }) => {
                     console.log(err.message);
                   });
               } else {
@@ -344,7 +343,7 @@ const App = () => {
                           });
                       });
                   })
-                  .catch((err: { message: any; }) => {
+                  .catch((err: { message: any }) => {
                     console.log(err.message);
                   });
               } else {
