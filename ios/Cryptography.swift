@@ -1,13 +1,26 @@
 import Foundation
 import CommonCrypto
 import CryptoSwift
+import os.log
+
+
 
 public class Cryptography: NSObject {
     public static func encryptMsg(_ message: Array<UInt8>, _ secretKey: Array<UInt8>)
     throws -> String {
+        OSLog.viewCycle.info("ReactNative encryptMsg started for \(message)")
         let aes = try! AES(key: secretKey, blockMode: ECB(), padding: .pkcs5)
+        OSLog.viewCycle.info("ReactNative encryptMsg aes")
         let encrypted = try! aes.encrypt(message)
-        return Data(encrypted).base64EncodedString()
+        OSLog.viewCycle.info("ReactNative encryptMsg encrypted")
+        do{
+            let data = Data(encrypted).base64EncodedString()
+            OSLog.viewCycle.info("ReactNative encryptMsg: \(data)")
+            return data
+        } catch let error {
+            OSLog.viewCycle.info("ReactNative encryptMsg error: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     public static func decryptMsg(_ cipherText: String, _ secretKey: Array<UInt8>)

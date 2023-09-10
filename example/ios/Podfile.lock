@@ -377,7 +377,7 @@ PODS:
   - React-jsinspector (0.72.3)
   - React-logger (0.72.3):
     - glog
-  - react-native-fula (1.14.2):
+  - react-native-fula (1.14.6):
     - CryptoSwift (~> 1.7.1)
     - Fula (~> 1.0.0)
     - RCT-Folly (= 2021.07.22.00)
@@ -712,7 +712,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
-  react-native-fula: f7df65e1d0931640568e9e19eb048ce40fd348f9
+  react-native-fula: 17a71317faa0b12fdb5d77c4d4560972be871ec7
   React-NativeModulesApple: c57f3efe0df288a6532b726ad2d0322a9bf38472
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
@@ -737,6 +737,6 @@ SPEC CHECKSUMS:
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 18e6e42feb52b2840969de671a351f681edeffed
+PODFILE CHECKSUM: 894d220cf9833d2e19f55138952974df1c3d2b30
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.12.1
