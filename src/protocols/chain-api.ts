@@ -1,6 +1,7 @@
 import { default as EventTypes } from '../interfaces/api-lookup';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
+// SBP-M1 review: remove commented out code
 //import { Keyring } from '@polkadot/keyring';
 import type * as BType from '../types/blockchain';
 
@@ -9,6 +10,7 @@ const types = {
 };
 
 export const init = async (
+  // SBP-M1 review: consider making configurable
   wsAddress: string = 'wss://node3.functionyard.fx.land'
 ): Promise<ApiPromise> => {
   const provider = new WsProvider(wsAddress);
@@ -23,6 +25,7 @@ export const disconnectApi = async (api: ApiPromise): Promise<void> => {
   await api.disconnect();
 };
 
+// SBP-M1 review: remove commented out code
 /*
   createAccount: This function takes a seed and returns am account
 */
@@ -102,6 +105,7 @@ export const listPools = async (
   }
 };
 
+// SBP-M1 review: typo
 /*
   checkJoinRequest: This function takes poolId and AccontId and returns a promise of an object that contains request to the pools.
   */
