@@ -1,4 +1,4 @@
-import { default as EventTypes } from '../interfaces/api-lookup';
+import { default as EventTypes } from '../interfaces/lookup';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
 //import { Keyring } from '@polkadot/keyring';
