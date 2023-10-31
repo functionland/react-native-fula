@@ -123,13 +123,12 @@ RCT_EXTERN_METHOD(createPool:(NSString *)seedString
 RCT_EXTERN_METHOD(listPools:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(joinPool:(NSString *)seedString
-                  withPoolID: (NSNumber *)poolID
+RCT_EXTERN_METHOD(joinPool: (NSNumber *)poolID
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(cancelPoolJoin:(NSString *)seedString
-                  withPoolID: (NSNumber *)poolID
+
+RCT_EXTERN_METHOD(cancelPoolJoin:(NSNumber *)poolID
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
@@ -144,8 +143,7 @@ RCT_EXTERN_METHOD(votePoolJoinRequest:(NSString *)seedString
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(leavePool:(NSString *)seedString
-                  withPoolID: (NSNumber *)poolID
+RCT_EXTERN_METHOD(leavePool:(NSNumber *)poolID
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 

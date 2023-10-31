@@ -55,9 +55,9 @@ interface FulaNativeModule {
   checkAccountExists: (account: string) => Promise<string>;
   createPool: (seed: string, poolName: string) => Promise<string>;
   listPools: () => Promise<string>;
-  joinPool: (seed: string, poolID: number) => Promise<string>;
-  leavePool: (seed: string, poolID: number) => Promise<string>;
-  cancelPoolJoin: (seed: string, poolID: number) => Promise<string>;
+  joinPool: (poolID: number) => Promise<string>;
+  leavePool: (poolID: number) => Promise<string>;
+  cancelPoolJoin: (poolID: number) => Promise<string>;
   listPoolJoinRequests: (poolID: number) => Promise<string>;
   votePoolJoinRequest: (
     seed: string,

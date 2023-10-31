@@ -1216,11 +1216,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void joinPool(String seedString, long poolID, Promise promise) {
+  public void joinPool(long poolID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "joinPool: seedString = " + seedString + "; poolID = " + poolID);
+      Log.d("ReactNative", "joinPool: poolID = " + poolID);
       try {
-        byte[] result = this.fula.poolJoin(seedString, poolID);
+        byte[] result = this.fula.poolJoin(poolID);
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
@@ -1231,11 +1231,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void cancelPoolJoin(String seedString, long poolID, Promise promise) {
+  public void cancelPoolJoin(long poolID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "cancelPoolJoin: seedString = " + seedString + "; poolID = " + poolID);
+      Log.d("ReactNative", "cancelPoolJoin: poolID = " + poolID);
       try {
-        byte[] result = this.fula.poolCancelJoin(seedString, poolID);
+        byte[] result = this.fula.poolCancelJoin(poolID);
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
@@ -1276,11 +1276,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void leavePool(String seedString, long poolID, Promise promise) {
+  public void leavePool(long poolID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "leavePool: seedString = " + seedString + "; poolID = " + poolID);
+      Log.d("ReactNative", "leavePool: poolID = " + poolID);
       try {
-        byte[] result = this.fula.poolLeave(seedString, poolID);
+        byte[] result = this.fula.poolLeave(poolID);
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {

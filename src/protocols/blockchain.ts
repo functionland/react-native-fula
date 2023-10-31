@@ -108,12 +108,9 @@ export const listPools = (): Promise<BType.PoolListResponse> => {
     joinPool: This function takes two arguments: seed and poolID. The seed is used to identify the account that is joining the pool, and the poolID is the ID of the pool the account is joining. The function returns a promise of an object that contains the account joining the pool and the poolID of the joined pool.
     */
 
-export const joinPool = (
-  seed: string,
-  poolID: number
-): Promise<BType.PoolJoinResponse> => {
-  console.log('joinPool in react-native started', seed, poolID);
-  let res = Fula.joinPool(seed, poolID)
+export const joinPool = (poolID: number): Promise<BType.PoolJoinResponse> => {
+  console.log('joinPool in react-native started', poolID);
+  let res = Fula.joinPool(poolID)
     .then((res) => {
       try {
         let jsonRes: BType.PoolJoinResponse = JSON.parse(res);
@@ -136,12 +133,9 @@ export const joinPool = (
       leavePool: This function takes two arguments: seed and poolID. The seed is used to identify the account that is leaving the pool, and the poolID is the ID of the pool the account is leaving. The function returns a promise of an object that contains the `
       */
 
-export const leavePool = (
-  seed: string,
-  poolID: number
-): Promise<BType.PoolLeaveResponse> => {
-  console.log('leavePool in react-native started', seed, poolID);
-  let res = Fula.leavePool(seed, poolID)
+export const leavePool = (poolID: number): Promise<BType.PoolLeaveResponse> => {
+  console.log('leavePool in react-native started', poolID);
+  let res = Fula.leavePool(poolID)
     .then((res) => {
       try {
         let jsonRes: BType.PoolLeaveResponse = JSON.parse(res);
@@ -161,11 +155,10 @@ export const leavePool = (
 };
 
 export const cancelPoolJoin = (
-  seed: string,
   poolID: number
 ): Promise<BType.PoolCancelJoinResponse> => {
-  console.log('cancelPoolJoin in react-native started', seed, poolID);
-  let res = Fula.cancelPoolJoin(seed, poolID)
+  console.log('cancelPoolJoin in react-native started', poolID);
+  let res = Fula.cancelPoolJoin(poolID)
     .then((res) => {
       try {
         let jsonRes: BType.PoolCancelJoinResponse = JSON.parse(res);

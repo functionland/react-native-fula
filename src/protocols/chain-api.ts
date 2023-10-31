@@ -1,7 +1,7 @@
 import { default as EventTypes } from '../interfaces/lookup';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
-//import { Keyring } from '@polkadot/keyring';
+import { Keyring } from '@polkadot/keyring';
 import type * as BType from '../types/blockchain';
 
 const types = {
@@ -23,14 +23,57 @@ export const disconnectApi = async (api: ApiPromise): Promise<void> => {
   await api.disconnect();
 };
 
+function addDoubleSlashToSeed(seed: string): string {
+  return seed.startsWith('//') ? seed : '//' + seed;
+}
+
 /*
-  createAccount: This function takes a seed and returns am account
+  createManifest: This function batch uploads manifests
 */
-export const uploadManifest = async (
+function createManifest(
+  cids: string[],
+  poolId: number,
+  replicationFactor: number = 4
+): {
+  manifest: any[];
+  cids: string[];
+  poolId: number[];
+  replicationFactor: number[];
+} {
+  const manifest_metadata = cids.map((cid) => ({
+    job: {
+      work: 'Storage',
+      engine: 'IPFS',
+      uri: cid,
+    },
+  }));
+
+  // Create arrays filled with `poolId` and `replicationFactor`, one element for each `cid`
+  const poolIds = new Array(cids.length).fill(poolId);
+  const replicationFactors = new Array(cids.length).fill(replicationFactor);
+
+  const batchUploadManifest = {
+    manifest: manifest_metadata,
+    cids: cids,
+    poolId: poolIds,
+    replicationFactor: replicationFactors,
+  };
+
+  return batchUploadManifest;
+}
+export const batchUploadManifest = async (
   api: ApiPromise | undefined,
   seed: string,
-  manifest: typeof EventTypes.FunctionlandFulaCall._enum.upload_manifest
-): Promise<BType.ManifestUploadResponse> => {
+  cids_i: [string],
+  poolId_i: number,
+  replicationFactor_i: number = 4
+): Promise<{ hash: string }> => {
+  const { manifest, cids, poolId, replicationFactor } = createManifest(
+    cids_i,
+    poolId_i,
+    replicationFactor_i
+  );
+
   console.log('uploadManifest in react-native started');
   try {
     if (api === undefined) {
@@ -39,24 +82,47 @@ export const uploadManifest = async (
 
     // Simple transaction
     const keyring = new Keyring({ type: 'sr25519' });
-    const userKey = keyring.addFromUri(seed, { name: 'account' });
+    const userKey = keyring.addFromUri(seed, { name: 'account' }, 'sr25519');
     console.log(
       `${userKey.meta.name}: has address ${userKey.address} with publicKey [${userKey.publicKey}]`
     );
-    //const submitExtrinsic = await api.tx.manifest.upload(manifest);
-    const submitExtrinsic = api.tx.fula.batchUploadManifest([manifest]);
-    const unsub = await submitExtrinsic
-      .signAndSend(userKey, ({ status, events }) => {
-        if (status.isInBlock || status.isFinalized) {
-          console.log(events);
-          unsub();
-          return Promise.resolve({ success: true });
-        }
-      })
-      .catch((error) => {
-        console.log(':( transaction failed', error);
-        return Promise.reject(error);
-      });
+    if (api?.tx?.fula?.batchUploadManifest) {
+      const submitExtrinsic = api.tx.fula.batchUploadManifest(
+        manifest,
+        cids,
+        poolId,
+        replicationFactor
+      );
+      let unsub: () => void; // Define a variable to hold the unsub function
+
+      if (submitExtrinsic) {
+        return new Promise<{ hash: string }>((resolve, reject) => {
+          submitExtrinsic
+            .signAndSend(userKey, ({ status, events }) => {
+              if (status.isInBlock || status.isFinalized) {
+                if (unsub) {
+                  unsub(); // Call unsub before resolving the promise
+                }
+                resolve({ hash: status.asInBlock.toString() });
+              }
+            })
+            .then((unsubFn) => {
+              unsub = unsubFn; // Store the unsub function once it becomes available
+            })
+            .catch((error) => {
+              if (unsub) {
+                unsub(); // Call unsub before rejecting the promise
+              }
+              console.log(':( transaction failed', error);
+              reject(error);
+            });
+        });
+      } else {
+        return Promise.reject(new TypeError('submitExtrinsic not constructed'));
+      }
+    } else {
+      return Promise.reject(new TypeError('api not initialized'));
+    }
   } catch (err) {
     return Promise.reject(err);
   }
@@ -76,7 +142,7 @@ export const listPools = async (
       api = await init();
     }
     // Type guard to assure TypeScript that api is not undefined
-    if (!api || !api.query || !api.query.pool || !api.query.pool.lastPoolId || !api.query.pool.pools) {
+    if (!api?.query?.pool?.lastPoolId || !api?.query?.pool?.pools) {
       throw new Error('Failed to initialize api or api.query.pool');
     }
     const pools: BType.PoolListResponse = { pools: [] };
@@ -117,7 +183,7 @@ export const checkJoinRequest = async (
       api = await init();
     }
     // Type guard to assure TypeScript that api is not undefined
-    if (!api || !api.query || !api.query.pool || !api.query.pool.poolRequests) {
+    if (!api?.query?.pool?.poolRequests) {
       throw new Error('Failed to initialize api or api.query.pool');
     }
 

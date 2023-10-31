@@ -620,6 +620,30 @@ const App = () => {
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Upload Manifest'}
+          onPress={async () => {
+            try {
+              chainApi.init().then((api: any) => {
+                console.log('api created');
+                if (api) {
+                  console.log('uploading manifests');
+                  chainApi
+                    .batchUploadManifest(api, '0xde74b73a4e99c09ae760e7d05c1cf50bd166312fe1be6fb46609b690efb0e472', ['Cid6'], 1)
+                    .then((res: any) => {
+                      console.log('res received');
+                      console.log(res);
+                    })
+                    .catch((e: any) => {
+                      console.log('res failed');
+                      console.log(e);
+                    });
+                }
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
       </View>
     </View>
   );
