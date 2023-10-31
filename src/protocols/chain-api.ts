@@ -9,7 +9,7 @@ const types = {
 };
 
 export const init = async (
-  wsAddress: string = 'wss://node3.functionyard.fx.land'
+  wsAddress: string = 'wss://node3.functionyard.fula.network'
 ): Promise<ApiPromise> => {
   const provider = new WsProvider(wsAddress);
   const api = await ApiPromise.create({ types, provider }).catch((err) => {
@@ -26,7 +26,7 @@ export const disconnectApi = async (api: ApiPromise): Promise<void> => {
 /*
   createAccount: This function takes a seed and returns am account
 */
-/*export const uploadManifest = async (
+export const uploadManifest = async (
   api: ApiPromise | undefined,
   seed: string,
   manifest: typeof EventTypes.FunctionlandFulaCall._enum.upload_manifest
@@ -43,7 +43,8 @@ export const disconnectApi = async (api: ApiPromise): Promise<void> => {
     console.log(
       `${userKey.meta.name}: has address ${userKey.address} with publicKey [${userKey.publicKey}]`
     );
-    const submitExtrinsic = await api.tx.manifest.upload(manifest);
+    //const submitExtrinsic = await api.tx.manifest.upload(manifest);
+    const submitExtrinsic = api.tx.fula.batchUploadManifest([manifest]);
     const unsub = await submitExtrinsic
       .signAndSend(userKey, ({ status, events }) => {
         if (status.isInBlock || status.isFinalized) {
@@ -59,7 +60,7 @@ export const disconnectApi = async (api: ApiPromise): Promise<void> => {
   } catch (err) {
     return Promise.reject(err);
   }
-};*/
+};
 
 /*
   listPools: This function takes start index and length and returns a promise of an object that contains a list of pools. Each pool in the list contains the poolID, owner, poolName, parent, and participants of the pool

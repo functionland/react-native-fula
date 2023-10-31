@@ -185,6 +185,18 @@ await fula.logout(
 
 ```
 
+## Polkadot type creation
+
+You can follow the documentation here: https://polkadot.js.org/docs/api/examples/promise/typegen
+
+Alternatively you do the below:
+
+```bash
+curl -H "Content-Type: application/json" -d "{\"id\":\"1\", \"jsonrpc\":\"2.0\", \"method\": \"state_getMetadata\", \"params\":[]}" https://node3.functionyard.fula.network > edgeware.json
+
+yarn build:polkadot
+```
+
 ## Roadmap
 
 Please note the following might not be done in order:

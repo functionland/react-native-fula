@@ -18,7 +18,7 @@ const App = () => {
     { peerId: string; rootCid: string; private_ref: string } | {}
   >({});
 
-  var RNFS = require('react-native-fs');
+  let RNFS = require('react-native-fs');
   const readFile = () => {
     RNFS.readDir(RNFS.DocumentDirectoryPath)
       .then((result: { path: any }[]) => {
@@ -46,12 +46,24 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
 
+  const privateKey_tower = [
+    136, 140, 244, 206, 112, 88, 174, 215, 168, 255, 187, 101, 60, 246, 164,
+    180, 36, 243, 231, 82, 182, 24, 99, 79, 114, 144, 196, 186, 92, 27, 109, 89,
+    153, 106, 217, 201, 106, 9, 66, 33, 214, 195, 255, 234, 178, 244, 203, 112,
+    62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
+  ];
+  const bloxPeerId_tower =
+    '12D3KooWDi9zBYJC3xhwVJ8TKFaSsK4XvSj66ZagXjQvxd449X7h';
+  const bloxPeerId_laptop =
+    '12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
+
   const bloxAddr =
-    '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
+    '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' +
+    bloxPeerId_tower;
 
   const initFula = async () => {
     try {
-      return fula.init(privateKey.toString(), '', bloxAddr, '');
+      return fula.init(privateKey_tower.toString(), '', bloxAddr, '');
     } catch (e) {
       console.log(e);
       return Promise.reject(e);
@@ -578,6 +590,32 @@ const App = () => {
               } else {
                 console.log('wait for init to complete');
               }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'List Pools'}
+          onPress={async () => {
+            try {
+              chainApi.init().then((api: any) => {
+                console.log('api created');
+                console.log(api.rpc);
+                if (api) {
+                  console.log('getting pools');
+                  chainApi
+                    .listPools(api)
+                    .then((res: any) => {
+                      console.log('list pool res received');
+                      console.log(res);
+                    })
+                    .catch((e: any) => {
+                      console.log('res failed');
+                      console.log(e);
+                    });
+                }
+              });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
