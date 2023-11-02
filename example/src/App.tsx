@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
+import { joinPool } from '../../.history/src/protocols/blockchain_20231031100906';
 
 import {
   fula,
@@ -53,13 +54,14 @@ const App = () => {
     62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
   ];
   const bloxPeerId_tower =
-    '12D3KooWDi9zBYJC3xhwVJ8TKFaSsK4XvSj66ZagXjQvxd449X7h';
+    '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4';
   const bloxPeerId_laptop =
     '12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
 
-  const bloxAddr =
+  const bloxAddrRelay =
     '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' +
     bloxPeerId_tower;
+  const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId_tower;
 
   const initFula = async () => {
     try {
@@ -406,7 +408,7 @@ const App = () => {
         />
 
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'New Account'}
+          title={inprogress ? 'Putting & Getting...' : 'Join Pool'}
           onPress={async () => {
             try {
               if (initComplete) {
@@ -414,17 +416,15 @@ const App = () => {
                   console.log('connection cehck');
                   console.log(r);
                   if (r) {
-                    console.log('initialization is completed. retry');
+                    console.log('initialization is completed.');
                     blockchain
-                      .createAccount(
-                        '//81862be6b6ffea2d4b11aee9e6d02499363685171369f8a9088ac979b87eb8cb'
-                      )
+                      .joinPool(1)
                       .then((res: any) => {
-                        console.log('created');
+                        console.log('joined');
                         console.log(res);
                       })
                       .catch((e: any) => {
-                        console.log('creation failed');
+                        console.log('join failed');
                         console.log(e);
                       });
                   }
@@ -457,36 +457,6 @@ const App = () => {
                       })
                       .catch((e: any) => {
                         console.log('replicationRequest creation failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Get All Pools'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log('initialization is completed. get pools');
-                    blockchain
-                      .listPools()
-                      .then((res: any) => {
-                        console.log('listpool received');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('listpool fetch failed');
                         console.log(e);
                       });
                   }
@@ -644,6 +614,7 @@ const App = () => {
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+
       </View>
     </View>
   );

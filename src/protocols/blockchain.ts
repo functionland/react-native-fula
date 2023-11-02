@@ -110,7 +110,7 @@ export const listPools = (): Promise<BType.PoolListResponse> => {
 
 export const joinPool = (poolID: number): Promise<BType.PoolJoinResponse> => {
   console.log('joinPool in react-native started', poolID);
-  let res = Fula.joinPool(poolID)
+  let res = Fula.joinPool(poolID.toString())
     .then((res) => {
       try {
         let jsonRes: BType.PoolJoinResponse = JSON.parse(res);

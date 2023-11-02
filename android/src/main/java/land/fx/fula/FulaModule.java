@@ -1216,11 +1216,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void joinPool(long poolID, Promise promise) {
+  public void joinPool(String poolID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "joinPool: poolID = " + poolID);
+      long poolIdLong = Long.parseLong(poolID);
+      Log.d("ReactNative", "joinPool: poolID = " + poolIdLong);
       try {
-        byte[] result = this.fula.poolJoin(poolID);
+        byte[] result = this.fula.poolJoin(poolIdLong);
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
