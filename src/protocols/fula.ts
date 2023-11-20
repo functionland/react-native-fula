@@ -105,6 +105,20 @@ export const listFailedActions = (cids: string[] = []): Promise<string[]> => {
 };
 
 /**
+ * Lists the cids that are recent
+ */
+export const listRecentCidsAsString = (): Promise<string[]> => {
+  return Fula.listRecentCidsAsString();
+};
+
+/**
+ * Clears the cids that ar recent
+ */
+export const clearCidsFromRecent = (cids: string[] = []): Promise<boolean> => {
+  return Fula.clearCidsFromRecent(cids);
+};
+
+/**
  * Checks if there are any un-synced changes on the device
  */
 export const checkConnection = (timeout: number = 20): Promise<boolean> => {

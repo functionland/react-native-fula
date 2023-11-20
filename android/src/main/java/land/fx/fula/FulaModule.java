@@ -651,6 +651,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "Creating a new Fula instance");
         try {
           shutdownInternal();
+          Log.d("ReactNative", "Creating a new Fula instance with config");
           this.fula = Fulamobile.newClient(fulaConfig);
           if (this.fula != null) {
             this.fula.flush();
@@ -1121,6 +1122,8 @@ public class FulaModule extends ReactContextBaseJavaModule {
         this.fula.shutdown();
         this.fula = null;
         this.client = null;
+        Log.d("ReactNative", "shutdownInternal done");
+
       }
     } catch (Exception e) {
       Log.d("ReactNative", "shutdownInternal"+ e.getMessage());
@@ -1380,6 +1383,69 @@ public class FulaModule extends ReactContextBaseJavaModule {
       }
     });
   }
+
+  @ReactMethod
+  private void listRecentCidsAsString(Promise promise) throws Exception {
+    ThreadUtils.runOnExecutor(() -> {
+    try {
+      if (this.fula != null) {
+        Log.d("ReactNative", "ListRecentCidsAsString");
+        fulamobile.StringIterator recentLinks = this.fula.listRecentCidsAsString();
+        ArrayList<String> recentLinksList = new ArrayList<>();
+        while (recentLinks.hasNext()) {
+          recentLinksList.add(recentLinks.next());
+        }
+        if (!recentLinksList.isEmpty()) {
+          // return the whole list
+          Log.d("ReactNative", "ListRecentCidsAsString found: "+ recentLinksList);
+          WritableArray recentLinksArray = Arguments.createArray();
+          for (String link : recentLinksList) {
+            recentLinksArray.pushString(link);
+          }
+          promise.resolve(recentLinksArray);
+        } else {
+          promise.resolve(false);
+        }
+      } else {
+        throw new Exception("ListRecentCidsAsString: Fula is not initialized");
+      }
+    } catch (Exception e) {
+      Log.d("ReactNative", "ListRecentCidsAsString failed with Error: " + e.getMessage());
+      try {
+        throw (e);
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    }
+    });
+  }
+
+  @ReactMethod
+  public void clearCidsFromRecent(ReadableArray cidArray, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+    try {
+      if (this.fula != null) {
+        StringBuilder cidStrBuilder = new StringBuilder();
+        for (int i = 0; i < cidArray.size(); i++) {
+          if (i > 0) {
+            cidStrBuilder.append("|");
+          }
+          cidStrBuilder.append(cidArray.getString(i));
+        }
+
+        byte[] cidsBytes = cidStrBuilder.toString().getBytes(StandardCharsets.UTF_8);
+        this.fula.clearCidsFromRecent(cidsBytes);
+        promise.resolve(true); // Indicate success
+      } else {
+        throw new Exception("clearCidsFromRecent: Fula is not initialized");
+      }
+    } catch (Exception e) {
+      Log.d("ReactNative", "clearCidsFromRecent failed with Error: " + e.getMessage());
+      promise.reject("Error", e.getMessage());
+    }
+    });
+  }
+
 
   ////////////////////////////////////////////////////////////////
   ///////////////// Blox Hardware Methods ////////////////////////

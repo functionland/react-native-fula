@@ -119,12 +119,14 @@ export const joinPool = (poolID: number): Promise<BType.PoolJoinResponse> => {
         try {
           return JSON.parse(res);
         } catch (e) {
-          return res;
+          console.error('Error parsing res in joining pool:', e);
+          throw e; // Rethrow the error to maintain the rejection state
         }
       }
     })
     .catch((err) => {
-      return err;
+      console.error('Error joining pool:', err);
+      throw err; // Rethrow the error to maintain the rejection state
     });
   return res;
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import { joinPool } from '../../.history/src/protocols/blockchain_20231031100906';
+import { clearCidsFromRecent } from '../../.history/src/protocols/fula_20231120182146';
 
 import {
   fula,
@@ -58,10 +58,10 @@ const App = () => {
   const bloxPeerId_laptop =
     '12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
 
-  const bloxAddrRelay =
+  const bloxAddr =
     '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' +
     bloxPeerId_tower;
-  const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId_tower;
+  //const bloxAddr = '/ip4/192.168.2.87/tcp/40001/p2p/' + bloxPeerId_tower;
 
   const initFula = async () => {
     try {
@@ -599,7 +599,12 @@ const App = () => {
                 if (api) {
                   console.log('uploading manifests');
                   chainApi
-                    .batchUploadManifest(api, '0xde74b73a4e99c09ae760e7d05c1cf50bd166312fe1be6fb46609b690efb0e472', ['Cid6'], 1)
+                    .batchUploadManifest(
+                      api,
+                      '0xde74b73a4e99c09ae760e7d05c1cf50bd166312fe1be6fb46609b690efb0e472',
+                      ['Cid6'],
+                      1
+                    )
                     .then((res: any) => {
                       console.log('res received');
                       console.log(res);
@@ -615,6 +620,42 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
 
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test Recent CIDs'}
+          onPress={async () => {
+            try {
+              chainApi.init().then((api: any) => {
+                console.log('api created');
+                if (api && initComplete) {
+                  console.log('get the list of cids');
+                  fula
+                    .listRecentCidsAsString()
+                    .then((res: any) => {
+                      console.log('res received');
+                      console.log(res);
+                      if (res) {
+                        fula
+                          .clearCidsFromRecent(res)
+                          .then((res2: any) => {
+                            console.log('clear done');
+                            console.log(res2);
+                          })
+                          .catch((e: any) => {
+                            console.log('clear failed');
+                            console.log(e);
+                          });
+                      }
+                    })
+                    .catch((e: any) => {
+                      console.log('res failed');
+                      console.log(e);
+                    });
+                }
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
       </View>
     </View>
   );
