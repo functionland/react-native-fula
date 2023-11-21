@@ -644,6 +644,32 @@ const App = () => {
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test Replicate'}
+          onPress={async () => {
+            try {
+              chainApi.init().then((api: any) => {
+                console.log('api created');
+                if (api && initComplete) {
+                  console.log('replicate');
+                  fula
+                    .replicateRecentCids(api, seed, 3)
+                    .then((res: any) => {
+                      console.log('res received');
+                      console.log(res);
+                    })
+                    .catch((e: any) => {
+                      console.log('res failed');
+                      console.log(e);
+                    });
+                }
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
       </View>
     </View>
   );
