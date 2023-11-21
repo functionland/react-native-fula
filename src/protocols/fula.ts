@@ -1,4 +1,11 @@
 import Fula from '../interfaces/fulaNativeModule';
+import {
+  init as chainApiInit,
+  batchUploadManifest,
+  checkAccountBalance,
+  getAccountIdFromSeed,
+} from './chain-api';
+import { ApiPromise } from '@polkadot/api';
 
 /**
  * Get gets the value corresponding to the given key from the local datastore.
@@ -102,6 +109,20 @@ export const checkFailedActions = (
  */
 export const listFailedActions = (cids: string[] = []): Promise<string[]> => {
   return Fula.listFailedActions(cids);
+};
+
+/**
+ * Lists the cids that are recent
+ */
+export const listRecentCidsAsString = (): Promise<string[]> => {
+  return Fula.listRecentCidsAsString();
+};
+
+/**
+ * Clears the cids that ar recent
+ */
+export const clearCidsFromRecent = (cids: string[] = []): Promise<boolean> => {
+  return Fula.clearCidsFromRecent(cids);
 };
 
 /**
@@ -311,4 +332,88 @@ export const setAuth = (peerId: string, allow: boolean): Promise<boolean> => {
  */
 export const isReady = (filesystemCheck: boolean = true): Promise<boolean> => {
   return Fula.isReady(filesystemCheck);
+};
+
+/**
+ * replicate replicates data on the nework
+ */
+export const replicateRecentCids = async (
+  api: ApiPromise,
+  seed: string,
+  poolId: number,
+  replicationNo: number = 4
+): Promise<{ status: boolean; msg: string }> => {
+  let status = true;
+  let msg = '';
+  if (!api) {
+    api = await chainApiInit();
+  }
+  if (api) {
+    console.log('uploading manifests');
+    try {
+      let account = await getAccountIdFromSeed(seed);
+      console.log('account: ' + account);
+      const accountBal = await checkAccountBalance(api, account);
+      console.log('account balance: ' + accountBal);
+      if (accountBal !== '0') {
+        const recentCids = await listRecentCidsAsString();
+        console.log(recentCids);
+        if (recentCids) {
+          console.log({
+            api,
+            seed,
+            recentCids,
+            poolId,
+            replicationNo,
+          });
+          const res = await batchUploadManifest(
+            api,
+            seed,
+            recentCids,
+            poolId,
+            replicationNo
+          );
+          console.log('batchUploadManifest res received');
+          console.log(res);
+          if (res && res.hash) {
+            const signedBlock = await api.rpc.chain.getBlock(res.hash);
+            if (signedBlock?.block?.extrinsics?.length) {
+              await clearCidsFromRecent(recentCids);
+              msg = res.hash;
+            } else {
+              status = false;
+              msg = 'block data is not found';
+            }
+          } else {
+            status = false;
+            msg = 'hash is not returned';
+          }
+        } else {
+          status = false;
+          msg = 'No recent Cids found';
+        }
+      } else {
+        status = false;
+        msg = 'Account balance is not enough or account does not exists';
+      }
+    } catch (e: any) {
+      console.log('res failed');
+      console.log(e);
+      let errorMessage = '';
+
+      if (e instanceof Error) {
+        // If it's an Error instance, use the message property
+        errorMessage = e.message;
+      } else {
+        // If it's not an Error instance, convert it to string
+        errorMessage = e.toString();
+      }
+      status = false;
+      msg = errorMessage;
+    }
+  }
+
+  // Return a value (true/false) depending on the outcome of the function
+  // For example:
+  return { status: status, msg: msg }; // or false, depending on your logic
 };

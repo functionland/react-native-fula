@@ -108,12 +108,9 @@ export const listPools = (): Promise<BType.PoolListResponse> => {
     joinPool: This function takes two arguments: seed and poolID. The seed is used to identify the account that is joining the pool, and the poolID is the ID of the pool the account is joining. The function returns a promise of an object that contains the account joining the pool and the poolID of the joined pool.
     */
 
-export const joinPool = (
-  seed: string,
-  poolID: number
-): Promise<BType.PoolJoinResponse> => {
-  console.log('joinPool in react-native started', seed, poolID);
-  let res = Fula.joinPool(seed, poolID)
+export const joinPool = (poolID: number): Promise<BType.PoolJoinResponse> => {
+  console.log('joinPool in react-native started', poolID);
+  let res = Fula.joinPool(poolID.toString())
     .then((res) => {
       try {
         let jsonRes: BType.PoolJoinResponse = JSON.parse(res);
@@ -122,12 +119,14 @@ export const joinPool = (
         try {
           return JSON.parse(res);
         } catch (e) {
-          return res;
+          console.error('Error parsing res in joining pool:', e);
+          throw e; // Rethrow the error to maintain the rejection state
         }
       }
     })
     .catch((err) => {
-      return err;
+      console.error('Error joining pool:', err);
+      throw err; // Rethrow the error to maintain the rejection state
     });
   return res;
 };
@@ -136,12 +135,9 @@ export const joinPool = (
       leavePool: This function takes two arguments: seed and poolID. The seed is used to identify the account that is leaving the pool, and the poolID is the ID of the pool the account is leaving. The function returns a promise of an object that contains the `
       */
 
-export const leavePool = (
-  seed: string,
-  poolID: number
-): Promise<BType.PoolLeaveResponse> => {
-  console.log('leavePool in react-native started', seed, poolID);
-  let res = Fula.leavePool(seed, poolID)
+export const leavePool = (poolID: number): Promise<BType.PoolLeaveResponse> => {
+  console.log('leavePool in react-native started', poolID);
+  let res = Fula.leavePool(poolID)
     .then((res) => {
       try {
         let jsonRes: BType.PoolLeaveResponse = JSON.parse(res);
@@ -161,11 +157,10 @@ export const leavePool = (
 };
 
 export const cancelPoolJoin = (
-  seed: string,
   poolID: number
 ): Promise<BType.PoolCancelJoinResponse> => {
-  console.log('cancelPoolJoin in react-native started', seed, poolID);
-  let res = Fula.cancelPoolJoin(seed, poolID)
+  console.log('cancelPoolJoin in react-native started', poolID);
+  let res = Fula.cancelPoolJoin(poolID)
     .then((res) => {
       try {
         let jsonRes: BType.PoolCancelJoinResponse = JSON.parse(res);

@@ -6,12 +6,12 @@ import Fula
 import os.log
 
 extension OSLog {
-    
+
     private static var subsystem = Bundle.main.bundleIdentifier!
-    
+
     /// Logs the view cycles like a view that appeared.
     static let viewCycle = OSLog(subsystem: subsystem, category: "viewcycle")
-    
+
     /// All logs related to tracking and analytics.
     static let statistics = OSLog(subsystem: subsystem, category: "statistics")
 }
@@ -21,11 +21,11 @@ extension OSLog {
     func info(_ msg: String, _ args: CVarArg...) {
         os_log("%{public}@", log: self, type: .info, msg)
     }
-    
+
     func error(_ msg: String, _ args: CVarArg...) {
         os_log("%{public}@", log: self, type: .error, msg)
     }
-    
+
     // ... (more methods for different log levels, if needed)
 }
 
@@ -34,7 +34,7 @@ extension OSLog {
 class FulaModule: NSObject {
     public let NAME: String = "FulaModule"
     var fula: FulamobileClient?
-    
+
     var client: Client?
     var wnfs: Wnfs?
     var fulaConfig: FulamobileConfig?
@@ -54,15 +54,15 @@ class FulaModule: NSObject {
     enum MyError: Error {
         case runtimeError(String)
     }
-    
+
     @objc(Client)
     public class Client: NSObject {
         let internalClient: FulamobileClient
-        
+
         init(clientInput:  FulamobileClient) {
             internalClient = clientInput
         }
-        
+
         func get(_ cid: Data) throws -> Data {
             do {
                 print(String(format: "ReactNative get cid: %s", cid.toHex()))
@@ -71,7 +71,7 @@ class FulaModule: NSObject {
                 throw error
             }
         }
-        
+
         func put(_ cid: Data, _ data: Data) throws -> Void {
             do {
                 print(String(format: "ReactNative put(%s) data: %s", cid.toHex(), data.toHex()))
@@ -86,7 +86,7 @@ class FulaModule: NSObject {
 
         self.appDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let fulaStoreURL = appDir.appendingPathComponent("/fula")
-            
+
             self.fulaStorePath = fulaStoreURL.path
             let fileManager = FileManager.default
             var success = true
@@ -97,16 +97,16 @@ class FulaModule: NSObject {
                     print(error.localizedDescription)
                     success = false
                 }
-                
+
             }
             if success {
                 print("Fula store folder created")
             } else {
                 print("Unable to create fula store folder!")
-                
+
             }
                    super.init()
-        
+
     }
     func convertConfigToJson(config: Cid) -> String {
         return String(format: "{\"cid\": \"%@\"}", config)
@@ -138,7 +138,7 @@ class FulaModule: NSObject {
     @objc(checkConnection:withResolver:withRejecter:)
     func checkConnection(timeout: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         OSLog.viewCycle.info("ReactNative checkConnection started with timeout=\(timeout)")
-        
+
         if let timeoutInt = timeout as? Int {
             if fula != nil {
                 DispatchQueue.global(qos: .default).async {
@@ -177,7 +177,7 @@ class FulaModule: NSObject {
                 print("ReactNative", "newClient failed with Error: ", error.localizedDescription)
                 reject("ERR_FULA", "Can't create client", error)
             }
-        
+
     }
 
     @objc(isReady:withResolver:withRejecter:)
@@ -205,7 +205,7 @@ class FulaModule: NSObject {
     // function to be compatible with the android version.
     @objc(initFula:withStorePath:withBloxAddr:withExchange:withAutoFlush:withRootConfig:withUseRelay:withRefresh:withResolver:withRejecter:)
     func initFula(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, rootConfig: String, useRelay: Bool, refresh: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-        
+
         OSLog.viewCycle.info("ReactNative - init started")
 
         do {
@@ -242,7 +242,7 @@ class FulaModule: NSObject {
                 print("ReactNative", "logout failed with Error: ", error.localizedDescription)
                 reject("ERR_FULA", "logout failed", error)
             }
-        
+
     }
 
     func checkConnectionInternal(timeout: Int) throws -> Bool {
@@ -252,7 +252,7 @@ class FulaModule: NSObject {
         if let fula = self.fula {
             let semaphore = DispatchSemaphore(value: 0)
             let queue = DispatchQueue(label: "com.yourapp.checkConnection", attributes: .concurrent)
-            
+
             queue.async {
                 do {
                     OSLog.viewCycle.info("ReactNative connectToBlox started")
@@ -265,7 +265,7 @@ class FulaModule: NSObject {
                     semaphore.signal()
                 }
             }
-            
+
             let timeoutResult = semaphore.wait(timeout: .now() + .seconds(timeout))
             switch timeoutResult {
             case .timedOut:
@@ -290,7 +290,7 @@ class FulaModule: NSObject {
                 if !retry {
                     OSLog.viewCycle.info("ReactNative checkFailedActions without retry")
                     let failedLinks = try fula.listFailedPushes()
-                    
+
                     let nextFailedLink = try failedLinks.next()
                     if nextFailedLink != nil {
                         // Assuming nextFailedLink is of type Data; replace `toHex()` with an appropriate method to convert Data to a hex string
@@ -314,15 +314,15 @@ class FulaModule: NSObject {
 
     func retryFailedActionsInternal(timeout: Int) throws -> Bool {
         OSLog.viewCycle.info("ReactNative retryFailedActionsInternal started")
-        
+
         guard let fula = fula else {
             OSLog.viewCycle.info("ReactNative retryFailedActionsInternal failed because fula is not initialized")
             return false
         }
-        
+
         do {
             let connectionCheck = try checkConnectionInternal(timeout: timeout)
-            
+
             if connectionCheck {
                 do {
                     OSLog.viewCycle.info("ReactNative retryFailedPushes started")
@@ -406,16 +406,16 @@ class FulaModule: NSObject {
         do {
             if let identityEncryptedGlobalUnwrapped = identityEncryptedGlobal {
                 OSLog.viewCycle.info("ReactNative encryptAndStoreConfig started")
-                
+
                 if let rootCidUnwrapped = rootCid, let wnfsKeyUnwrapped = wnfsKey, let secretKeyGlobalUnwrapped = secretKeyGlobal {
                     OSLog.viewCycle.info("ReactNative encryptAndStoreConfig started with rootCid: \(rootCidUnwrapped.toUint8Array()) and wnfsKey:\(wnfsKeyUnwrapped)")
-                    
+
                     let cid_encrypted = try Cryptography.encryptMsg(rootCidUnwrapped.toUint8Array(), secretKeyGlobalUnwrapped)
                     OSLog.viewCycle.info("ReactNative encryptAndStoreConfig cid_encrypted: \(cid_encrypted)")
-                    
+
                     let wnfs_key_encrypted = try Cryptography.encryptMsg(wnfsKeyUnwrapped.toUint8Array(), secretKeyGlobalUnwrapped)
                     OSLog.viewCycle.info("ReactNative encryptAndStoreConfig wnfs_key_encrypted: \(wnfs_key_encrypted)")
-                    
+
                     userDataHelper.add("cid_encrypted_" + identityEncryptedGlobalUnwrapped, cid_encrypted)
                     userDataHelper.add("wnfs_key_encrypted_" + identityEncryptedGlobalUnwrapped, wnfs_key_encrypted)
                 } else {
@@ -555,7 +555,7 @@ class FulaModule: NSObject {
                         cid = _rootCid.toUint8Array()
                     }
 
-                } 
+                }
                 if(cid == nil || cid!.isEmpty){
                         OSLog.viewCycle.info("ReactNative Tried to recover cid but was not successful. Creating ones")
                         try createNewrootCid(identity: identity)
@@ -796,7 +796,7 @@ class FulaModule: NSObject {
                 print("readFileContent", error.localizedDescription)
                 reject("ERR_WNFS", "readFileContent", error)
             }
-        
+
     }
 
     @objc(get:withResolver:withRejecter:)
@@ -812,7 +812,7 @@ class FulaModule: NSObject {
                 print("get", error.localizedDescription)
                 reject("ERR_FULA", "get", error)
             }
-        
+
     }
 
     func getInternal(_ key: Data) throws -> Data {
@@ -841,7 +841,7 @@ class FulaModule: NSObject {
                 print("has", error.localizedDescription)
                 reject("ERR_FULA", "has", error)
             }
-        
+
     }
 
     func hasInternal(_ key: Data) throws -> Bool {
@@ -1050,32 +1050,32 @@ class FulaModule: NSObject {
 
     }
 
-    @objc(joinPool:withPoolID:withResolver:withRejecter:)
-    func joinPool(seedString: String, poolID: Int,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "joinPool: seedString = ",seedString," poolID = ",poolID)
+    @objc(joinPool:withResolver:withRejecter:)
+    func joinPool(poolID: Int, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+        print("ReactNative", "joinPool: poolID = ", poolID)
         do {
-            let result = try fula!.poolJoin(seedString, poolID: poolID)
+            // Note: Adjust this line if fula!.poolJoin requires seedString
+            let result = try fula!.poolJoin(poolID: poolID)
             let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("joinPool", error.localizedDescription)
             reject("ERR_FULA", "joinPool", error)
         }
-
     }
 
-    @objc(cancelPoolJoin:withPoolID:withResolver:withRejecter:)
-    func cancelPoolJoin(seedString: String, poolID: Int,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "cancelPoolJoin: seedString = " , seedString , " poolID = " , poolID)
+    @objc(cancelPoolJoin:withResolver:withRejecter:)
+    func cancelPoolJoin(poolID: Int, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+        print("ReactNative", "cancelPoolJoin: poolID = ", poolID)
         do {
-            let result = try fula!.poolCancelJoin(seedString, poolID: poolID)
+            // Note: Adjust this line if fula!.poolCancelJoin requires seedString
+            let result = try fula!.poolCancelJoin(poolID: poolID)
             let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("cancelPoolJoin", error.localizedDescription)
             reject("ERR_FULA", "cancelPoolJoin", error)
         }
-
     }
 
     @objc(listPoolJoinRequests:withResolver:withRejecter:)
@@ -1106,18 +1106,18 @@ class FulaModule: NSObject {
 
     }
 
-    @objc(leavePool:withPoolID:withResolver:withRejecter:)
-    func leavePool(seedString: String, poolID: Int,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "leavePool: seedString = " , seedString , " poolID = " , poolID)
+    @objc(leavePool:withResolver:withRejecter:)
+    func leavePool(poolID: Int, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+        print("ReactNative", "leavePool: poolID = ", poolID)
         do {
-            let result = try fula!.poolLeave(seedString, poolID: poolID)
+            // Note: Adjust this line if fula!.poolLeave requires seedString
+            let result = try fula!.poolLeave(poolID: poolID)
             let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
             print("leavePool", error.localizedDescription)
             reject("ERR_FULA", "leavePool", error)
         }
-
     }
 
     @objc(newReplicationRequest:withPoolID:withReplicationFactor:withCid:withResolver:withRejecter:)

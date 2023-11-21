@@ -24,6 +24,8 @@ interface FulaNativeModule {
   logout: (identity: string, storePath: string) => Promise<boolean>;
   checkFailedActions: (retry: boolean, timeout: number) => Promise<boolean>;
   listFailedActions: (cids: string[]) => Promise<string[]>;
+  listRecentCidsAsString: () => Promise<string[]>;
+  clearCidsFromRecent: (cids: string[]) => Promise<boolean>;
   checkConnection: (timeout: number) => Promise<boolean>;
   get: (key: string) => Promise<string>;
   has: (key: Uint8Array) => Promise<boolean>;
@@ -55,9 +57,9 @@ interface FulaNativeModule {
   checkAccountExists: (account: string) => Promise<string>;
   createPool: (seed: string, poolName: string) => Promise<string>;
   listPools: () => Promise<string>;
-  joinPool: (seed: string, poolID: number) => Promise<string>;
-  leavePool: (seed: string, poolID: number) => Promise<string>;
-  cancelPoolJoin: (seed: string, poolID: number) => Promise<string>;
+  joinPool: (poolID: string) => Promise<string>;
+  leavePool: (poolID: number) => Promise<string>;
+  cancelPoolJoin: (poolID: number) => Promise<string>;
   listPoolJoinRequests: (poolID: number) => Promise<string>;
   votePoolJoinRequest: (
     seed: string,

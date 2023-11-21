@@ -13,12 +13,13 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
   const [newRootCid, setNewRootCid] = React.useState<string>('');
+  const seed = '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
 
   const [initComplete, setInitComplete] = React.useState<
     { peerId: string; rootCid: string; private_ref: string } | {}
   >({});
 
-  var RNFS = require('react-native-fs');
+  let RNFS = require('react-native-fs');
   const readFile = () => {
     RNFS.readDir(RNFS.DocumentDirectoryPath)
       .then((result: { path: any }[]) => {
@@ -46,12 +47,25 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
 
+  const privateKey_tower = [
+    136, 140, 244, 206, 112, 88, 174, 215, 168, 255, 187, 101, 60, 246, 164,
+    180, 36, 243, 231, 82, 182, 24, 99, 79, 114, 144, 196, 186, 92, 27, 109, 89,
+    153, 106, 217, 201, 106, 9, 66, 33, 214, 195, 255, 234, 178, 244, 203, 112,
+    62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
+  ];
+  const bloxPeerId_tower =
+    '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4';
+  const bloxPeerId_laptop =
+    '12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
+
   const bloxAddr =
-    '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
+    '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' +
+    bloxPeerId_tower;
+  //const bloxAddr = '/ip4/192.168.2.87/tcp/40001/p2p/' + bloxPeerId_tower;
 
   const initFula = async () => {
     try {
-      return fula.init(privateKey.toString(), '', bloxAddr, '');
+      return fula.init(privateKey_tower.toString(), '', bloxAddr, '');
     } catch (e) {
       console.log(e);
       return Promise.reject(e);
@@ -394,7 +408,7 @@ const App = () => {
         />
 
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'New Account'}
+          title={inprogress ? 'Putting & Getting...' : 'Join Pool'}
           onPress={async () => {
             try {
               if (initComplete) {
@@ -402,17 +416,15 @@ const App = () => {
                   console.log('connection cehck');
                   console.log(r);
                   if (r) {
-                    console.log('initialization is completed. retry');
+                    console.log('initialization is completed.');
                     blockchain
-                      .createAccount(
-                        '//81862be6b6ffea2d4b11aee9e6d02499363685171369f8a9088ac979b87eb8cb'
-                      )
+                      .joinPool(1)
                       .then((res: any) => {
-                        console.log('created');
+                        console.log('joined');
                         console.log(res);
                       })
                       .catch((e: any) => {
-                        console.log('creation failed');
+                        console.log('join failed');
                         console.log(e);
                       });
                   }
@@ -426,62 +438,25 @@ const App = () => {
         />
 
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Check Account'}
+          title={inprogress ? 'Putting & Getting...' : 'Check Account Balance'}
           onPress={async () => {
             try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log('initialization is completed. check account');
-                    blockchain
-                      .checkAccountExists(
-                        '5DAfEJDKAeejGCzw7kdvrzkhwyoNLZ1iSsq4LZkYPMMi6pgf'
-                      )
-                      .then((res: any) => {
-                        console.log('replicationRequest created');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('replicationRequest creation failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Get All Pools'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log('initialization is completed. get pools');
-                    blockchain
-                      .listPools()
-                      .then((res: any) => {
-                        console.log('listpool received');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('listpool fetch failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
+              chainApi.init().then(async (api: any) => {
+                console.log('api created');
+                console.log('check account balance');
+                let accountId = await chainApi.getAccountIdFromSeed(seed);
+                console.log('account ID is ' + accountId);
+                chainApi
+                  .checkAccountBalance(api, accountId)
+                  .then((res: any) => {
+                    console.log('account balance created');
+                    console.log(res);
+                  })
+                  .catch((e: any) => {
+                    console.log('account balance creation failed');
+                    console.log(e);
+                  });
+              });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
@@ -578,6 +553,119 @@ const App = () => {
               } else {
                 console.log('wait for init to complete');
               }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'List Pools'}
+          onPress={async () => {
+            try {
+              chainApi.init().then((api: any) => {
+                console.log('api created');
+                console.log(api.rpc);
+                if (api) {
+                  console.log('getting pools');
+                  chainApi
+                    .listPools(api)
+                    .then((res: any) => {
+                      console.log('list pool res received');
+                      console.log(res);
+                    })
+                    .catch((e: any) => {
+                      console.log('res failed');
+                      console.log(e);
+                    });
+                }
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Upload Manifest'}
+          onPress={async () => {
+            try {
+              chainApi.init().then((api: any) => {
+                console.log('api created');
+                if (api) {
+                  console.log('uploading manifests');
+                  chainApi
+                    .batchUploadManifest(api, seed, ['Cid6'], 1)
+                    .then((res: any) => {
+                      console.log('res received');
+                      console.log(res);
+                    })
+                    .catch((e: any) => {
+                      console.log('res failed');
+                      console.log(e);
+                    });
+                }
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test Recent CIDs'}
+          onPress={async () => {
+            try {
+              chainApi.init().then((api: any) => {
+                console.log('api created');
+                if (api && initComplete) {
+                  console.log('get the list of cids');
+                  fula
+                    .listRecentCidsAsString()
+                    .then((res: any) => {
+                      console.log('res received');
+                      console.log(res);
+                      if (res) {
+                        fula
+                          .clearCidsFromRecent(res)
+                          .then((res2: any) => {
+                            console.log('clear done');
+                            console.log(res2);
+                          })
+                          .catch((e: any) => {
+                            console.log('clear failed');
+                            console.log(e);
+                          });
+                      }
+                    })
+                    .catch((e: any) => {
+                      console.log('res failed');
+                      console.log(e);
+                    });
+                }
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test Replicate'}
+          onPress={async () => {
+            try {
+              chainApi.init().then((api: any) => {
+                console.log('api created');
+                if (api && initComplete) {
+                  console.log('replicate');
+                  fula
+                    .replicateRecentCids(api, seed, 1, 6)
+                    .then((res: any) => {
+                      console.log('res received');
+                      console.log(res);
+                    })
+                    .catch((e: any) => {
+                      console.log('res failed');
+                      console.log(e);
+                    });
+                }
+              });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
