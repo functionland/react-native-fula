@@ -655,7 +655,7 @@ const App = () => {
                 if (api && initComplete) {
                   console.log('replicate');
                   fula
-                    .replicateRecentCids(api, seed, 3)
+                    .replicateRecentCids(api, seed, 1, 6)
                     .then((res: any) => {
                       console.log('res received');
                       console.log(res);

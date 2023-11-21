@@ -4,6 +4,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/keyring';
 const { cryptoWaitReady } = require('@polkadot/util-crypto');
 import type * as BType from '../types/blockchain';
+import { TextEncoder } from 'text-encoding';
 
 const types = {
   FulaPoolPool: EventTypes.FulaPoolPool,
@@ -31,13 +32,17 @@ function addDoubleSlashToSeed(seed: string): string {
 /*
   createManifest: This function batch uploads manifests
 */
+function serialize(obj: any): string {
+  return JSON.stringify(obj);
+}
+
 function createManifest(
   cids: string[],
   poolId: number,
   replicationFactor: number = 4
 ): {
-  manifest: any[];
-  cids: string[];
+  manifest: string[]; // or string[]
+  cids: string[]; // or string[]
   poolId: number[];
   replicationFactor: number[];
 } {
@@ -49,19 +54,27 @@ function createManifest(
     },
   }));
 
-  // Create arrays filled with `poolId` and `replicationFactor`, one element for each `cid`
+  // Serialize manifest_metadata to Uint8Array or string
+  const serializedManifest = manifest_metadata.map((item) => serialize(item)); // Implement `serialize` accordingly
+
+  // Serialize cids to Uint8Array or string
+  const serializedCids = cids.map((cid) => serialize(cid)); // Implement `serialize` accordingly
+
+  // Create arrays for `poolId` and `replicationFactor`
   const poolIds = new Array(cids.length).fill(poolId);
   const replicationFactors = new Array(cids.length).fill(replicationFactor);
 
   const batchUploadManifest = {
-    manifest: manifest_metadata,
-    cids: cids,
+    manifest: serializedManifest,
+    cids: serializedCids,
     poolId: poolIds,
     replicationFactor: replicationFactors,
   };
 
   return batchUploadManifest;
 }
+
+
 export const batchUploadManifest = async (
   api: ApiPromise | undefined,
   seed: string,

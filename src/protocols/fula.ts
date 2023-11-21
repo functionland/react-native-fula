@@ -340,6 +340,7 @@ export const isReady = (filesystemCheck: boolean = true): Promise<boolean> => {
 export const replicateRecentCids = async (
   api: ApiPromise,
   seed: string,
+  poolId: number,
   replicationNo: number = 4
 ): Promise<{ status: boolean; msg: string }> => {
   let status = true;
@@ -351,22 +352,34 @@ export const replicateRecentCids = async (
     console.log('uploading manifests');
     try {
       let account = await getAccountIdFromSeed(seed);
+      console.log('account: ' + account);
       const accountBal = await checkAccountBalance(api, account);
+      console.log('account balance: ' + accountBal);
       if (accountBal !== '0') {
         const recentCids = await listRecentCidsAsString();
+        console.log(recentCids);
         if (recentCids) {
+          console.log({
+            api,
+            seed,
+            recentCids,
+            poolId,
+            replicationNo,
+          });
           const res = await batchUploadManifest(
             api,
             seed,
             recentCids,
+            poolId,
             replicationNo
           );
-          console.log('res received');
+          console.log('batchUploadManifest res received');
           console.log(res);
           if (res && res.hash) {
             const signedBlock = await api.rpc.chain.getBlock(res.hash);
             if (signedBlock?.block?.extrinsics?.length) {
               await clearCidsFromRecent(recentCids);
+              msg = res.hash;
             } else {
               status = false;
               msg = 'block data is not found';
@@ -375,6 +388,9 @@ export const replicateRecentCids = async (
             status = false;
             msg = 'hash is not returned';
           }
+        } else {
+          status = false;
+          msg = 'No recent Cids found';
         }
       } else {
         status = false;
