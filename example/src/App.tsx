@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import { clearCidsFromRecent } from '../../.history/src/protocols/fula_20231120182146';
 
 import {
   fula,
@@ -438,32 +437,27 @@ const App = () => {
         />
 
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Check Account'}
+          title={inprogress ? 'Putting & Getting...' : 'Check Account Balance'}
           onPress={async () => {
             try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log('initialization is completed. check account');
-                    blockchain
-                      .checkAccountExists(
-                        '5DAfEJDKAeejGCzw7kdvrzkhwyoNLZ1iSsq4LZkYPMMi6pgf'
-                      )
-                      .then((res: any) => {
-                        console.log('replicationRequest created');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('replicationRequest creation failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
+              chainApi.init().then(async (api: any) => {
+                console.log('api created');
+                console.log('check account balance');
+                let accountId = await chainApi.getAccountIdFromSeed(
+                  '0xde74b73a4e99c09ae760e7d05c1cf50bd166312fe1be6fb46609b690efb0e472'
+                );
+                console.log('account ID is ' + accountId);
+                chainApi
+                  .checkAccountBalance(api, accountId)
+                  .then((res: any) => {
+                    console.log('account balance created');
+                    console.log(res);
+                  })
+                  .catch((e: any) => {
+                    console.log('account balance creation failed');
+                    console.log(e);
+                  });
+              });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}

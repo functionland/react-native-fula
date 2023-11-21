@@ -2,6 +2,7 @@ import { default as EventTypes } from '../interfaces/lookup';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/keyring';
+const { cryptoWaitReady } = require('@polkadot/util-crypto');
 import type * as BType from '../types/blockchain';
 
 const types = {
@@ -64,7 +65,7 @@ function createManifest(
 export const batchUploadManifest = async (
   api: ApiPromise | undefined,
   seed: string,
-  cids_i: [string],
+  cids_i: string[],
   poolId_i: number,
   replicationFactor_i: number = 4
 ): Promise<{ hash: string }> => {
@@ -196,6 +197,47 @@ export const checkJoinRequest = async (
       return Promise.resolve(formattedPoolRequest);
     }
     return Promise.resolve(null);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
+
+/*
+  checkAccountExsists: This function takes accountId and checks if the account exists
+  */
+export const checkAccountBalance = async (
+  api: ApiPromise | undefined,
+  accountId: string
+): Promise<string> => {
+  console.log('checkAcocuntExsists in react-native started');
+  try {
+    if (api === undefined) {
+      api = await init();
+    }
+    // Type guard to assure TypeScript that api is not undefined
+    if (!api?.query?.system?.account) {
+      throw new Error('Failed to initialize api or api.query.account');
+    }
+
+    let {
+      data: { free: balance },
+    } = await api.query.system.account(accountId);
+
+    if (balance && balance !== '0' && balance > 0) {
+      return Promise.resolve(balance.toHuman());
+    }
+    return Promise.resolve('0');
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
+
+export const getAccountIdFromSeed = async (seed: string): Promise<string> => {
+  try {
+    await cryptoWaitReady();
+    const keyring = new Keyring({ type: 'sr25519' });
+    const account = keyring.addFromUri(seed, { name: 'account' }, 'sr25519');
+    return Promise.resolve(account.address);
   } catch (err) {
     return Promise.reject(err);
   }
