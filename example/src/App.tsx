@@ -13,6 +13,7 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
   const [newRootCid, setNewRootCid] = React.useState<string>('');
+  const seed = '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
 
   const [initComplete, setInitComplete] = React.useState<
     { peerId: string; rootCid: string; private_ref: string } | {}
@@ -443,9 +444,7 @@ const App = () => {
               chainApi.init().then(async (api: any) => {
                 console.log('api created');
                 console.log('check account balance');
-                let accountId = await chainApi.getAccountIdFromSeed(
-                  '0xde74b73a4e99c09ae760e7d05c1cf50bd166312fe1be6fb46609b690efb0e472'
-                );
+                let accountId = await chainApi.getAccountIdFromSeed(seed);
                 console.log('account ID is ' + accountId);
                 chainApi
                   .checkAccountBalance(api, accountId)
@@ -593,12 +592,7 @@ const App = () => {
                 if (api) {
                   console.log('uploading manifests');
                   chainApi
-                    .batchUploadManifest(
-                      api,
-                      '0xde74b73a4e99c09ae760e7d05c1cf50bd166312fe1be6fb46609b690efb0e472',
-                      ['Cid6'],
-                      1
-                    )
+                    .batchUploadManifest(api, seed, ['Cid6'], 1)
                     .then((res: any) => {
                       console.log('res received');
                       console.log(res);
