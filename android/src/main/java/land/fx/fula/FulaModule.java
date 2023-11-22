@@ -1446,6 +1446,26 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void ipniNotifyLink(ReadableArray cidArray, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        if (this.fula != null) {
+          for (int i = 0; i < cidArray.size(); i++) {
+            String cid = cidArray.getString(i);
+            this.fula.ipniNotifyLink(cid);
+          }
+          promise.resolve(true); // Indicate success
+        } else {
+          throw new Exception("clearCidsFromRecent: Fula is not initialized");
+        }
+      } catch (Exception e) {
+        Log.d("ReactNative", "ipniNotifyLink failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
+      }
+    });
+  }
+
 
   ////////////////////////////////////////////////////////////////
   ///////////////// Blox Hardware Methods ////////////////////////

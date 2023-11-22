@@ -25,6 +25,7 @@ interface FulaNativeModule {
   checkFailedActions: (retry: boolean, timeout: number) => Promise<boolean>;
   listFailedActions: (cids: string[]) => Promise<string[]>;
   listRecentCidsAsString: () => Promise<string[]>;
+  ipniNotifyLink: (cids: string[]) => Promise<boolean>;
   clearCidsFromRecent: (cids: string[]) => Promise<boolean>;
   checkConnection: (timeout: number) => Promise<boolean>;
   get: (key: string) => Promise<string>;

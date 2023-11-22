@@ -119,6 +119,13 @@ export const listRecentCidsAsString = (): Promise<string[]> => {
 };
 
 /**
+ * publish new link to ipni
+ */
+export const ipniNotifyLink = (cids: string[] = []): Promise<boolean> => {
+  return Fula.ipniNotifyLink(cids);
+};
+
+/**
  * Clears the cids that ar recent
  */
 export const clearCidsFromRecent = (cids: string[] = []): Promise<boolean> => {
@@ -378,6 +385,7 @@ export const replicateRecentCids = async (
           if (res && res.hash) {
             const signedBlock = await api.rpc.chain.getBlock(res.hash);
             if (signedBlock?.block?.extrinsics?.length) {
+              await ipniNotifyLink(recentCids);
               await clearCidsFromRecent(recentCids);
               msg = res.hash;
             } else {
