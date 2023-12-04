@@ -4,7 +4,6 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/keyring';
 const { cryptoWaitReady } = require('@polkadot/util-crypto');
 import type * as BType from '../types/blockchain';
-import { TextEncoder } from 'text-encoding';
 
 const types = {
   FulaPoolPool: EventTypes.FulaPoolPool,
@@ -25,9 +24,9 @@ export const disconnectApi = async (api: ApiPromise): Promise<void> => {
   await api.disconnect();
 };
 
-function addDoubleSlashToSeed(seed: string): string {
+/*function addDoubleSlashToSeed(seed: string): string {
   return seed.startsWith('//') ? seed : '//' + seed;
-}
+}*/
 
 /*
   createManifest: This function batch uploads manifests
@@ -74,7 +73,6 @@ function createManifest(
   return batchUploadManifest;
 }
 
-
 export const batchUploadManifest = async (
   api: ApiPromise | undefined,
   seed: string,
@@ -112,7 +110,7 @@ export const batchUploadManifest = async (
       if (submitExtrinsic) {
         return new Promise<{ hash: string }>((resolve, reject) => {
           submitExtrinsic
-            .signAndSend(userKey, ({ status, events }) => {
+            .signAndSend(userKey, ({ status }) => {
               if (status.isInBlock || status.isFinalized) {
                 if (unsub) {
                   unsub(); // Call unsub before resolving the promise
@@ -215,6 +213,9 @@ export const checkJoinRequest = async (
   }
 };
 
+function isAccountInfo(obj: any): obj is { data: { free: any } } {
+  return 'data' in obj && 'free' in obj.data;
+}
 /*
   checkAccountExsists: This function takes accountId and checks if the account exists
   */
@@ -231,10 +232,11 @@ export const checkAccountBalance = async (
     if (!api?.query?.system?.account) {
       throw new Error('Failed to initialize api or api.query.account');
     }
-
-    let {
-      data: { free: balance },
-    } = await api.query.system.account(accountId);
+    let balance: any;
+    let accountInfo = await api.query.system.account(accountId);
+    if (isAccountInfo(accountInfo)) {
+      balance = accountInfo.data.free;
+    }
 
     if (balance && balance !== '0' && balance > 0) {
       return Promise.resolve(balance.toHuman());
