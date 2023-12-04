@@ -497,3 +497,53 @@ export const bloxFreeSpace = (): Promise<BType.BloxFreeSpaceResponse> => {
     });
   return res;
 };
+
+export const getAccount = (): Promise<BType.GetAccountResponse> => {
+  console.log('getAccount in react-native started');
+  let res = Fula.getAccount()
+    .then((res) => {
+      try {
+        let jsonRes: BType.GetAccountResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e1) {
+          console.error('Error parsing res in get account:', e1);
+          throw e1; // Rethrow the error to maintain the rejection state
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error getting account:', err);
+      throw err; // Rethrow the error to maintain the rejection state
+    });
+  return res;
+};
+
+export const assetsBalance = (
+  account: string,
+  assetId: string,
+  classId: string
+): Promise<BType.AssetsBalanceResponse> => {
+  console.log('assetsBalance in react-native started');
+  let res = Fula.assetsBalance(account, assetId, classId)
+    .then((res) => {
+      try {
+        let jsonRes: BType.AssetsBalanceResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e1) {
+          console.error('Error parsing res in get asset balance:', e1);
+          throw e1; // Rethrow the error to maintain the rejection state
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error getting asset balance:', err);
+      throw err; // Rethrow the error to maintain the rejection state
+    });
+  return res;
+};

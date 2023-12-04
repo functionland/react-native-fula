@@ -58,10 +58,8 @@ const App = () => {
   const bloxPeerId_laptop =
     '12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
 
-  const bloxAddr =
-    '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' +
-    bloxPeerId_tower;
-  //const bloxAddr = '/ip4/192.168.2.87/tcp/40001/p2p/' + bloxPeerId_tower;
+  //const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId_laptop;
+  const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId_laptop;
 
   const initFula = async () => {
     try {
@@ -666,6 +664,44 @@ const App = () => {
                     });
                 }
               });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Getting...' : 'Check Balance'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log('initialization is completed. get account');
+                    blockchain
+                      .getAccount()
+                      .then((res: any) => {
+                        console.log('account received');
+                        console.log(res);
+                        if (res) {
+                          blockchain
+                            .assetsBalance(res.account, '110', '100')
+                            .then((r2: any) => {
+                              console.log('amount received');
+                              console.log(r2);
+                          });
+                        }
+                      })
+                      .catch((e: any) => {
+                        console.log('bloxFreeSpace fetch failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}

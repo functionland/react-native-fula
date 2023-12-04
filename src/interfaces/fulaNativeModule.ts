@@ -102,6 +102,12 @@ interface FulaNativeModule {
   bloxFreeSpace: () => Promise<string>;
   wifiRemoveall: () => Promise<string>;
   reboot: () => Promise<string>;
+  getAccount: () => Promise<string>;
+  assetsBalance: (
+    account: string,
+    assetId: string,
+    classId: string
+  ) => Promise<string>;
 }
 
 const LINKING_ERROR =
