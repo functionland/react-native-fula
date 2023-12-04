@@ -13,6 +13,14 @@ export interface PoolCreateResponse {
   poolID: number;
 }
 
+export interface GetAccountResponse {
+  account: string;
+}
+
+export interface AssetsBalanceResponse {
+  amount: string;
+}
+
 export interface PoolJoinResponse {
   account: string;
   poolID: number;
