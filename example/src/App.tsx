@@ -58,8 +58,8 @@ const App = () => {
   const bloxPeerId_laptop =
     '12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
 
-  //const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId_laptop;
-  const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId_laptop;
+  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId_laptop;
+  //const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId_laptop;
 
   const initFula = async () => {
     try {

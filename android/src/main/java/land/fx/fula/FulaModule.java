@@ -1151,7 +1151,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   //////////////////////ANYTHING BELOW IS FOR BLOCKCHAIN/////
   ///////////////////////////////////////////////////////////
   @ReactMethod
-  public void GetAccount(Promise promise) {
+  public void getAccount(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "getAccount called ");
       try {
@@ -1166,9 +1166,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void AssetsBalance(String account, String assetId, String classId, Promise promise) {
+  public void assetsBalance(String account, String assetId, String classId, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "getAccount called ");
+      Log.d("ReactNative", "assetsBalance called ");
       try {
         byte[] result = this.fula.assetsBalance(account, assetId, classId);
         String resultString = toString(result);
