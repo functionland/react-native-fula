@@ -102,6 +102,7 @@ interface FulaNativeModule {
   bloxFreeSpace: () => Promise<string>;
   wifiRemoveall: () => Promise<string>;
   reboot: () => Promise<string>;
+  eraseBlData: () => Promise<string>;
   getAccount: () => Promise<string>;
   assetsBalance: (
     account: string,

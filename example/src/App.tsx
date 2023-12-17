@@ -53,17 +53,24 @@ const App = () => {
     153, 106, 217, 201, 106, 9, 66, 33, 214, 195, 255, 234, 178, 244, 203, 112,
     62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
   ];
-  const bloxPeerId_tower =
-    '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4';
+  const bloxPeerId_tower ='12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4';
   const bloxPeerId_laptop =
-    '12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
+    '12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q';
 
   const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId_laptop;
-  //const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId_laptop;
+  //const bloxAddr = '/ip4/192.168.2.14/udp/40001/quic-v1/webtransport/certhash/uEiCyi71HRdMPHfi01Q9iqdvgWfBTUnApu0HpyaLn52n3UQ/certhash/uEiC-8OnVZGvLP82NUDCdeZvDaz3VFEwbOiblisjZ8ft0iw/p2p/' + bloxPeerId_laptop;
 
   const initFula = async () => {
     try {
-      return fula.init(privateKey_tower.toString(), '', bloxAddr, '');
+      return fula.init(
+        privateKey_tower.toString(),
+        '',
+        bloxAddr,
+        '',
+        false,
+        null,
+        true
+      );
     } catch (e) {
       console.log(e);
       return Promise.reject(e);
