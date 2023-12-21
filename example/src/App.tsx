@@ -502,7 +502,7 @@ const App = () => {
                 let accountId = await chainApi.getAccountIdFromSeed(seed);
                 console.log('account ID is ' + accountId);
                 chainApi
-                  .GetUserPool(api, "5CcHZucP2u1FXQW9wuyC11vAVxB3c48pUhc5cc9b3oxbKPL2")
+                  .getUserPool(api, "5CcHZucP2u1FXQW9wuyC11vAVxB3c48pUhc5cc9b3oxbKPL2")
                   .then((res: any) => {
                     console.log('GetUserPool created');
                     console.log(res);

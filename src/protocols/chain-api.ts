@@ -213,7 +213,7 @@ export const checkJoinRequest = async (
   }
 };
 
-export const GetUserPool = async (
+export const getUserPool = async (
   api: ApiPromise | undefined,
   accountId: string
 ): Promise<BType.PoolUsers | null> => {
