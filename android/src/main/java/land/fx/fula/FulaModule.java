@@ -707,6 +707,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
           if(rootCid != null && !rootCid.isEmpty()){
             Log.d("ReactNative", "Re-setting cid from input: "+rootCid);
             cid = rootCid;
+            this.rootConfig = new land.fx.wnfslib.Config(cid);
+            this.reloadFS(this.client, identity, cid);
+            this.encrypt_and_store_config();
           }
           if(cid == null || cid.isEmpty()) {
             Log.d("ReactNative", "Tried to recover cid but was not successful. Creating new ones");
