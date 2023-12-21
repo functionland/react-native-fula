@@ -213,6 +213,36 @@ export const checkJoinRequest = async (
   }
 };
 
+export const getUserPool = async (
+  api: ApiPromise | undefined,
+  accountId: string
+): Promise<BType.PoolUsers | null> => {
+  console.log('GetUserPool in react-native started');
+  try {
+    if (api === undefined) {
+      api = await init();
+    }
+    // Type guard to assure TypeScript that api is not undefined
+    if (!api?.query?.pool?.users) {
+      throw new Error(
+        'Failed to initialize api or api.query.pool or api.query.pool.users'
+      );
+    }
+
+    const poolUsers = await api.query.pool.users(accountId);
+
+    if (poolUsers != null) {
+      let formattedPoolUsers: BType.PoolUsers = JSON.parse(
+        JSON.stringify(poolUsers.toHuman())
+      );
+      return Promise.resolve(formattedPoolUsers);
+    }
+    return Promise.resolve(null);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
+
 function isAccountInfo(obj: any): obj is { data: { free: any } } {
   return 'data' in obj && 'free' in obj.data;
 }

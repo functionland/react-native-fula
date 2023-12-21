@@ -64,6 +64,13 @@ export interface PoolRequest {
   peerID: string;
 }
 
+export interface PoolUsers {
+  poolID: number;
+  account: string;
+  requestPoolId: string;
+  peerID: string;
+}
+
 export interface Pool {
   poolID: number;
   owner: string;

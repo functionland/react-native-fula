@@ -13,7 +13,9 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
   const [newRootCid, setNewRootCid] = React.useState<string>('');
-  const seed = '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
+  const root_cid = 'bafyr4ibz4okarrsr7awv6wrwbnpnwi73rk72cnwgi5unvad5l75lr2zctu';
+  const seed =
+    '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
 
   const [initComplete, setInitComplete] = React.useState<
     { peerId: string; rootCid: string; private_ref: string } | {}
@@ -53,17 +55,22 @@ const App = () => {
     153, 106, 217, 201, 106, 9, 66, 33, 214, 195, 255, 234, 178, 244, 203, 112,
     62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
   ];
-  const bloxPeerId_tower =
-    '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4';
-  const bloxPeerId_laptop =
-    '12D3KooWLGatFxDzMrKd4S6UC4GAtuM4zcFJW8RPuMR9SH7j46A8';
+  const bloxPeerId_tower = '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4';
+  const bloxPeerId_laptop = '12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q';
 
   const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId_laptop;
   //const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId_laptop;
 
   const initFula = async () => {
     try {
-      return fula.init(privateKey_tower.toString(), '', bloxAddr, '');
+      return fula.init(
+        privateKey_tower.toString(),
+        '',
+        bloxAddr,
+        '',
+        true,
+        root_cid
+      );
     } catch (e) {
       console.log(e);
       return Promise.reject(e);
@@ -461,6 +468,56 @@ const App = () => {
         />
 
         <Button
+          title={
+            inprogress ? 'Putting & Getting...' : 'Check Join Request Status'
+          }
+          onPress={async () => {
+            try {
+              chainApi.init().then(async (api: any) => {
+                console.log('api created');
+                let accountId = await chainApi.getAccountIdFromSeed(seed);
+                console.log('account ID is ' + accountId);
+                chainApi
+                  .checkJoinRequest(api, 1, "5DD9qAHKNUqcYaKf5qgYra9y8s9BtbfLanJrTr3hQsK5XGGP")
+                  .then((res: any) => {
+                    console.log('join request status created');
+                    console.log(res);
+                  })
+                  .catch((e: any) => {
+                    console.log('join request status failed');
+                    console.log(e);
+                  });
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Get User Pool'}
+          onPress={async () => {
+            try {
+              chainApi.init().then(async (api: any) => {
+                console.log('api created');
+                let accountId = await chainApi.getAccountIdFromSeed(seed);
+                console.log('account ID is ' + accountId);
+                chainApi
+                  .getUserPool(api, "5CcHZucP2u1FXQW9wuyC11vAVxB3c48pUhc5cc9b3oxbKPL2")
+                  .then((res: any) => {
+                    console.log('GetUserPool created');
+                    console.log(res);
+                  })
+                  .catch((e: any) => {
+                    console.log('GetUserPool failed');
+                    console.log(e);
+                  });
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
           title={inprogress ? 'Getting...' : 'Get Blox Free Space'}
           onPress={async () => {
             try {
@@ -643,7 +700,6 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
 
-
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Test Replicate'}
           onPress={async () => {
@@ -690,7 +746,7 @@ const App = () => {
                             .then((r2: any) => {
                               console.log('amount received');
                               console.log(r2);
-                          });
+                            });
                         }
                       })
                       .catch((e: any) => {
