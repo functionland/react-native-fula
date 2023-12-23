@@ -13,7 +13,7 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
   const [newRootCid, setNewRootCid] = React.useState<string>('');
-  const root_cid = '';
+  const root_cid = 'bafyr4id2oxonbgmyg7tul53omvmb7r23et2p2bf3jzi6c2p2zmh4fyi26m';
   const seed =
     '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
 
