@@ -189,6 +189,18 @@ RCT_EXTERN_METHOD(removeStoredReplication:(NSString *)seedString
 RCT_EXTERN_METHOD(bloxFreeSpace:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(assetsBalance:(NSString *)account
+                  assetId:(NSString *)assetId
+                  classId:(NSString *)classId
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(transferToFula:(NSString *)amount
+                  wallet:(NSString *)wallet
+                  chain:(NSString *)chain
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 + (BOOL)requiresMainQueueSetup
 {
     return NO;

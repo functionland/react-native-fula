@@ -1184,6 +1184,21 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void transferToFula(String amount, String wallet, String chain, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "transferToFula called ");
+      try {
+        byte[] result = this.fula.transferToFula(amount, wallet, chain);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
   public void checkAccountExists(String accountString, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "checkAccountExists: accountString = " + accountString);

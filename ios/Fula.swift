@@ -1218,4 +1218,33 @@ class FulaModule: NSObject {
 
     }
 
+    @objc(assetsBalance:assetId:classId:withResolver:withRejecter:)
+    func assetsBalance(account: String, assetId: String, classId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                print("ReactNative", "assetsBalance called")
+                let result = try fula!.assetsBalance(account, assetId: assetId, classId: classId)
+                let resultString = String(data: result!, encoding: .utf8)
+                resolve(resultString)
+            } catch let error {
+                print("ReactNative", "assetsBalance failed with Error: \(error.localizedDescription)")
+                reject("ERR_FULA_ASSETS_BALANCE", "assetsBalance failed", error)
+            }
+        }
+    }
+    @objc(transferToFula:wallet:chain:withResolver:withRejecter:)
+    func transferToFula(amount: String, wallet: String, chain: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                print("ReactNative", "transferToFula called")
+                let result = try fula!.transferToFula(amount, wallet: wallet, chain: chain)
+                let resultString = String(data: result!, encoding: .utf8)
+                resolve(resultString)
+            } catch let error {
+                print("ReactNative", "transferToFula failed with Error: \(error.localizedDescription)")
+                reject("ERR_FULA_TRANSFER", "transferToFula failed", error)
+            }
+        }
+    }
+
 }
