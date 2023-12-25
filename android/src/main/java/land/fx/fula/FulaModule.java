@@ -714,6 +714,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
           if(cid == null || cid.isEmpty()) {
             Log.d("ReactNative", "Tried to recover cid but was not successful. Creating new ones");
             this.createNewRootConfig(this.client, identity);
+          } else {
+            this.rootConfig = new land.fx.wnfslib.Config(cid);
+            this.reloadFS(this.client, identity, cid);
+            this.encrypt_and_store_config();
           }
         } else {
           Log.d("ReactNative", "Recovered cid and private ref from keychain store. cid="+cid +" and cid from input was: "+rootCid);
@@ -1394,6 +1398,22 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "reboot");
       try {
         byte[] result = this.fula.reboot();
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void eraseBlData(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "eraseBlData");
+      try {
+        byte[] result = this.fula.eraseBlData();
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
         promise.resolve(resultString);
