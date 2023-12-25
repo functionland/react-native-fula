@@ -13,7 +13,9 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
   const [newRootCid, setNewRootCid] = React.useState<string>('');
-  const seed = '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
+  const root_cid = 'bafyr4id2oxonbgmyg7tul53omvmb7r23et2p2bf3jzi6c2p2zmh4fyi26m';
+  const seed =
+    '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
 
   const [initComplete, setInitComplete] = React.useState<
     { peerId: string; rootCid: string; private_ref: string } | {}
@@ -39,7 +41,7 @@ const App = () => {
         console.log(err.message, err.code);
       });
   };
-  //Key for peerId: 12D3KooWFi2PK36Rzi4Bmosj1np2t6i9v3QnbBiNY9hQWuJajnmZ
+  //Key for peerId: 12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx
   const privateKey = [
     183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27, 27,
     17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204, 142, 241,
@@ -53,12 +55,11 @@ const App = () => {
     153, 106, 217, 201, 106, 9, 66, 33, 214, 195, 255, 234, 178, 244, 203, 112,
     62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
   ];
-  const bloxPeerId_tower ='12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4';
-  const bloxPeerId_laptop =
-    '12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q';
+  //const bloxPeerId = '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4'; //tower
+  const bloxPeerId = '12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q'; //laptop
 
-  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId_laptop;
-  //const bloxAddr = '/ip4/192.168.2.14/udp/40001/quic-v1/webtransport/certhash/uEiCyi71HRdMPHfi01Q9iqdvgWfBTUnApu0HpyaLn52n3UQ/certhash/uEiC-8OnVZGvLP82NUDCdeZvDaz3VFEwbOiblisjZ8ft0iw/p2p/' + bloxPeerId_laptop;
+  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
+  //const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId;
 
   const initFula = async () => {
     try {
@@ -67,9 +68,8 @@ const App = () => {
         '',
         bloxAddr,
         '',
-        false,
-        null,
-        true
+        true,
+        root_cid
       );
     } catch (e) {
       console.log(e);
@@ -468,6 +468,56 @@ const App = () => {
         />
 
         <Button
+          title={
+            inprogress ? 'Putting & Getting...' : 'Check Join Request Status'
+          }
+          onPress={async () => {
+            try {
+              chainApi.init().then(async (api: any) => {
+                console.log('api created');
+                let accountId = await chainApi.getAccountIdFromSeed(seed);
+                console.log('account ID is ' + accountId);
+                chainApi
+                  .checkJoinRequest(api, 1, "5DD9qAHKNUqcYaKf5qgYra9y8s9BtbfLanJrTr3hQsK5XGGP")
+                  .then((res: any) => {
+                    console.log('join request status created');
+                    console.log(res);
+                  })
+                  .catch((e: any) => {
+                    console.log('join request status failed');
+                    console.log(e);
+                  });
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Get User Pool'}
+          onPress={async () => {
+            try {
+              chainApi.init().then(async (api: any) => {
+                console.log('api created');
+                let accountId = await chainApi.getAccountIdFromSeed(seed);
+                console.log('account ID is ' + accountId);
+                chainApi
+                  .getUserPool(api, "5CcHZucP2u1FXQW9wuyC11vAVxB3c48pUhc5cc9b3oxbKPL2")
+                  .then((res: any) => {
+                    console.log('GetUserPool created');
+                    console.log(res);
+                  })
+                  .catch((e: any) => {
+                    console.log('GetUserPool failed');
+                    console.log(e);
+                  });
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
           title={inprogress ? 'Getting...' : 'Get Blox Free Space'}
           onPress={async () => {
             try {
@@ -650,7 +700,6 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
 
-
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Test Replicate'}
           onPress={async () => {
@@ -697,7 +746,7 @@ const App = () => {
                             .then((r2: any) => {
                               console.log('amount received');
                               console.log(r2);
-                          });
+                            });
                         }
                       })
                       .catch((e: any) => {

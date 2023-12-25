@@ -707,6 +707,9 @@ public class FulaModule extends ReactContextBaseJavaModule {
           if(rootCid != null && !rootCid.isEmpty()){
             Log.d("ReactNative", "Re-setting cid from input: "+rootCid);
             cid = rootCid;
+            this.rootConfig = new land.fx.wnfslib.Config(cid);
+            this.reloadFS(this.client, identity, cid);
+            this.encrypt_and_store_config();
           }
           if(cid == null || cid.isEmpty()) {
             Log.d("ReactNative", "Tried to recover cid but was not successful. Creating new ones");
@@ -836,7 +839,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void ls(String path, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "ls: path = " + path);
+      Log.d("ReactNative", "ls: path = " + path + "rootCid= " + this.rootConfig.getCid());
       try {
         byte[] res = Fs.ls(this.client, this.rootConfig.getCid(), path);
 
@@ -844,7 +847,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "ls: res = " + s);
         promise.resolve(s);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -870,7 +873,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
             promise.reject(new Exception("rm Error: config is null"));
         }
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -894,7 +897,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
           promise.reject(new Exception("cp Error: config is null"));
         }
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -918,7 +921,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
           promise.reject(new Exception("mv Error: config is null"));
         }
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -940,7 +943,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String path = Fs.readFilestreamToPath(this.client, this.rootConfig.getCid(), fulaTargetFilename, localFilename);
         promise.resolve(path);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -955,7 +958,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resString = toString(res);
         promise.resolve(resString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -971,7 +974,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String valueString = toString(value);
         promise.resolve(valueString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1001,7 +1004,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         boolean result = this.hasInternal(key);
         promise.resolve(result);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1012,7 +1015,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
       boolean res = this.fula.has(key);
       return res;
     } catch (Exception e) {
-      Log.d("hasInternal", e.getMessage());
+      Log.d("ReactNative", e.getMessage());
       throw (e);
     }
   }
@@ -1021,7 +1024,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
     try {
       this.fula.pull(key);
     } catch (Exception e) {
-      Log.d("pullInternal", e.getMessage());
+      Log.d("ReactNative", e.getMessage());
       throw (e);
     }
   }
@@ -1034,7 +1037,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         this.pushInternal(this.convertStringToByte(this.rootConfig.getCid()));
         promise.resolve(this.rootConfig.getCid());
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1114,7 +1117,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         }
         promise.resolve(false);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1163,7 +1166,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1178,7 +1181,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1193,7 +1196,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1208,7 +1211,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1224,7 +1227,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1239,7 +1242,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1254,7 +1257,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1269,7 +1272,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
@@ -1284,7 +1287,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("get", e.getMessage());
+        Log.d("ReactNative", e.getMessage());
         promise.reject(e);
       }
     });
