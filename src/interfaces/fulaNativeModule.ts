@@ -100,6 +100,12 @@ interface FulaNativeModule {
   ) => Promise<string>;
 
   //On Blox calls for chain
+  //Hardware
+  bloxFreeSpace: () => Promise<string>;
+  wifiRemoveall: () => Promise<string>;
+  reboot: () => Promise<string>;
+  eraseBlData: () => Promise<string>;
+  getAccount: () => Promise<string>;
   assetsBalance: (
     account: string,
     assetId: string,

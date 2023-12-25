@@ -8,7 +8,7 @@ import type * as BType from '../types/fxblox';
 
 export const wifiRemoveall = (): Promise<BType.wifiRemoveallResponse> => {
   console.log('wifiRemoveall in react-native started');
-  let res = Fula.wifiRemoveall()
+  let res2 = Fula.wifiRemoveall()
     .then((res) => {
       try {
         let jsonRes: BType.wifiRemoveallResponse = JSON.parse(res);
@@ -16,7 +16,7 @@ export const wifiRemoveall = (): Promise<BType.wifiRemoveallResponse> => {
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -24,12 +24,12 @@ export const wifiRemoveall = (): Promise<BType.wifiRemoveallResponse> => {
     .catch((err) => {
       return err;
     });
-  return res;
+  return res2;
 };
 
 export const reboot = (): Promise<BType.rebootResponse> => {
   console.log('reboot in react-native started');
-  let res = Fula.reboot()
+  let res2 = Fula.reboot()
     .then((res) => {
       try {
         let jsonRes: BType.rebootResponse = JSON.parse(res);
@@ -37,7 +37,7 @@ export const reboot = (): Promise<BType.rebootResponse> => {
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -45,5 +45,26 @@ export const reboot = (): Promise<BType.rebootResponse> => {
     .catch((err) => {
       return err;
     });
-  return res;
+  return res2;
+};
+
+export const eraseBlData = (): Promise<BType.rebootResponse> => {
+  console.log('eraseBlData in react-native started');
+  let res2 = Fula.eraseBlData()
+    .then((res) => {
+      try {
+        let jsonRes: BType.eraseBlDataResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          return res;
+        }
+      }
+    })
+    .catch((err) => {
+      return err;
+    });
+  return res2;
 };

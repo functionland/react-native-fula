@@ -1050,34 +1050,6 @@ class FulaModule: NSObject {
 
     }
 
-    @objc(joinPool:withResolver:withRejecter:)
-    func joinPool(poolID: Int, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
-        print("ReactNative", "joinPool: poolID = ", poolID)
-        do {
-            // Note: Adjust this line if fula!.poolJoin requires seedString
-            let result = try fula!.poolJoin(poolID: poolID)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("joinPool", error.localizedDescription)
-            reject("ERR_FULA", "joinPool", error)
-        }
-    }
-
-    @objc(cancelPoolJoin:withResolver:withRejecter:)
-    func cancelPoolJoin(poolID: Int, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
-        print("ReactNative", "cancelPoolJoin: poolID = ", poolID)
-        do {
-            // Note: Adjust this line if fula!.poolCancelJoin requires seedString
-            let result = try fula!.poolCancelJoin(poolID: poolID)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("cancelPoolJoin", error.localizedDescription)
-            reject("ERR_FULA", "cancelPoolJoin", error)
-        }
-    }
-
     @objc(listPoolJoinRequests:withResolver:withRejecter:)
     func listPoolJoinRequests(poolID: Int,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
         print("ReactNative", "listPoolJoinRequests: poolID = ", poolID)
@@ -1104,20 +1076,6 @@ class FulaModule: NSObject {
             reject("ERR_FULA", "votePoolJoinRequest", error)
         }
 
-    }
-
-    @objc(leavePool:withResolver:withRejecter:)
-    func leavePool(poolID: Int, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
-        print("ReactNative", "leavePool: poolID = ", poolID)
-        do {
-            // Note: Adjust this line if fula!.poolLeave requires seedString
-            let result = try fula!.poolLeave(poolID: poolID)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("leavePool", error.localizedDescription)
-            reject("ERR_FULA", "leavePool", error)
-        }
     }
 
     @objc(newReplicationRequest:withPoolID:withReplicationFactor:withCid:withResolver:withRejecter:)
@@ -1205,7 +1163,7 @@ class FulaModule: NSObject {
     }
 
     @objc(bloxFreeSpace:withRejecter:)
-    func bloxFreeSpace( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+    func bloxFreeSpace( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
         print("ReactNative", "bloxFreeSpace")
         do {
             let result = try fula!.bloxFreeSpace()
@@ -1218,20 +1176,6 @@ class FulaModule: NSObject {
 
     }
 
-    @objc(assetsBalance:assetId:classId:withResolver:withRejecter:)
-    func assetsBalance(account: String, assetId: String, classId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        DispatchQueue.global(qos: .default).async {
-            do {
-                print("ReactNative", "assetsBalance called")
-                let result = try fula!.assetsBalance(account, assetId: assetId, classId: classId)
-                let resultString = String(data: result!, encoding: .utf8)
-                resolve(resultString)
-            } catch let error {
-                print("ReactNative", "assetsBalance failed with Error: \(error.localizedDescription)")
-                reject("ERR_FULA_ASSETS_BALANCE", "assetsBalance failed", error)
-            }
-        }
-    }
     @objc(transferToFula:wallet:chain:withResolver:withRejecter:)
     func transferToFula(amount: String, wallet: String, chain: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.global(qos: .default).async {
@@ -1247,4 +1191,102 @@ class FulaModule: NSObject {
         }
     }
 
+
+  @objc(getAccount:withRejecter:)
+  func getAccount(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      do {
+          let account = try fula!.getAccount()
+          let accountString = String(data: account, encoding: .utf8)
+          resolve(accountString)
+      } catch let error {
+          reject("ERR_FULA", "getAccount: \(error.localizedDescription)", error)
+      }
+  }
+
+  @objc(assetsBalance:assetId:classId:withResolver:withRejecter:)
+  func assetsBalance(account: String, assetId: String, classId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      do {
+          let balance = try fula!.assetsBalance(account, assetId: assetId, classId: classId)
+          let balanceString = String(data: balance, encoding: .utf8)
+          resolve(balanceString)
+      } catch let error {
+          reject("ERR_FULA", "assetsBalance: \(error.localizedDescription)", error)
+      }
+  }
+
+
+  @objc(joinPool:withResolver:withRejecter:)
+  func joinPool(poolID: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      print("ReactNative", "joinPool: poolID = ", poolID)
+      do {
+          let result = try fula!.joinPool(poolID: poolID)
+          let resultString = String(data: result, encoding: .utf8)
+          resolve(resultString)
+      } catch let error {
+          reject("ERR_FULA", "joinPool: \(error.localizedDescription)", error)
+      }
+  }
+
+
+  @objc(cancelPoolJoin:withResolver:withRejecter:)
+  func cancelPoolJoin(poolID: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      do {
+          let result = try fula!.cancelPoolJoin(poolID: poolID)
+          let resultString = String(data: result, encoding: .utf8)
+          resolve(resultString)
+      } catch let error {
+          reject("ERR_FULA", "cancelPoolJoin: \(error.localizedDescription)", error)
+      }
+  }
+
+
+  @objc(leavePool:withResolver:withRejecter:)
+  func leavePool(poolID: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      print("ReactNative", "leavePool: poolID = ", poolID)
+      do {
+          let result = try fula!.leavePool(poolID: poolID)
+          let resultString = String(data: result, encoding: .utf8)
+          resolve(resultString)
+      } catch let error {
+          reject("ERR_FULA", "leavePool: \(error.localizedDescription)", error)
+      }
+  }
+
+  @objc(eraseBlData:withRejecter:)
+  func eraseBlData(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      do {
+          let result = try fula!.eraseBlData()
+          let resultString = String(data: result, encoding: .utf8)
+          resolve(resultString)
+      } catch let error {
+          reject("ERR_FULA", "eraseBlData: \(error.localizedDescription)", error)
+      }
+  }
+
+  @objc(reboot:withRejecter:)
+  func reboot(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      do {
+          let result = try fula!.reboot()
+          let resultString = result.toUTF8String()!
+          resolve(resultString)
+      } catch let error {
+          print("reboot", error.localizedDescription)
+          reject("ERR_FULA", "reboot", error)
+      }
+  }
+
+  @objc(wifiRemoveall:withRejecter:)
+  func wifiRemoveall(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      do {
+          let result = try fula!.wifiRemoveall()
+          let resultString = result.toUTF8String()!
+          resolve(resultString)
+      } catch let error {
+          print("wifiRemoveall", error.localizedDescription)
+          reject("ERR_FULA", "wifiRemoveall", error)
+      }
+  }
+
 }
+
+
