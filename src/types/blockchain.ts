@@ -21,6 +21,11 @@ export interface AssetsBalanceResponse {
   amount: string;
 }
 
+export interface TransferToFulaResponse {
+  msg: string;
+  description: string;
+}
+
 export interface PoolJoinResponse {
   account: string;
   poolID: number;

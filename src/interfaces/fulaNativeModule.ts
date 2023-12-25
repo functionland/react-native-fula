@@ -1,4 +1,5 @@
 import { NativeModules, Platform } from 'react-native';
+import { transferToFula } from '../../.history/src/protocols/blockchain_20231223214858';
 
 interface FulaNativeModule {
   initFula: (
@@ -98,6 +99,7 @@ interface FulaNativeModule {
     cid: string
   ) => Promise<string>;
 
+  //On Blox calls for chain
   //Hardware
   bloxFreeSpace: () => Promise<string>;
   wifiRemoveall: () => Promise<string>;
@@ -109,6 +111,18 @@ interface FulaNativeModule {
     assetId: string,
     classId: string
   ) => Promise<string>;
+  transferToFula: (
+    amount: string,
+    wallet: string,
+    chain: string
+  ) => Promise<string>;
+
+
+  //Hardware
+  bloxFreeSpace: () => Promise<string>;
+  wifiRemoveall: () => Promise<string>;
+  reboot: () => Promise<string>;
+  getAccount: () => Promise<string>;
 }
 
 const LINKING_ERROR =

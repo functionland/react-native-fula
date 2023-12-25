@@ -1176,6 +1176,20 @@ class FulaModule: NSObject {
 
     }
 
+    @objc(transferToFula:wallet:chain:withResolver:withRejecter:)
+    func transferToFula(amount: String, wallet: String, chain: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                print("ReactNative", "transferToFula called")
+                let result = try fula!.transferToFula(amount, wallet: wallet, chain: chain)
+                let resultString = String(data: result!, encoding: .utf8)
+                resolve(resultString)
+            } catch let error {
+                print("ReactNative", "transferToFula failed with Error: \(error.localizedDescription)")
+                reject("ERR_FULA_TRANSFER", "transferToFula failed", error)
+            }
+        }
+    }
 
 
   @objc(getAccount:withRejecter:)
@@ -1272,7 +1286,6 @@ class FulaModule: NSObject {
           reject("ERR_FULA", "wifiRemoveall", error)
       }
   }
-
 
 }
 

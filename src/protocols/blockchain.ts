@@ -547,3 +547,30 @@ export const assetsBalance = (
     });
   return res;
 };
+
+export const transferToFula = (
+  amount: string,
+  wallet: string,
+  chain: string
+): Promise<BType.TransferToFulaResponse> => {
+  console.log('transferToFula in react-native started');
+  let res = Fula.transferToFula(amount, wallet, chain)
+    .then((res) => {
+      try {
+        let jsonRes: BType.TransferToFulaResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e1) {
+          console.error('Error parsing res in transferToFula:', e1);
+          throw e1; // Rethrow the error to maintain the rejection state
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error getting transferToFula:', err);
+      throw err; // Rethrow the error to maintain the rejection state
+    });
+  return res;
+};
