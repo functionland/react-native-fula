@@ -110,7 +110,7 @@ export const batchUploadManifest = async (
       if (submitExtrinsic) {
         return new Promise<{ hash: string }>((resolve, reject) => {
           submitExtrinsic
-            .signAndSend(userKey, ({ status }) => {
+            .signAndSend(userKey, { nonce: -1 }, ({ status }) => {
               if (status.isInBlock || status.isFinalized) {
                 if (unsub) {
                   unsub(); // Call unsub before resolving the promise
