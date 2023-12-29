@@ -509,32 +509,68 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
       if (encryptedLibp2pId == null || !encryptedLibp2pId.startsWith("FULA_" +
         "ENC_V4:")) {
-        Log.d("ReactNative", "encryptedLibp2pId is not correct. creating new one " + encryptedLibp2pId);
-
-        try {
-          libp2pId = Fulamobile.generateEd25519KeyFromString(toString(identity));
-        } catch (Exception e) {
-          Log.d("ReactNative", "Failed to generate libp2pId: " + e.getMessage());
-          throw new GeneralSecurityException("Failed to generate libp2pId", e);
-        }
-        encryptedLibp2pId = "FULA_ENC_V4:" + Cryptography.encryptMsg(StaticHelper.bytesToBase64(libp2pId), encryptionSecretKey, null);
-        sharedPref.add(PRIVATE_KEY_STORE_PEERID, encryptedLibp2pId);
+        Log.d("ReactNative", "encryptedLibp2pId is not correct or empty. creating new one " + encryptedLibp2pId);
+        encryptedLibp2pId = createEncryptedLibp2pId(identity, encryptionSecretKey);
       } else {
         Log.d("ReactNative", "encryptedLibp2pId is correct. decrypting " + encryptedLibp2pId);
       }
 
       try {
-        String decryptedLibp2pId = Cryptography.decryptMsg(encryptedLibp2pId.replace("FULA_ENC_V4:", ""), encryptionSecretKey);
-
+        String decryptedLibp2pId = decryptLibp2pIdentity(encryptedLibp2pId, encryptionSecretKey);
         return StaticHelper.base64ToBytes(decryptedLibp2pId);
       } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
         Log.d("ReactNative", "createPeerIdentity decryptMsg failed with Error: " + e.getMessage());
-        throw (e);
+        Log.d("ReactNative", "creating new encrpyted identity");
+        try {
+          encryptedLibp2pId = createEncryptedLibp2pId(identity, encryptionSecretKey);
+          String decryptedLibp2pId = decryptLibp2pIdentity(encryptedLibp2pId, encryptionSecretKey);
+          return StaticHelper.base64ToBytes(decryptedLibp2pId);
+        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e2) {
+          Log.d("ReactNative", "createPeerIdentity decryptMsg failed with Error: " + e2.getMessage());
+          Log.d("ReactNative", "creating new encrpyted identity");
+          throw(e2);
+        }
       }
 
     } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
       Log.d("ReactNative", "createPeerIdentity failed with Error: " + e.getMessage());
       throw (e);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private String decryptLibp2pIdentity(String encryptedLibp2pId, SecretKey encryptionSecretKey) throws Exception {
+    try {
+        String decryptedLibp2pId = Cryptography.decryptMsg(encryptedLibp2pId.replace("FULA_ENC_V4:", ""), encryptionSecretKey);
+
+        return decryptedLibp2pId;
+      } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
+        Log.d("ReactNative", "createPeerIdentity decryptMsg failed with Error: " + e.getMessage());
+        Log.d("ReactNative", "creating new encrpyted identity");
+        throw new GeneralSecurityException("decryptLibp2pIdentity Failed to decrypt libp2pId", e);
+      }
+  }
+
+  private String createEncryptedLibp2pId(byte[] identity, SecretKey encryptionSecretKey) throws Exception {
+    byte[] libp2pId;
+    String encryptedLibp2pId;
+    try {
+      Log.d("ReactNative", "createEncryptedLibp2pId started");
+
+        try {
+          libp2pId = Fulamobile.generateEd25519KeyFromString(toString(identity));
+        } catch (Exception e) {
+          Log.d("ReactNative", " createEncryptedLibp2pId Failed to generate libp2pId: " + e.getMessage());
+          throw new GeneralSecurityException("createEncryptedLibp2pId Failed to generate libp2pId", e);
+        }
+        encryptedLibp2pId = "FULA_ENC_V4:" + Cryptography.encryptMsg(StaticHelper.bytesToBase64(libp2pId), encryptionSecretKey, null);
+        sharedPref.add(PRIVATE_KEY_STORE_PEERID, encryptedLibp2pId);
+        return encryptedLibp2pId;
+    }
+    catch (Exception e) {
+      Log.d("ReactNative", "createEncryptedLibp2pId failed with Error: " + e.getMessage());
+      throw new GeneralSecurityException("createEncryptedLibp2pId Failed to generate libp2pId at hte first level", e);
     }
   }
 

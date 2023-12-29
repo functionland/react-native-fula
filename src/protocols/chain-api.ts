@@ -172,6 +172,7 @@ export const listPools = async (
         let formattedPoolInfo: BType.Pool = JSON.parse(
           JSON.stringify(poolInfo.toHuman())
         );
+        formattedPoolInfo.poolID = i;
         pools.pools.push(formattedPoolInfo);
       }
     }

@@ -78,10 +78,11 @@ export interface PoolUsers {
 
 export interface Pool {
   poolID: number;
-  owner: string;
+  creator: string;
   poolName: string;
   parent: string;
   participants: string[];
+  region: string;
 }
 
 export interface ManifestMetadata {
