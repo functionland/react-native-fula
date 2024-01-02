@@ -135,6 +135,48 @@ class FulaModule: NSObject {
         return convertIntToByte(keyInt)
     }
 
+    @objc func registerLifecycleListener() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationWillResignActive),
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationWillTerminate),
+            name: UIApplication.willTerminateNotification,
+            object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc func applicationWillResignActive() {
+        // Handle app will resign active (similar to onHostPause)
+    }
+
+    @objc func applicationDidEnterBackground() {
+        // Handle app entered background
+    }
+
+    @objc func applicationWillTerminate() {
+        // Attempt to shut down Fula cleanly (similar to onHostDestroy)
+        do {
+            try shutdownInternal()
+        } catch {
+            print("Error shutting down Fula: \(error)")
+        }
+    }
+
+
     @objc(checkConnection:withResolver:withRejecter:)
     func checkConnection(timeout: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         OSLog.viewCycle.info("ReactNative checkConnection started with timeout=\(timeout)")

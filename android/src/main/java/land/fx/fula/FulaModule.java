@@ -14,6 +14,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.LifecycleEventListener;
 
 
 import org.apache.commons.io.FileUtils;
@@ -181,6 +182,33 @@ public class FulaModule extends ReactContextBaseJavaModule {
     int[] keyInt = stringArrToIntArr(keyInt_S);
 
     return convertIntToByte(keyInt);
+  }
+
+  @ReactMethod
+  public void registerLifecycleListener(Promise promise) {
+      getReactApplicationContext().addLifecycleEventListener(new LifecycleEventListener() {
+          @Override
+          public void onHostResume() {
+              // App is in the foreground
+          }
+
+          @Override
+          public void onHostPause() {
+              // App is in the background
+          }
+
+          @Override
+          public void onHostDestroy() {
+              // Attempt to shut down Fula cleanly
+              try {
+                  Log.e("ReactNative", "shutting down Fula onHostDestroy");
+                  shutdownInternal();
+              } catch (Exception e) {
+                  Log.e("ReactNative", "Error shutting down Fula", e);
+              }
+          }
+      });
+      promise.resolve(true);
   }
 
   @ReactMethod

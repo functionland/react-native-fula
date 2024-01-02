@@ -1,6 +1,7 @@
 import { NativeModules, Platform } from 'react-native';
 
 interface FulaNativeModule {
+  registerLifecycleListener: () => Promise<void>;
   initFula: (
     identity: string, //Private key of did identity
     storePath: string, //You can leave empty

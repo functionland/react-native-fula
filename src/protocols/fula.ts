@@ -8,6 +8,14 @@ import {
 import { ApiPromise } from '@polkadot/api';
 
 /**
+ * Register the app's lifecycle listeners to handle foreground, background, and termination states.
+ */
+export const registerLifecycleListener = (): Promise<void> => {
+  console.log('called registerLifecycleListener');
+  return Fula.registerLifecycleListener();
+};
+
+/**
  * Get gets the value corresponding to the given key from the local datastore.
 // The key must be a valid ipld.Link.
  * @param config
