@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
 import {
@@ -20,6 +20,19 @@ const App = () => {
   const [initComplete, setInitComplete] = React.useState<
     { peerId: string; rootCid: string; private_ref: string } | {}
   >({});
+
+  useEffect(() => {
+    if (!__DEV__) {
+      console.log = () => null;
+      //console.error = () => null
+    }
+    fula
+      .registerLifecycleListener()
+      .then(() => console.log('Lifecycle listener registered'))
+      .catch((error) =>
+        console.error('Failed to register lifecycle listener', error)
+      );
+  }, []);
 
   let RNFS = require('react-native-fs');
   const readFile = () => {
