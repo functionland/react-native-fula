@@ -1161,7 +1161,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   private void shutdownInternal() throws Exception {
     try {
-      if(this.fula != null) {
+      if(this.fula != null || this.client != null) {
         this.fula.shutdown();
         this.fula = null;
         this.client = null;
