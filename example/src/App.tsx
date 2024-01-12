@@ -13,7 +13,7 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
   const [newRootCid, setNewRootCid] = React.useState<string>('');
-  const root_cid = 'bafyr4igvbqjrqi4ukrj4skydwpdeo4zaof5iduk7jfzdz6bd7z5wkmokwq';
+  const root_cid = '';
   const seed =
     '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
 
@@ -68,7 +68,7 @@ const App = () => {
     153, 106, 217, 201, 106, 9, 66, 33, 214, 195, 255, 234, 178, 244, 203, 112,
     62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
   ];
-  //const bloxPeerId = '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4'; //tower
+  //const bloxPeerId = '12D3KooWDiBNebfFD4QwJ1qDZaeapKcbr72cJfHE8foooTX25Z1V'; //tower
   const bloxPeerId = '12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q'; //laptop
 
   const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
