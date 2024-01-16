@@ -1237,7 +1237,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void assetsBalance(String account, String assetId, String classId, Promise promise) {
+  public void assetsBalance(String account, long assetId, long classId, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "assetsBalance called ");
       try {

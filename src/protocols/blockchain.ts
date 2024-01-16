@@ -8,7 +8,7 @@ export const createAccount = (
   seed: string //seed that is used to create the account. It must start with "/"
 ): Promise<BType.SeededResponse> => {
   console.log('createAccount in react-native started', seed);
-  let res = Fula.createAccount(seed)
+  let res1 = Fula.createAccount(seed)
     .then((res) => {
       try {
         let jsonRes: BType.SeededResponse = JSON.parse(res);
@@ -16,7 +16,7 @@ export const createAccount = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -24,7 +24,7 @@ export const createAccount = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -34,7 +34,7 @@ export const checkAccountExists = (
   account: string
 ): Promise<BType.AccountExistsResponse> => {
   console.log('checkAccountExists in react-native started', account);
-  let res = Fula.checkAccountExists(account)
+  let res1 = Fula.checkAccountExists(account)
     .then((res) => {
       try {
         let jsonRes: BType.AccountExistsResponse = JSON.parse(res);
@@ -42,7 +42,7 @@ export const checkAccountExists = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -50,7 +50,7 @@ export const checkAccountExists = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -61,7 +61,7 @@ export const createPool = (
   poolName: string
 ): Promise<BType.PoolCreateResponse> => {
   console.log('createPool in react-native started', seed, poolName);
-  let res = Fula.createPool(seed, poolName)
+  let res1 = Fula.createPool(seed, poolName)
     .then((res) => {
       try {
         let jsonRes: BType.PoolCreateResponse = JSON.parse(res);
@@ -69,7 +69,7 @@ export const createPool = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -77,7 +77,7 @@ export const createPool = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -85,7 +85,7 @@ export const createPool = (
   */
 export const listPools = (): Promise<BType.PoolListResponse> => {
   console.log('listPools in react-native started');
-  let res = Fula.listPools()
+  let res1 = Fula.listPools()
     .then((res) => {
       try {
         let jsonRes: BType.PoolListResponse = JSON.parse(res);
@@ -93,7 +93,7 @@ export const listPools = (): Promise<BType.PoolListResponse> => {
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -101,7 +101,7 @@ export const listPools = (): Promise<BType.PoolListResponse> => {
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -110,7 +110,7 @@ export const listPools = (): Promise<BType.PoolListResponse> => {
 
 export const joinPool = (poolID: number): Promise<BType.PoolJoinResponse> => {
   console.log('joinPool in react-native started', poolID);
-  let res = Fula.joinPool(poolID.toString())
+  let res1 = Fula.joinPool(poolID.toString())
     .then((res) => {
       try {
         let jsonRes: BType.PoolJoinResponse = JSON.parse(res);
@@ -118,9 +118,9 @@ export const joinPool = (poolID: number): Promise<BType.PoolJoinResponse> => {
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           console.error('Error parsing res in joining pool:', e);
-          throw e; // Rethrow the error to maintain the rejection state
+          return res; // Rethrow the error to maintain the rejection state
         }
       }
     })
@@ -128,7 +128,7 @@ export const joinPool = (poolID: number): Promise<BType.PoolJoinResponse> => {
       console.error('Error joining pool:', err);
       throw err; // Rethrow the error to maintain the rejection state
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -137,7 +137,7 @@ export const joinPool = (poolID: number): Promise<BType.PoolJoinResponse> => {
 
 export const leavePool = (poolID: number): Promise<BType.PoolLeaveResponse> => {
   console.log('leavePool in react-native started', poolID);
-  let res = Fula.leavePool(poolID)
+  let res1 = Fula.leavePool(poolID)
     .then((res) => {
       try {
         let jsonRes: BType.PoolLeaveResponse = JSON.parse(res);
@@ -145,7 +145,7 @@ export const leavePool = (poolID: number): Promise<BType.PoolLeaveResponse> => {
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -153,14 +153,14 @@ export const leavePool = (poolID: number): Promise<BType.PoolLeaveResponse> => {
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 export const cancelPoolJoin = (
   poolID: number
 ): Promise<BType.PoolCancelJoinResponse> => {
   console.log('cancelPoolJoin in react-native started', poolID);
-  let res = Fula.cancelPoolJoin(poolID)
+  let res1 = Fula.cancelPoolJoin(poolID)
     .then((res) => {
       try {
         let jsonRes: BType.PoolCancelJoinResponse = JSON.parse(res);
@@ -168,7 +168,7 @@ export const cancelPoolJoin = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -176,13 +176,13 @@ export const cancelPoolJoin = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 export const listPoolJoinRequests = (
   poolID: number
 ): Promise<BType.PoolRequestsResponse> => {
   console.log('listPoolJoinRequests in react-native started', poolID);
-  let res = Fula.listPoolJoinRequests(poolID)
+  let res1 = Fula.listPoolJoinRequests(poolID)
     .then((res) => {
       try {
         let jsonRes: BType.PoolRequestsResponse = JSON.parse(res);
@@ -190,7 +190,7 @@ export const listPoolJoinRequests = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -198,7 +198,7 @@ export const listPoolJoinRequests = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -221,7 +221,7 @@ export const votePoolJoinRequest = (
     account,
     accept
   );
-  let res = Fula.votePoolJoinRequest(seed, poolID, account, accept)
+  let res1 = Fula.votePoolJoinRequest(seed, poolID, account, accept)
     .then((res) => {
       try {
         let jsonRes: BType.PoolVoteResponse = JSON.parse(res);
@@ -229,7 +229,7 @@ export const votePoolJoinRequest = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -237,7 +237,7 @@ export const votePoolJoinRequest = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -262,7 +262,7 @@ export const newReplicationRequest = (
     replicationFactor,
     cid
   );
-  let res = Fula.newReplicationRequest(seed, poolID, replicationFactor, cid)
+  let res1 = Fula.newReplicationRequest(seed, poolID, replicationFactor, cid)
     .then((res) => {
       try {
         let jsonRes: BType.ManifestUploadResponse = JSON.parse(res);
@@ -270,7 +270,7 @@ export const newReplicationRequest = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -278,7 +278,7 @@ export const newReplicationRequest = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -303,7 +303,7 @@ export const newStoreRequest = (
     uploader,
     cid
   );
-  let res = Fula.newStoreRequest(seed, poolID, uploader, cid)
+  let res1 = Fula.newStoreRequest(seed, poolID, uploader, cid)
     .then((res) => {
       try {
         let jsonRes: BType.ManifestUploadResponse = JSON.parse(res);
@@ -311,7 +311,7 @@ export const newStoreRequest = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -319,7 +319,7 @@ export const newStoreRequest = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -335,7 +335,7 @@ export const listAvailableReplicationRequests = (
     'listAvailableReplicationRequests in react-native started',
     poolID
   );
-  let res = Fula.listAvailableReplicationRequests(poolID)
+  let res1 = Fula.listAvailableReplicationRequests(poolID)
     .then((res) => {
       try {
         let jsonRes: BType.ManifestUploadResponse[] = JSON.parse(res);
@@ -343,7 +343,7 @@ export const listAvailableReplicationRequests = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -351,7 +351,7 @@ export const listAvailableReplicationRequests = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -373,7 +373,7 @@ export const removeReplicationRequest = (
     poolID,
     cid
   );
-  let res = Fula.removeReplicationRequest(seed, poolID, cid)
+  let res1 = Fula.removeReplicationRequest(seed, poolID, cid)
     .then((res) => {
       try {
         let jsonRes: BType.ManifestUploadResponse = JSON.parse(res);
@@ -381,7 +381,7 @@ export const removeReplicationRequest = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -389,7 +389,7 @@ export const removeReplicationRequest = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -414,7 +414,7 @@ export const removeStorer = (
     poolID,
     cid
   );
-  let res = Fula.removeStorer(seed, storer, poolID, cid)
+  let res1 = Fula.removeStorer(seed, storer, poolID, cid)
     .then((res) => {
       try {
         let jsonRes: BType.ManifestUploadResponse = JSON.parse(res);
@@ -422,7 +422,7 @@ export const removeStorer = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -430,7 +430,7 @@ export const removeStorer = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -455,7 +455,7 @@ export const removeStoredReplication = (
     poolID,
     cid
   );
-  let res = Fula.removeStoredReplication(seed, uploader, poolID, cid)
+  let res1 = Fula.removeStoredReplication(seed, uploader, poolID, cid)
     .then((res) => {
       try {
         let jsonRes: BType.ManifestUploadResponse = JSON.parse(res);
@@ -463,7 +463,7 @@ export const removeStoredReplication = (
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -471,7 +471,7 @@ export const removeStoredReplication = (
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 /*
@@ -479,7 +479,7 @@ export const removeStoredReplication = (
   */
 export const bloxFreeSpace = (): Promise<BType.BloxFreeSpaceResponse> => {
   console.log('bloxFreeSpace in react-native started');
-  let res = Fula.bloxFreeSpace()
+  let res1 = Fula.bloxFreeSpace()
     .then((res) => {
       try {
         let jsonRes: BType.BloxFreeSpaceResponse = JSON.parse(res);
@@ -487,7 +487,7 @@ export const bloxFreeSpace = (): Promise<BType.BloxFreeSpaceResponse> => {
       } catch (e) {
         try {
           return JSON.parse(res);
-        } catch (e) {
+        } catch (e2) {
           return res;
         }
       }
@@ -495,19 +495,19 @@ export const bloxFreeSpace = (): Promise<BType.BloxFreeSpaceResponse> => {
     .catch((err) => {
       return err;
     });
-  return res;
+  return res1;
 };
 
 export const getAccount = (): Promise<BType.GetAccountResponse> => {
   console.log('getAccount in react-native started');
   let res = Fula.getAccount()
-    .then((res) => {
+    .then((res1) => {
       try {
-        let jsonRes: BType.GetAccountResponse = JSON.parse(res);
+        let jsonRes: BType.GetAccountResponse = JSON.parse(res1);
         return jsonRes;
       } catch (e) {
         try {
-          return JSON.parse(res);
+          return JSON.parse(res1);
         } catch (e1) {
           console.error('Error parsing res in get account:', e1);
           throw e1; // Rethrow the error to maintain the rejection state
@@ -523,18 +523,18 @@ export const getAccount = (): Promise<BType.GetAccountResponse> => {
 
 export const assetsBalance = (
   account: string,
-  assetId: string,
-  classId: string
+  assetId: number,
+  classId: number
 ): Promise<BType.AssetsBalanceResponse> => {
   console.log('assetsBalance in react-native started');
   let res = Fula.assetsBalance(account, assetId, classId)
-    .then((res) => {
+    .then((res1) => {
       try {
-        let jsonRes: BType.AssetsBalanceResponse = JSON.parse(res);
+        let jsonRes: BType.AssetsBalanceResponse = JSON.parse(res1);
         return jsonRes;
       } catch (e) {
         try {
-          return JSON.parse(res);
+          return JSON.parse(res1);
         } catch (e1) {
           console.error('Error parsing res in get asset balance:', e1);
           throw e1; // Rethrow the error to maintain the rejection state
@@ -555,13 +555,13 @@ export const transferToFula = (
 ): Promise<BType.TransferToFulaResponse> => {
   console.log('transferToFula in react-native started');
   let res = Fula.transferToFula(amount, wallet, chain)
-    .then((res) => {
+    .then((res1) => {
       try {
-        let jsonRes: BType.TransferToFulaResponse = JSON.parse(res);
+        let jsonRes: BType.TransferToFulaResponse = JSON.parse(res1);
         return jsonRes;
       } catch (e) {
         try {
-          return JSON.parse(res);
+          return JSON.parse(res1);
         } catch (e1) {
           console.error('Error parsing res in transferToFula:', e1);
           throw e1; // Rethrow the error to maintain the rejection state

@@ -71,7 +71,7 @@ const App = () => {
   //const bloxPeerId = '12D3KooWDiBNebfFD4QwJ1qDZaeapKcbr72cJfHE8foooTX25Z1V'; //tower
   const bloxPeerId = '12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q'; //laptop
 
-  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
+  const bloxAddr = '/dns/delta-relay.dev.fx.land/tcp/4001/p2p/12D3KooWDtA7kecHAGEB8XYEKHBUTt8GsRfMen1yMs7V85vrpMzC/p2p-circuit/p2p/' + bloxPeerId;
   //const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId;
 
   const initFula = async () => {
@@ -755,7 +755,7 @@ const App = () => {
                         console.log(res);
                         if (res) {
                           blockchain
-                            .assetsBalance(res.account, '110', '100')
+                            .assetsBalance(res.account, 110, 100)
                             .then((r2: any) => {
                               console.log('amount received');
                               console.log(r2);
