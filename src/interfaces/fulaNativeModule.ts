@@ -103,8 +103,8 @@ interface FulaNativeModule {
   //Hardware
   assetsBalance: (
     account: string,
-    assetId: number,
-    classId: number
+    assetId: string,
+    classId: string
   ) => Promise<string>;
   transferToFula: (
     amount: string,

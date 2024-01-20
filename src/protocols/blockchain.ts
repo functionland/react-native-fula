@@ -523,8 +523,8 @@ export const getAccount = (): Promise<BType.GetAccountResponse> => {
 
 export const assetsBalance = (
   account: string,
-  assetId: number,
-  classId: number
+  assetId: string,
+  classId: string
 ): Promise<BType.AssetsBalanceResponse> => {
   console.log('assetsBalance in react-native started');
   let res = Fula.assetsBalance(account, assetId, classId)
