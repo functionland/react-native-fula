@@ -1315,11 +1315,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void cancelPoolJoin(long poolID, Promise promise) {
+  public void cancelPoolJoin(String poolID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "cancelPoolJoin: poolID = " + poolID);
+      long poolIdLong = Long.parseLong(poolID);
+      Log.d("ReactNative", "cancelPoolJoin: poolID = " + poolIdLong);
       try {
-        byte[] result = this.fula.poolCancelJoin(poolID);
+        byte[] result = this.fula.poolCancelJoin(poolIdLong);
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
@@ -1345,11 +1346,12 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void leavePool(long poolID, Promise promise) {
+  public void leavePool(String poolID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "leavePool: poolID = " + poolID);
+      long poolIdLong = Long.parseLong(poolID);
+      Log.d("ReactNative", "leavePool: poolID = " + poolIdLong);
       try {
-        byte[] result = this.fula.poolLeave(poolID);
+        byte[] result = this.fula.poolLeave(poolIdLong);
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {

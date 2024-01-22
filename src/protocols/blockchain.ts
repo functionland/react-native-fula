@@ -137,7 +137,7 @@ export const joinPool = (poolID: number): Promise<BType.PoolJoinResponse> => {
 
 export const leavePool = (poolID: number): Promise<BType.PoolLeaveResponse> => {
   console.log('leavePool in react-native started', poolID);
-  let res1 = Fula.leavePool(poolID)
+  let res1 = Fula.leavePool(poolID.toString())
     .then((res) => {
       try {
         let jsonRes: BType.PoolLeaveResponse = JSON.parse(res);
@@ -160,7 +160,7 @@ export const cancelPoolJoin = (
   poolID: number
 ): Promise<BType.PoolCancelJoinResponse> => {
   console.log('cancelPoolJoin in react-native started', poolID);
-  let res1 = Fula.cancelPoolJoin(poolID)
+  let res1 = Fula.cancelPoolJoin(poolID.toString())
     .then((res) => {
       try {
         let jsonRes: BType.PoolCancelJoinResponse = JSON.parse(res);

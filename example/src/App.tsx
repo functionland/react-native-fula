@@ -69,7 +69,8 @@ const App = () => {
     62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
   ];
   //const bloxPeerId = '12D3KooWDiBNebfFD4QwJ1qDZaeapKcbr72cJfHE8foooTX25Z1V'; //tower
-  const bloxPeerId = '12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q'; //laptop
+  //const bloxPeerId = '12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q'; //laptop
+  const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
   //const bloxPeerId = '12D3KooWAN5FaAnC4d1GhAvoYxyUXdrkCGqux1NB6Pr4cZXn813E'; //test aws server
 
   const bloxAddr = '/dns/delta-relay.dev.fx.land/tcp/4001/p2p/12D3KooWDtA7kecHAGEB8XYEKHBUTt8GsRfMen1yMs7V85vrpMzC/p2p-circuit/p2p/' + bloxPeerId;
@@ -444,6 +445,36 @@ const App = () => {
                       })
                       .catch((e: any) => {
                         console.log('join failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Cancel join Pool'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection cehck');
+                  console.log(r);
+                  if (r) {
+                    console.log('initialization is completed.');
+                    blockchain
+                      .cancelPoolJoin(1)
+                      .then((res: any) => {
+                        console.log('cancel joined');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('cancel join failed');
                         console.log(e);
                       });
                   }
