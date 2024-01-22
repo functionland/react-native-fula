@@ -1263,7 +1263,7 @@ class FulaModule: NSObject {
           guard let poolIdInt = Int(poolID) else {
               throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
           }
-          let result = try fula!.joinPool(poolID: poolIdInt)
+          let result = try fula!.poolJoin(poolID: poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -1277,7 +1277,7 @@ class FulaModule: NSObject {
           guard let poolIdInt = Int(poolID) else {
               throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
           }
-          let result = try fula!.cancelPoolJoin(poolID: poolIdInt)
+          let result = try fula!.poolCancelJoin(poolID: poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -1292,7 +1292,7 @@ class FulaModule: NSObject {
           guard let poolIdInt = Int(poolID) else {
               throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
           }
-          let result = try fula!.leavePool(poolID: poolIdInt)
+          let result = try fula!.poolLeave(poolID: poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
