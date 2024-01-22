@@ -1256,12 +1256,14 @@ class FulaModule: NSObject {
       }
   }
 
-
   @objc(joinPool:withResolver:withRejecter:)
-  func joinPool(poolID: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+  func joinPool(poolID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
       print("ReactNative", "joinPool: poolID = ", poolID)
       do {
-          let result = try fula!.joinPool(poolID: poolID)
+          guard let poolIdInt = Int(poolID) else {
+              throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
+          }
+          let result = try fula!.joinPool(poolID: poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -1269,11 +1271,13 @@ class FulaModule: NSObject {
       }
   }
 
-
   @objc(cancelPoolJoin:withResolver:withRejecter:)
-  func cancelPoolJoin(poolID: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+  func cancelPoolJoin(poolID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
       do {
-          let result = try fula!.cancelPoolJoin(poolID: poolID)
+          guard let poolIdInt = Int(poolID) else {
+              throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
+          }
+          let result = try fula!.cancelPoolJoin(poolID: poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -1281,18 +1285,21 @@ class FulaModule: NSObject {
       }
   }
 
-
   @objc(leavePool:withResolver:withRejecter:)
-  func leavePool(poolID: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+  func leavePool(poolID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
       print("ReactNative", "leavePool: poolID = ", poolID)
       do {
-          let result = try fula!.leavePool(poolID: poolID)
+          guard let poolIdInt = Int(poolID) else {
+              throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
+          }
+          let result = try fula!.leavePool(poolID: poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
           reject("ERR_FULA", "leavePool: \(error.localizedDescription)", error)
       }
   }
+
 
   @objc(eraseBlData:withRejecter:)
   func eraseBlData(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
