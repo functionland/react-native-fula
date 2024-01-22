@@ -1000,6 +1000,66 @@ class FulaModule: NSObject {
         }
 
     }
+    
+    @objc(clearCidsFromRecent:withResolver:withRejecter:)
+    func clearCidsFromRecent(cidArray: NSArray, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                guard let fulaClient = self.fula else {
+                    throw MyError.runtimeError("Fula client is not initialized")
+                }
+
+                // Concatenate all CID strings into a single string separated by "|"
+                let concatenatedCids = (cidArray as? [String])?.joined(separator: "|")
+
+                guard let cidsData = concatenatedCids?.data(using: .utf8) else {
+                    throw MyError.runtimeError("Unable to encode CIDs as data")
+                }
+
+                try fulaClient.clearCids(fromRecent: cidsData)
+                resolve(true)
+            } catch let error {
+                print("ReactNative", "clearCidsFromRecent failed with Error: \(error.localizedDescription)")
+                reject("ERR_FULA_CLEAR_CIDS", "Failed to clear CIDs from recent", error)
+            }
+        }
+    }
+
+
+    @objc(listRecentCidsAsString:withRejecter:)
+    func listRecentCidsAsString(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                guard let fulaClient = self.fula else {
+                    throw MyError.runtimeError("Fula client is not initialized")
+                }
+
+                let recentLinksIterator = try fulaClient.listRecentCidsAsString()
+                var recentLinksList = [String]()
+                var hasNext = true
+
+                while hasNext {
+                    do {
+                        let nextLink = try recentLinksIterator.next(<#NSErrorPointer#>)
+                        recentLinksList.append(nextLink)
+                    } catch {
+                        hasNext = false
+                    }
+                }
+
+                if !recentLinksList.isEmpty {
+                    resolve(recentLinksList)
+                } else {
+                    resolve(false)
+                }
+            } catch let error {
+                print("ReactNative", "listRecentCidsAsString failed with Error: \(error.localizedDescription)")
+                reject("ERR_FULA_LIST_RECENT_CIDS", "Failed to list recent CIDs as string", error)
+            }
+        }
+    }
+
+
 
     @objc(shutdown:withRejecter:)
     func shutdown( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
@@ -1028,27 +1088,6 @@ class FulaModule: NSObject {
     ///////////////////////////////////////////////////////////
     //////////////////////ANYTHING BELOW IS FOR BLOCKCHAIN/////
     ///////////////////////////////////////////////////////////
-    @objc(createAccount:withResolver:withRejecter:)
-    func createAccount(seedString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "createAccount: seedString = ", seedString)
-        do {
-            if (fula == nil ||  ((fula?.id_().isEmpty) != nil)) {
-                reject("ERR_FULA", "createAccount", MyError.runtimeError("Fula client is not initialized"))
-            } else {
-
-                if (!seedString.starts(with: "/")) {
-                    reject("ERR_FULA", "createAccount", MyError.runtimeError("seed should start with /"))
-                }
-                let result = try fula!.seeded(seedString)
-                let resultString = result.toUTF8String()!
-                resolve(resultString)
-            }
-        } catch let error {
-            print("createAccount", error.localizedDescription)
-            reject("ERR_FULA", "createAccount", error)
-        }
-
-    }
 
     @objc(checkAccountExists:withResolver:withRejecter:)
     func checkAccountExists(accountString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
@@ -1060,20 +1099,6 @@ class FulaModule: NSObject {
         } catch let error {
             print("checkAccountExists", error.localizedDescription)
             reject("ERR_FULA", "checkAccountExists", error)
-        }
-
-    }
-
-    @objc(createPool:withPoolName:withResolver:withRejecter:)
-    func createPool(seedString: String, poolName: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "createPool: seedString = " + seedString + " poolName = " + poolName)
-        do {
-            let result = try fula!.poolCreate(seedString, poolName: poolName)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("createPool", error.localizedDescription)
-            reject("ERR_FULA", "createPool", error)
         }
 
     }
@@ -1106,48 +1131,6 @@ class FulaModule: NSObject {
 
     }
 
-    @objc(votePoolJoinRequest:withPoolID:withAccountString:withAccept:withResolver:withRejecter:)
-    func votePoolJoinRequest(seedString: String, poolID: Int, accountString: String, accept: Bool,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "votePoolJoinRequest: seedString = ", seedString ," poolID = ", poolID, " accountString = ", accountString , " accept = ", accept)
-        do {
-            let result = try fula!.poolVote(seedString, poolID: Int(poolID), account: accountString, voteValue: accept)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("votePoolJoinRequest", error.localizedDescription)
-            reject("ERR_FULA", "votePoolJoinRequest", error)
-        }
-
-    }
-
-    @objc(newReplicationRequest:withPoolID:withReplicationFactor:withCid:withResolver:withRejecter:)
-    func newReplicationRequest(seedString: String, poolID: Int, replicationFactor: Int, cid: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "newReplicationRequest: seedString = " , seedString , " poolID = " , poolID , " replicationFactor = " , replicationFactor , " cid = " , cid)
-        do {
-            let result = try fula!.manifestUpload(seedString, poolID: poolID, replicationFactor: replicationFactor, uri: cid)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("newReplicationRequest", error.localizedDescription)
-            reject("ERR_FULA", "newReplicationRequest", error)
-        }
-
-    }
-
-    @objc(newStoreRequest:withPoolID:withUploader:withCid:withResolver:withRejecter:)
-    func newStoreRequest(seedString: String, poolID: Int, uploader: String, cid: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "newStoreRequest: seedString = " + seedString + " poolID = " , poolID , " uploader = " , uploader , " cid = " , cid)
-        do {
-            let result = try fula!.manifestStore(seedString, poolID: poolID, uploader: uploader, cid: cid)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("newStoreRequest", error.localizedDescription)
-            reject("ERR_FULA", "newStoreRequest", error)
-        }
-
-    }
-
     @objc(listAvailableReplicationRequests:withResolver:withRejecter:)
     func listAvailableReplicationRequests(poolID: Int,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
         print("ReactNative", "listAvailableReplicationRequests: poolID = ", poolID)
@@ -1158,48 +1141,6 @@ class FulaModule: NSObject {
         } catch let error {
             print("listAvailableReplicationRequests", error.localizedDescription)
             reject("ERR_FULA", "listAvailableReplicationRequests", error)
-        }
-
-    }
-
-    @objc(removeReplicationRequest:withPoolID:withCid:withResolver:withRejecter:)
-    func removeReplicationRequest(seedString: String, poolID: Int, cid: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "newReplicationRequest: seedString = " , seedString , " poolID = " , poolID , " cid = " , cid)
-        do {
-            let result = try fula!.manifestRemove(seedString, poolID: poolID,  cid: cid)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("removeReplicationRequest", error.localizedDescription)
-            reject("ERR_FULA", "removeReplicationRequest", error)
-        }
-
-    }
-
-    @objc(removeStorer:withStorage:withPoolID:withCid:withResolver:withRejecter:)
-    func removeStorer(seedString: String, storage: String, poolID: Int, cid: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "removeStorer: seedString = " , seedString , " storage = " , storage , " poolID = " , poolID , " cid = " , cid)
-        do {
-            let result = try fula!.manifestRemoveStorer(seedString, storage: storage, poolID: poolID, cid: cid)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("removeStorer", error.localizedDescription)
-            reject("ERR_FULA", "removeStorer", error)
-        }
-
-    }
-
-    @objc(removeStoredReplication:withUploader:withPoolID:withCid:withResolver:withRejecter:)
-    func removeStoredReplication(seedString: String, uploader: String, poolID: Int, cid: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "removeStoredReplication: seedString = " , seedString , " uploader = " , uploader , " poolID = " , poolID , " cid = " , cid)
-        do {
-            let result = try fula!.manifestRemoveStored(seedString, uploader: uploader, poolID: poolID, cid: cid)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("removeStoredReplication", error.localizedDescription)
-            reject("ERR_FULA", "removeStoredReplication", error)
         }
 
     }
@@ -1223,8 +1164,8 @@ class FulaModule: NSObject {
         DispatchQueue.global(qos: .default).async {
             do {
                 print("ReactNative", "transferToFula called")
-                let result = try fula!.transferToFula(amount, wallet: wallet, chain: chain)
-                let resultString = String(data: result!, encoding: .utf8)
+                let result = try self.fula!.transfer(toFula: amount, walletAccount: wallet, chain: chain)
+                let resultString = String(data: result, encoding: .utf8)
                 resolve(resultString)
             } catch let error {
                 print("ReactNative", "transferToFula failed with Error: \(error.localizedDescription)")
@@ -1245,16 +1186,21 @@ class FulaModule: NSObject {
       }
   }
 
-  @objc(assetsBalance:assetId:classId:withResolver:withRejecter:)
-  func assetsBalance(account: String, assetId: String, classId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-      do {
-          let balance = try fula!.assetsBalance(account, assetId: assetId, classId: classId)
-          let balanceString = String(data: balance, encoding: .utf8)
-          resolve(balanceString)
-      } catch let error {
-          reject("ERR_FULA", "assetsBalance: \(error.localizedDescription)", error)
-      }
-  }
+    @objc(assetsBalance:assetId:classId:withResolver:withRejecter:)
+    func assetsBalance(account: String, assetId: String, classId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard let assetIdInt = Int(assetId), let classIdInt = Int(classId) else {
+            reject("ERR_FULA", "Invalid assetId or classId", nil)
+            return
+        }
+
+        do {
+            let balance = try fula!.assetsBalance(account, assetId: assetIdInt, classId: classIdInt)
+            let balanceString = String(data: balance, encoding: .utf8)
+            resolve(balanceString)
+        } catch let error {
+            reject("ERR_FULA", "assetsBalance: \(error.localizedDescription)", error)
+        }
+    }
 
   @objc(joinPool:withResolver:withRejecter:)
   func joinPool(poolID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
@@ -1263,7 +1209,7 @@ class FulaModule: NSObject {
           guard let poolIdInt = Int(poolID) else {
               throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
           }
-          let result = try fula!.joinPool(poolID: poolIdInt)
+          let result = try fula!.poolJoin(poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -1277,7 +1223,7 @@ class FulaModule: NSObject {
           guard let poolIdInt = Int(poolID) else {
               throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
           }
-          let result = try fula!.cancelPoolJoin(poolID: poolIdInt)
+          let result = try fula!.poolCancelJoin(poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -1292,7 +1238,7 @@ class FulaModule: NSObject {
           guard let poolIdInt = Int(poolID) else {
               throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
           }
-          let result = try fula!.leavePool(poolID: poolIdInt)
+          let result = try fula!.poolLeave(poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {

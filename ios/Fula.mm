@@ -109,16 +109,7 @@ RCT_EXTERN_METHOD(setAuth:(NSString *)peerIdString
 RCT_EXTERN_METHOD(shutdown:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(createAccount:(NSString *)seedString
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
 RCT_EXTERN_METHOD(checkAccountExists:(NSString *)accountString
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(createPool:(NSString *)seedString
-                  withPoolName: (NSString *)poolName
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
@@ -138,52 +129,12 @@ RCT_EXTERN_METHOD(listPoolJoinRequests:(NSNumber *)poolID
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(votePoolJoinRequest:(NSString *)seedString
-                  withPoolID: (NSNumber *)poolID
-                  withAccountString: (NSString *) accountString
-                  withAccept: (BOOL) accept
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
 RCT_EXTERN_METHOD(leavePool:(NSString *)poolID
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(newReplicationRequest:(NSString *)seedString
-                  withPoolID: (NSNumber *)poolID
-                  withReplicationFactor: (NSNumber *) replicationFactor
-                  withCid: (NSNumber *) cid
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(newStoreRequest:(NSString *)seedString
-                  withPoolID: (NSNumber *)poolID
-                  withUploader: (NSString *) uploader
-                  withCid: (NSNumber *) cid
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 
 RCT_EXTERN_METHOD(listAvailableReplicationRequests:(NSNumber *)poolID
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(removeReplicationRequest:(NSString *)seedString
-                  withPoolID: (NSNumber *)poolID
-                  withCid: (NSString *) cid
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(removeStorer:(NSString *)seedString
-                  withPoolID: (NSNumber *)poolID
-                  withCid: (NSString *) cid
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(removeStoredReplication:(NSString *)seedString
-                  withUploader: (NSString *) uploader
-                  withPoolID: (NSNumber *)poolID
-                  withCid: (NSString *) cid
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
