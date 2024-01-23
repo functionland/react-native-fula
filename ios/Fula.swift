@@ -1036,18 +1036,20 @@ class FulaModule: NSObject {
 
                 let recentLinksIterator = try fulaClient.listRecentCidsAsString()
                 var recentLinksList = [String]()
-                var hasNext = true
 
-                while hasNext {
-                    do {
-                        let nextLink = try recentLinksIterator.next(<#NSErrorPointer#>)
-                        recentLinksList.append(nextLink)
-                    } catch {
-                        hasNext = false
+                while recentLinksIterator.hasNext() {
+                    var error: NSError?
+                    let nextLink = try recentLinksIterator.next(&error)
+
+                    if let error = error {
+                        throw error
                     }
+
+                    recentLinksList.append(nextLink)
                 }
 
                 if !recentLinksList.isEmpty {
+                    // Return the whole list
                     resolve(recentLinksList)
                 } else {
                     resolve(false)
