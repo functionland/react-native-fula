@@ -2,7 +2,7 @@ import { default as EventTypes } from '../interfaces/lookup';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/keyring';
-const { cryptoWaitReady } = require('@polkadot/util-crypto');
+const { cryptoWaitReady, blake2AsHex } = require('@polkadot/util-crypto');
 import type * as BType from '../types/blockchain';
 
 const types = {
@@ -138,6 +138,24 @@ export const batchUploadManifest = async (
   } catch (err) {
     return Promise.reject(err);
   }
+};
+
+export const createHexSeedFromString = async (
+  seed: string
+): Promise<string> => {
+  await cryptoWaitReady(); // Ensure the crypto library is initialized
+  const seedHex = blake2AsHex(seed, 256); // Hash the input to a 32-byte hex string
+  return seedHex;
+};
+
+export const getLocalAccount = (seed: string): { account: string } => {
+  // Simple transaction
+  const keyring = new Keyring({ type: 'sr25519' });
+  const userKey = keyring.addFromUri(seed, { name: 'account' }, 'sr25519');
+  console.log(
+    `${userKey.meta.name}: has address ${userKey.address} with publicKey [${userKey.publicKey}]`
+  );
+  return { account: userKey.address };
 };
 
 /*

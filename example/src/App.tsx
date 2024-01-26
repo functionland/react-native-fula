@@ -7,7 +7,6 @@ import {
   chainApi,
   fxblox,
 } from '@functionland/react-native-fula';
-
 const App = () => {
   const [key, setKey] = React.useState<string>('');
   const [value, setValue] = React.useState<string>('');
@@ -215,6 +214,21 @@ const App = () => {
                   console.log(e);
                 });
             } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Get Local Account'}
+          onPress={async () => {
+            try {
+              let seedHex = await chainApi.createHexSeedFromString(seed);
+              console.log('seedHex is the polkadot acceptable seed:' + seedHex);
+              let res = chainApi.getLocalAccount(seedHex);
+              console.log('account is:' + res.account);
+            } catch (e) {
+              console.log(e);
+            }
           }}
           color={inprogress ? 'green' : 'blue'}
         />
