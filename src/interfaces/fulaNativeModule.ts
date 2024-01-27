@@ -56,6 +56,7 @@ interface FulaNativeModule {
   //Blockchain related functions
   createAccount: (seed: string) => Promise<string>;
   checkAccountExists: (account: string) => Promise<string>;
+  accountFund: (account: string) => Promise<string>;
   createPool: (seed: string, poolName: string) => Promise<string>;
   listPools: () => Promise<string>;
   joinPool: (poolID: string) => Promise<string>;

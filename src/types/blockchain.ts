@@ -8,6 +8,12 @@ export interface AccountExistsResponse {
   exists: boolean;
 }
 
+export interface AccountFundResponse {
+  from:   string;
+	to:     string;
+	amount: string;
+}
+
 export interface PoolCreateResponse {
   owner: string;
   poolID: number;

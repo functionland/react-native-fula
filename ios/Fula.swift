@@ -1000,7 +1000,7 @@ class FulaModule: NSObject {
         }
 
     }
-    
+
     @objc(clearCidsFromRecent:withResolver:withRejecter:)
     func clearCidsFromRecent(cidArray: NSArray, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.global(qos: .default).async {
@@ -1101,6 +1101,20 @@ class FulaModule: NSObject {
         } catch let error {
             print("checkAccountExists", error.localizedDescription)
             reject("ERR_FULA", "checkAccountExists", error)
+        }
+
+    }
+
+    @objc(accountFund:withResolver:withRejecter:)
+    func accountFund(accountString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        print("ReactNative", "accountFund: accountString = ", accountString)
+        do {
+            let result = try fula!.accountFund(accountString)
+            let resultString = result.toUTF8String()!
+            resolve(resultString)
+        } catch let error {
+            print("accountFund", error.localizedDescription)
+            reject("ERR_FULA", "accountFund", error)
         }
 
     }

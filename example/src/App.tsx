@@ -234,6 +234,23 @@ const App = () => {
         />
 
         <Button
+          title={inprogress ? 'Putting & Getting...' : 'Account Fund'}
+          onPress={async () => {
+            try {
+              let seedHex = await chainApi.createHexSeedFromString(seed);
+              console.log('seedHex is the polkadot acceptable seed:' + seedHex);
+              let res = chainApi.getLocalAccount(seedHex);
+              console.log('account is:' + res.account);
+              let res2 = await blockchain.accountFund(res.account);
+              console.log(res2);
+            } catch (e) {
+              console.log(e);
+            }
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
           title={
             inprogress
               ? 'Putting & Getting...'

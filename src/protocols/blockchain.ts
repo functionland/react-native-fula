@@ -54,6 +54,32 @@ export const checkAccountExists = (
 };
 
 /*
+accountFund: This function takes an account argument, and returns a promise of an object that contains the account and a boolean exists flag. If exists is true, it means the account exists, otherwise, the account does not exist
+*/
+export const accountFund = (
+  account: string
+): Promise<BType.AccountFundResponse> => {
+  console.log('accountFund in react-native started', account);
+  let res1 = Fula.accountFund(account)
+    .then((res) => {
+      try {
+        let jsonRes: BType.AccountFundResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          return res;
+        }
+      }
+    })
+    .catch((err) => {
+      return err;
+    });
+  return res1;
+};
+
+/*
 createPool: This function takes two arguments: seed and poolName. The seed is used to identify the account that is creating the pool, and the poolName is the name of the pool being created. The function returns a promise of an object that contains the owner of the pool and the poolID of the created pool.
 */
 export const createPool = (
