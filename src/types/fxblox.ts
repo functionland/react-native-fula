@@ -11,3 +11,8 @@ export interface eraseBlDataResponse {
   status: boolean;
   msg: string;
 }
+
+export interface FetchContainerLogsResponse {
+  status: boolean;
+  msg: string;
+}

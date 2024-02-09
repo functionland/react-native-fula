@@ -114,9 +114,12 @@ interface FulaNativeModule {
   ) => Promise<string>;
   getAccount: () => Promise<string>;
 
-
   //Hardware
   eraseBlData: () => Promise<string>;
+  fetchContainerLogs: (
+    containerName: string,
+    tailCount: string
+  ) => Promise<string>;
   bloxFreeSpace: () => Promise<string>;
   wifiRemoveall: () => Promise<string>;
   reboot: () => Promise<string>;

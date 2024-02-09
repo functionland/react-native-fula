@@ -1298,6 +1298,18 @@ class FulaModule: NSObject {
       }
   }
 
+  @objc(fetchContainerLogs:tailCount:withResolver:withRejecter:)
+  func fetchContainerLogs(containerName: String, tailCount: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      do {
+          let result = try fula!.fetchContainerLogs(containerName, tailCount)
+          let resultString = result.toUTF8String()!
+          resolve(resultString)
+      } catch let error {
+          print("fetchContainerLogs", error.localizedDescription)
+          reject("ERR_FULA", "fetchContainerLogs", error)
+      }
+  }
+
 }
 
 
