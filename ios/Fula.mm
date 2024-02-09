@@ -162,6 +162,11 @@ RCT_EXTERN_METHOD(assetsBalance:(NSString *)account withAssetId:(NSString *)asse
 
 RCT_EXTERN_METHOD(getAccount:(RCTPromiseResolveBlock)resolve withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(fetchContainerLogs:(NSString *)containerName
+                  withTailCount:(NSString *)tailCount
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 + (BOOL)requiresMainQueueSetup
 {
     return NO;

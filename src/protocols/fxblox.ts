@@ -1,5 +1,6 @@
 import Fula from '../interfaces/fulaNativeModule';
 import type * as BType from '../types/fxblox';
+import { fetchContainerLogsResponse } from '../../.history/src/types/fxblox_20240209182705';
 
 /**
  * send a command to Blox hardware to remove all save wifis.
@@ -67,4 +68,30 @@ export const eraseBlData = (): Promise<BType.rebootResponse> => {
       return err;
     });
   return res2;
+};
+
+export const fetchContainerLogs = (
+  containerName: string,
+  tailCount: string
+): Promise<BType.FetchContainerLogsResponse> => {
+  console.log('fetchContainerLogs in react-native started');
+  let res = Fula.fetchContainerLogs(containerName, tailCount)
+    .then((res1) => {
+      try {
+        let jsonRes: BType.FetchContainerLogsResponse = JSON.parse(res1);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in fetchContainerLogs:', e1);
+          throw e1; // Rethrow the error to maintain the rejection state
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error fetchContainerLogs:', err);
+      throw err; // Rethrow the error to maintain the rejection state
+    });
+  return res;
 };
