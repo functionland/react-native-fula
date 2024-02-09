@@ -1,6 +1,5 @@
 import Fula from '../interfaces/fulaNativeModule';
 import type * as BType from '../types/fxblox';
-import { fetchContainerLogsResponse } from '../../.history/src/types/fxblox_20240209182705';
 
 /**
  * send a command to Blox hardware to remove all save wifis.
