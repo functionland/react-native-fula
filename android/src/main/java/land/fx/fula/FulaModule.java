@@ -1491,7 +1491,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void fetchContainerLogs(Promise promise, String containerName, String tailCount) {
+  public void fetchContainerLogs(String containerName, String tailCount, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "fetchContainerLogs");
       try {
@@ -1500,7 +1500,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "result string="+resultString);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "an error happened="+e.getMessage());
         promise.reject(e);
       }
     });

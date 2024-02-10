@@ -77,6 +77,8 @@ export const fetchContainerLogs = (
   let res = Fula.fetchContainerLogs(containerName, tailCount)
     .then((res1) => {
       try {
+        console.log('res1 received');
+        console.log(res1);
         let jsonRes: BType.FetchContainerLogsResponse = JSON.parse(res1);
         return jsonRes;
       } catch (e) {
