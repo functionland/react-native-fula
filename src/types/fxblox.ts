@@ -6,6 +6,10 @@ export interface rebootResponse {
   status: boolean;
   msg: string;
 }
+export interface partitionResponse {
+  status: boolean;
+  msg: string;
+}
 
 export interface eraseBlDataResponse {
   status: boolean;
