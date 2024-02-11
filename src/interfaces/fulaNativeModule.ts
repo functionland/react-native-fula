@@ -123,6 +123,7 @@ interface FulaNativeModule {
   bloxFreeSpace: () => Promise<string>;
   wifiRemoveall: () => Promise<string>;
   reboot: () => Promise<string>;
+  partition: () => Promise<string>;
 }
 
 const LINKING_ERROR =

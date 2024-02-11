@@ -1286,6 +1286,18 @@ class FulaModule: NSObject {
       }
   }
 
+  @objc(partition:withRejecter:)
+  func partition(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      do {
+          let result = try fula!.partition()
+          let resultString = result.toUTF8String()!
+          resolve(resultString)
+      } catch let error {
+          print("partition", error.localizedDescription)
+          reject("ERR_FULA", "partition", error)
+      }
+  }
+
   @objc(wifiRemoveall:withRejecter:)
   func wifiRemoveall(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
       do {

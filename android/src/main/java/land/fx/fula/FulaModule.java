@@ -1523,6 +1523,22 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void partition(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "partition");
+      try {
+        byte[] result = this.fula.partition();
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
   public void eraseBlData(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "eraseBlData");

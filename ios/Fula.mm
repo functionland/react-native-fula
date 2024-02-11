@@ -158,6 +158,8 @@ RCT_EXTERN_METHOD(wifiRemoveall:(RCTPromiseResolveBlock)resolve withRejecter:(RC
 
 RCT_EXTERN_METHOD(reboot:(RCTPromiseResolveBlock)resolve withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(partition:(RCTPromiseResolveBlock)resolve withRejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(assetsBalance:(NSString *)account withAssetId:(NSString *)assetId withClassId:(NSString *)classId withResolver:(RCTPromiseResolveBlock)resolve withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(getAccount:(RCTPromiseResolveBlock)resolve withRejecter:(RCTPromiseRejectBlock)reject)

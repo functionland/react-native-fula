@@ -48,6 +48,27 @@ export const reboot = (): Promise<BType.rebootResponse> => {
   return res2;
 };
 
+export const partition = (): Promise<BType.partitionResponse> => {
+  console.log('partition in react-native started');
+  let res2 = Fula.partition()
+    .then((res) => {
+      try {
+        let jsonRes: BType.partitionResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          return res;
+        }
+      }
+    })
+    .catch((err) => {
+      return err;
+    });
+  return res2;
+};
+
 export const eraseBlData = (): Promise<BType.rebootResponse> => {
   console.log('eraseBlData in react-native started');
   let res2 = Fula.eraseBlData()
