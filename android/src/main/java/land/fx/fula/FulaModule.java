@@ -1507,6 +1507,22 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void getFolderSize(String folderPath, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "getFolderSize");
+      try {
+        byte[] result = this.fula.getFolderSize(folderPath);
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "an error happened="+e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
   public void reboot(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "reboot");

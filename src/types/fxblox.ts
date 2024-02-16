@@ -20,3 +20,8 @@ export interface FetchContainerLogsResponse {
   status: boolean;
   msg: string;
 }
+
+export interface GetFolderPathResponse {
+  folder_path: string;
+  size: string;
+}

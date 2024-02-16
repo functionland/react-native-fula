@@ -1322,6 +1322,18 @@ class FulaModule: NSObject {
       }
   }
 
+  @objc(getFolderSize:withResolver:withRejecter:)
+  func getFolderSize(folderPath: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      do {
+          let result = try fula!.getFolderSize(folderPath)
+          let resultString = result.toUTF8String()!
+          resolve(resultString)
+      } catch let error {
+          print("getFolderSize", error.localizedDescription)
+          reject("ERR_FULA", "getFolderSize", error)
+      }
+  }
+
 }
 
 

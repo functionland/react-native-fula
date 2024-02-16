@@ -117,3 +117,30 @@ export const fetchContainerLogs = (
     });
   return res;
 };
+
+export const getFolderSize = (
+  folderPath: string
+): Promise<BType.GetFolderPathResponse> => {
+  console.log('getFolderSize in react-native started');
+  let res = Fula.getFolderSize(folderPath)
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.GetFolderPathResponse = JSON.parse(res1);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in getFolderSize:', e1);
+          throw e1; // Rethrow the error to maintain the rejection state
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error getFolderSize:', err);
+      throw err; // Rethrow the error to maintain the rejection state
+    });
+  return res;
+};
