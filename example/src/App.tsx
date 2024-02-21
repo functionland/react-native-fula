@@ -12,7 +12,7 @@ const App = () => {
   const [value, setValue] = React.useState<string>('');
   const [inprogress, setInprogress] = React.useState<boolean>(false);
   const [newRootCid, setNewRootCid] = React.useState<string>('');
-  const root_cid = '';
+  const root_cid = 'bafyr4ihelqywjivn3lrveiyaqjdfnz5vkg6hji6rk7qzp7srwkq5f4jz2y';
   const seed =
     '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
 
@@ -67,13 +67,13 @@ const App = () => {
     153, 106, 217, 201, 106, 9, 66, 33, 214, 195, 255, 234, 178, 244, 203, 112,
     62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
   ];
-  const bloxPeerId = '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4'; //tower
-  // const bloxPeerId = '12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q'; //laptop
+  // const bloxPeerId = '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4'; //tower
+  const bloxPeerId = '12D3KooWDaT8gS2zGMLGBKmW1mKhQSHxYeEX3Fr3VSjuPzmjyfZC'; //laptop
   // const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
   //const bloxPeerId = '12D3KooWAN5FaAnC4d1GhAvoYxyUXdrkCGqux1NB6Pr4cZXn813E'; //test aws server
 
   // const bloxAddr = '/dns/delta-relay.dev.fx.land/tcp/4001/p2p/12D3KooWDtA7kecHAGEB8XYEKHBUTt8GsRfMen1yMs7V85vrpMzC/p2p-circuit/p2p/' + bloxPeerId;
-  const bloxAddr = '/ip4/192.168.2.88/tcp/40001/p2p/' + bloxPeerId;
+  const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
 
   const initFula = async () => {
     try {
