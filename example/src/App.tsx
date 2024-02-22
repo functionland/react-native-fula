@@ -658,6 +658,38 @@ const App = () => {
         />
 
         <Button
+          title={inprogress ? 'Getting...' : 'Get Datastoresize'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send Datastoresize command'
+                    );
+                    fxblox
+                      .getDatastoreSize()
+                      .then((res: any) => {
+                        console.log('Datastoresize received');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('Datastoresize failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+
+        <Button
           title={inprogress ? 'Getting...' : 'Get Node Logs'}
           onPress={async () => {
             try {

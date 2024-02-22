@@ -144,3 +144,29 @@ export const getFolderSize = (
     });
   return res;
 };
+
+
+export const getDatastoreSize = (): Promise<BType.GetDatastoreSizeResponse> => {
+  console.log('getDatastoreSize in react-native started');
+  let res = Fula.getDatastoreSize()
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.GetDatastoreSizeResponse = JSON.parse(res1);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in getDatastoreSize:', e1);
+          throw e1; // Rethrow the error to maintain the rejection state
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error getDatastoreSize:', err);
+      throw err; // Rethrow the error to maintain the rejection state
+    });
+  return res;
+};

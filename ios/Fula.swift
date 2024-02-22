@@ -1334,6 +1334,18 @@ class FulaModule: NSObject {
       }
   }
 
+  @objc(getDatastoreSize:withResolver:withRejecter:)
+  func getDatastoreSize(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      do {
+          let result = try fula!.getDatastoreSize()
+          let resultString = result.toUTF8String()!
+          resolve(resultString)
+      } catch let error {
+          print("getDatastoreSize", error.localizedDescription)
+          reject("ERR_FULA", "getDatastoreSize", error)
+      }
+  }
+
 }
 
 

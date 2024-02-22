@@ -1523,6 +1523,22 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void getDatastoreSize(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "getDatastoreSize");
+      try {
+        byte[] result = this.fula.getDatastoreSize();
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "an error happened="+e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
   public void reboot(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "reboot");

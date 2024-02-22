@@ -120,9 +120,8 @@ interface FulaNativeModule {
     containerName: string,
     tailCount: string
   ) => Promise<string>;
-  getFolderSize: (
-    folderPath: string
-  ) => Promise<string>;
+  getFolderSize: (folderPath: string) => Promise<string>;
+  getDatastoreSize: () => Promise<string>;
   bloxFreeSpace: () => Promise<string>;
   wifiRemoveall: () => Promise<string>;
   reboot: () => Promise<string>;

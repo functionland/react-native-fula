@@ -25,3 +25,11 @@ export interface GetFolderPathResponse {
   folder_path: string;
   size: string;
 }
+
+export interface GetDatastoreSizeResponse {
+  size: string;
+  storage_max: string;
+  count: string;
+  folder_path: string;
+  version: string;
+}
