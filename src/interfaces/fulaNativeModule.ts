@@ -69,11 +69,10 @@ interface FulaNativeModule {
     account: string,
     accept: boolean
   ) => Promise<string>;
-  newReplicationRequest: (
-    seed: string,
+  batchUploadManifest: (
     poolID: number,
     replicationFactor: number,
-    cid: string
+    cid: string[]
   ) => Promise<string>;
   newStoreRequest: (
     seed: string,

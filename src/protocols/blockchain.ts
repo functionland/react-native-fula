@@ -1,6 +1,6 @@
 import Fula from '../interfaces/fulaNativeModule';
 import type * as BType from '../types/blockchain';
-
+import { ApiPromise } from '@polkadot/api';
 /*
 createAccount: This function takes a seed argument, which is used to create an account. The seed must start with "/". The function returns a promise of an object that contains the seed and the account that was created.
 */
@@ -275,20 +275,20 @@ replicationFactor is the number of copies of the content to be stored.
 cid is the content identifier of the content to be replicated.
 It returns a promise of BType.ManifestUploadResponse which includes the uploader, storage, ManifestMetadata, and poolID
           */
-export const newReplicationRequest = (
-  seed: string,
-  poolID: number,
-  replicationFactor: number,
-  cid: string
+export const batchUploadManifest = (
+  api: ApiPromise | undefined = undefined, //this is just for compatibility with chainAPI inputs and is not used
+  seed: string = '', //this is just for compatibility with chainAPI inputs and is not used
+  cids_i: string[],
+  poolId_i: number,
+  replicationFactor_i: number
 ): Promise<BType.ManifestUploadResponse> => {
   console.log(
     'newReplicationRequest in react-native started',
-    seed,
-    poolID,
-    replicationFactor,
-    cid
+    poolId_i,
+    replicationFactor_i,
+    cids_i
   );
-  let res1 = Fula.newReplicationRequest(seed, poolID, replicationFactor, cid)
+  let res1 = Fula.batchUploadManifest(poolId_i, replicationFactor_i, cids_i)
     .then((res) => {
       try {
         let jsonRes: BType.ManifestUploadResponse = JSON.parse(res);
