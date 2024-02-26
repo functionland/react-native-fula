@@ -9,9 +9,9 @@ export interface AccountExistsResponse {
 }
 
 export interface AccountFundResponse {
-  from:   string;
-	to:     string;
-	amount: string;
+  from: string;
+  to: string;
+  amount: string;
 }
 
 export interface PoolCreateResponse {
@@ -65,6 +65,12 @@ export interface ManifestUploadResponse {
   storage: string[];
   manifestMetadata: ManifestMetadata;
   poolID: number;
+}
+
+export interface ManifestBatchUploadResponse {
+  storer: string;
+  cid: string[];
+  pool_id: number;
 }
 
 export interface PoolRequest {

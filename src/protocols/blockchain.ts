@@ -288,10 +288,10 @@ export const batchUploadManifest = (
     replicationFactor_i,
     cids_i
   );
-  let res1 = Fula.batchUploadManifest(poolId_i, replicationFactor_i, cids_i)
+  let res1 = Fula.batchUploadManifest(cids_i, poolId_i, replicationFactor_i)
     .then((res) => {
       try {
-        let jsonRes: BType.ManifestUploadResponse = JSON.parse(res);
+        let jsonRes: BType.ManifestBatchUploadResponse = JSON.parse(res);
         return jsonRes;
       } catch (e) {
         try {
