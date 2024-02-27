@@ -1061,6 +1061,30 @@ class FulaModule: NSObject {
         }
     }
 
+    @objc(batchUploadManifest:withPoolId:withReplicationFactor:withResolver:withRejecter:)
+    func batchUploadManifest(cidArray: NSArray, poolId: Int, replicationFactor: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                guard let fulaClient = self.fula else {
+                    throw MyError.runtimeError("Fula client is not initialized")
+                }
+
+                // Concatenate all CID strings into a single string separated by "|"
+                let concatenatedCids = (cidArray as? [String])?.joined(separator: "|")
+
+                guard let cidsData = concatenatedCids?.data(using: .utf8) else {
+                    throw MyError.runtimeError("Unable to encode CIDs as data")
+                }
+
+                try fulaClient.batchUploadManifest(cidsData, poolId, replicationFactor)
+                resolve(true)
+            } catch let error {
+                print("ReactNative", "batchUploadManifest failed with Error: \(error.localizedDescription)")
+                reject("ERR_FULA_BATCH_UPLOAD_MANIFEST", "Failed to batch upload CIDs", error)
+            }
+        }
+    }
+
 
 
     @objc(shutdown:withRejecter:)

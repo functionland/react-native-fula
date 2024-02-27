@@ -1453,6 +1453,32 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void batchUploadManifest(ReadableArray cidArray, long poolId, long replicationFactor, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        if (this.fula != null) {
+          StringBuilder cidStrBuilder = new StringBuilder();
+          for (int i = 0; i < cidArray.size(); i++) {
+            if (i > 0) {
+              cidStrBuilder.append("|");
+            }
+            cidStrBuilder.append(cidArray.getString(i));
+          }
+
+          byte[] cidsBytes = cidStrBuilder.toString().getBytes(StandardCharsets.UTF_8);
+          this.fula.batchUploadManifest(cidsBytes, poolId, replicationFactor);
+          promise.resolve(true); // Indicate success
+        } else {
+          throw new Exception("BatchUploadManifest: Fula is not initialized");
+        }
+      } catch (Exception e) {
+        Log.d("ReactNative", "BatchUploadManifest failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
+      }
+    });
+  }
+
 
   ////////////////////////////////////////////////////////////////
   ///////////////// Blox Hardware Methods ////////////////////////

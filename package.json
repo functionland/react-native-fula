@@ -1,6 +1,6 @@
 {
   "name": "@functionland/react-native-fula",
-  "version": "1.48.0",
+  "version": "1.50.0",
   "description": "This package is a bridge to use the Fula libp2p protocols in the react-native which is using wnfs",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -93,7 +93,7 @@
   "engines": {
     "node": ">= 16.0.0"
   },
-  "packageManager": "^yarn@1.22.15",
+  "packageManager": "yarn@1.22.21",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [

@@ -106,6 +106,19 @@ RCT_EXTERN_METHOD(setAuth:(NSString *)peerIdString
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(clearCidsFromRecent:(NSArray *)cidArray
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(listRecentCidsAsString:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(batchUploadManifest:(NSArray *)cidArray
+                  withPoolId:(NSNumber *) poolId
+                  withReplicationFactor:(NSNumber *) replicationFactor
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(shutdown:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
