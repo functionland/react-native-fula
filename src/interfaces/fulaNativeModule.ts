@@ -62,7 +62,7 @@ interface FulaNativeModule {
   joinPool: (poolID: string) => Promise<string>;
   leavePool: (poolID: string) => Promise<string>;
   cancelPoolJoin: (poolID: string) => Promise<string>;
-  listPoolJoinRequests: (poolID: number) => Promise<string>;
+  listPoolJoinRequests: (poolID: string) => Promise<string>;
   votePoolJoinRequest: (
     seed: string,
     poolID: number,
@@ -71,8 +71,8 @@ interface FulaNativeModule {
   ) => Promise<string>;
   batchUploadManifest: (
     cid: string[],
-    poolID: number,
-    replicationFactor: number
+    poolID: string,
+    replicationFactor: string
   ) => Promise<string>;
   newStoreRequest: (
     seed: string,
@@ -80,7 +80,7 @@ interface FulaNativeModule {
     uploader: string,
     cid: string
   ) => Promise<string>;
-  listAvailableReplicationRequests: (poolID: number) => Promise<string>;
+  listAvailableReplicationRequests: (poolID: string) => Promise<string>;
   removeReplicationRequest: (
     seed: string,
     poolID: number,

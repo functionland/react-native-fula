@@ -205,7 +205,7 @@ export const cancelPoolJoin = (
   return res1;
 };
 export const listPoolJoinRequests = (
-  poolID: number
+  poolID: string
 ): Promise<BType.PoolRequestsResponse> => {
   console.log('listPoolJoinRequests in react-native started', poolID);
   let res1 = Fula.listPoolJoinRequests(poolID)
@@ -276,18 +276,26 @@ cid is the content identifier of the content to be replicated.
 It returns a promise of BType.ManifestUploadResponse which includes the uploader, storage, ManifestMetadata, and poolID
           */
 export const batchUploadManifest = (
-  api: ApiPromise | undefined = undefined, //this is just for compatibility with chainAPI inputs and is not used
-  seed: string = '', //this is just for compatibility with chainAPI inputs and is not used
+  api: ApiPromise | undefined, //this is just for compatibility with chainAPI inputs and is not used
+  seed: string, //this is just for compatibility with chainAPI inputs and is not used
   cids_i: string[],
-  poolId_i: number,
-  replicationFactor_i: number
-): Promise<BType.ManifestUploadResponse> => {
+  poolId_i: string | number,
+  replicationFactor_i: string | number
+): Promise<BType.ManifestBatchUploadResponse> => {
   console.log(
     'newReplicationRequest in react-native started',
+    api,
+    seed,
     poolId_i,
     replicationFactor_i,
     cids_i
   );
+  if (typeof poolId_i === 'number') {
+    poolId_i = poolId_i.toString();
+  }
+  if (typeof replicationFactor_i === 'number') {
+    replicationFactor_i = replicationFactor_i.toString();
+  }
   let res1 = Fula.batchUploadManifest(cids_i, poolId_i, replicationFactor_i)
     .then((res) => {
       try {
@@ -355,7 +363,7 @@ poolID is the ID of the pool for which the replication requests are listed
 It returns a promise of BType.ManifestUploadResponse[] which is an array of the replication requests, including the uploader, storage, ManifestMetadata, and poolID
 */
 export const listAvailableReplicationRequests = (
-  poolID: number
+  poolID: string
 ): Promise<BType.ManifestUploadResponse[]> => {
   console.log(
     'listAvailableReplicationRequests in react-native started',

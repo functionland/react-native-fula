@@ -1062,11 +1062,19 @@ class FulaModule: NSObject {
     }
 
     @objc(batchUploadManifest:withPoolId:withReplicationFactor:withResolver:withRejecter:)
-    func batchUploadManifest(cidArray: NSArray, poolId: Int, replicationFactor: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func batchUploadManifest(cidArray: NSArray, poolIDStr: String, replicationFactorStr: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.global(qos: .default).async {
             do {
                 guard let fulaClient = self.fula else {
                     throw MyError.runtimeError("Fula client is not initialized")
+                }
+                guard let poolID = Int64(poolIDStr) else {
+                    reject("ERR_FULA", "Invalid poolID - not a valid number: \(poolIDStr)")
+                    return
+                }
+                guard let replicationFactor = Int64(replicationFactorStr) else {
+                    reject("ERR_FULA", "Invalid replicationFactorStr - not a valid number: \(replicationFactorStr)")
+                    return
                 }
 
                 // Concatenate all CID strings into a single string separated by "|"
@@ -1076,7 +1084,7 @@ class FulaModule: NSObject {
                     throw MyError.runtimeError("Unable to encode CIDs as data")
                 }
 
-                try fulaClient.batchUploadManifest(cidsData, poolId, replicationFactor)
+                try fulaClient.batchUploadManifest(cidsData, poolID, replicationFactor)
                 resolve(true)
             } catch let error {
                 print("ReactNative", "batchUploadManifest failed with Error: \(error.localizedDescription)")
@@ -1158,12 +1166,19 @@ class FulaModule: NSObject {
     }
 
     @objc(listPoolJoinRequests:withResolver:withRejecter:)
-    func listPoolJoinRequests(poolID: Int,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "listPoolJoinRequests: poolID = ", poolID)
+    func listPoolJoinRequests(poolIDStr: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        print("ReactNative", "listPoolJoinRequests: poolIDStr = ", poolIDStr)
         do {
-            let result = try fula!.poolRequests(poolID)
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
+            if let poolID = Int64(poolIDStr) {
+              // Conversion successful - use longPoolID
+
+              let result = try fula!.poolRequests(poolID)
+              let resultString = result.toUTF8String()!
+              resolve(resultString)
+            } else {
+                // Handle invalid input (e.g., "abc", "123.45")
+                reject("ERR_FULA", "Invalid poolIDStr - not a valid number: \(poolIDStr)")
+            }
         } catch let error {
             print("listPoolJoinRequests", error.localizedDescription)
             reject("ERR_FULA", "listPoolJoinRequests", error)
@@ -1172,9 +1187,13 @@ class FulaModule: NSObject {
     }
 
     @objc(listAvailableReplicationRequests:withResolver:withRejecter:)
-    func listAvailableReplicationRequests(poolID: Int,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "listAvailableReplicationRequests: poolID = ", poolID)
+    func listAvailableReplicationRequests(poolIDStr: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+        print("ReactNative", "listAvailableReplicationRequests: poolIDStr = ", poolIDStr)
         do {
+            guard let poolID = Int64(poolIDStr) else {
+                reject("ERR_FULA", "Invalid poolID - not a valid number: \(poolIDStr)")
+                return
+            }
             let result = try fula!.manifestAvailable(poolID)
             let resultString = result.toUTF8String()!
             resolve(resultString)

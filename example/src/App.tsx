@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, ScrollView, View, Button } from 'react-native';
 
 import {
   fula,
@@ -8,17 +8,14 @@ import {
   fxblox,
 } from '@functionland/react-native-fula';
 const App = () => {
-  const [key, setKey] = React.useState<string>('');
-  const [value, setValue] = React.useState<string>('');
-  const [inprogress, setInprogress] = React.useState<boolean>(false);
+  const inprogress = false;
   const [newRootCid, setNewRootCid] = React.useState<string>('');
-  const root_cid = 'bafyr4ihelqywjivn3lrveiyaqjdfnz5vkg6hji6rk7qzp7srwkq5f4jz2y';
+  const root_cid =
+    'bafyr4ihelqywjivn3lrveiyaqjdfnz5vkg6hji6rk7qzp7srwkq5f4jz2y';
   const seed =
     '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
 
-  const [initComplete, setInitComplete] = React.useState<
-    { peerId: string; rootCid: string; private_ref: string } | {}
-  >({});
+  const initComplete = true;
 
   useEffect(() => {
     if (!__DEV__) {
@@ -72,7 +69,9 @@ const App = () => {
   // const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
   //const bloxPeerId = '12D3KooWAN5FaAnC4d1GhAvoYxyUXdrkCGqux1NB6Pr4cZXn813E'; //test aws server
 
-const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
+  const bloxAddr =
+    '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' +
+    bloxPeerId;
   //const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
 
   const initFula = async () => {
@@ -133,9 +132,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.section}>
-        <Text>Put & Get</Text>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'newclient'}
           onPress={async () => {
@@ -160,6 +158,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Init'}
           onPress={async () => {
@@ -176,7 +176,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Test'}
           onPress={async () => {
@@ -195,6 +196,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+      </View>
+      <View style={styles.section}>
         <Button
           //12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx
           title={inprogress ? 'Putting & Getting...' : 'set auth'}
@@ -217,7 +220,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Get Local Account'}
           onPress={async () => {
@@ -232,7 +236,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Account Fund'}
           onPress={async () => {
@@ -249,7 +254,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={
             inprogress
@@ -273,6 +279,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+      </View>
+      <View style={styles.section}>
         <Button
           title={
             inprogress
@@ -295,7 +303,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Write WNFS'}
           onPress={async () => {
@@ -345,7 +354,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'List' : 'List'}
           onPress={async () => {
@@ -364,7 +374,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Check Failes'}
           onPress={async () => {
@@ -418,7 +429,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Retry'}
           onPress={async () => {
@@ -457,7 +469,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Join Pool'}
           onPress={async () => {
@@ -487,7 +500,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Cancel join Pool'}
           onPress={async () => {
@@ -517,7 +531,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Check Account Balance'}
           onPress={async () => {
@@ -542,7 +557,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={
             inprogress ? 'Putting & Getting...' : 'Check Join Request Status'
@@ -554,7 +570,11 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
                 let accountId = await chainApi.getAccountIdFromSeed(seed);
                 console.log('account ID is ' + accountId);
                 chainApi
-                  .checkJoinRequest(api, 1, "5DD9qAHKNUqcYaKf5qgYra9y8s9BtbfLanJrTr3hQsK5XGGP")
+                  .checkJoinRequest(
+                    api,
+                    1,
+                    '5DD9qAHKNUqcYaKf5qgYra9y8s9BtbfLanJrTr3hQsK5XGGP'
+                  )
                   .then((res: any) => {
                     console.log('join request status created');
                     console.log(res);
@@ -568,7 +588,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Get User Pool'}
           onPress={async () => {
@@ -578,7 +599,10 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
                 let accountId = await chainApi.getAccountIdFromSeed(seed);
                 console.log('account ID is ' + accountId);
                 chainApi
-                  .getUserPool(api, "5CcHZucP2u1FXQW9wuyC11vAVxB3c48pUhc5cc9b3oxbKPL2")
+                  .getUserPool(
+                    api,
+                    '5CcHZucP2u1FXQW9wuyC11vAVxB3c48pUhc5cc9b3oxbKPL2'
+                  )
                   .then((res: any) => {
                     console.log('GetUserPool created');
                     console.log(res);
@@ -592,7 +616,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Getting...' : 'Get Blox Free Space'}
           onPress={async () => {
@@ -624,7 +649,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Getting...' : 'Remove all Wifis'}
           onPress={async () => {
@@ -656,7 +682,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Getting...' : 'Get Datastoresize'}
           onPress={async () => {
@@ -688,7 +715,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Getting...' : 'Get Node Logs'}
           onPress={async () => {
@@ -720,7 +748,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Getting...' : 'Reboot'}
           onPress={async () => {
@@ -752,7 +781,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Getting...' : 'Partition'}
           onPress={async () => {
@@ -784,7 +814,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'List Pools'}
           onPress={async () => {
@@ -810,6 +841,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Upload Manifest'}
           onPress={async () => {
@@ -834,7 +867,8 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Test Recent CIDs'}
           onPress={async () => {
@@ -871,32 +905,31 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Putting & Getting...' : 'Test Replicate'}
           onPress={async () => {
             try {
-              chainApi.init().then((api: any) => {
-                console.log('api created');
-                if (api && initComplete) {
-                  console.log('replicate');
-                  fula
-                    .replicateRecentCids(api, seed, 1, 6)
-                    .then((res: any) => {
-                      console.log('res received');
-                      console.log(res);
-                    })
-                    .catch((e: any) => {
-                      console.log('res failed');
-                      console.log(e);
-                    });
-                }
-              });
+              if (initComplete) {
+                console.log('replicate');
+                fula
+                  .replicateRecentCidsBlox(undefined, '', 1, 6)
+                  .then((res: any) => {
+                    console.log('res received');
+                    console.log(res);
+                  })
+                  .catch((e: any) => {
+                    console.log('res failed');
+                    console.log(e);
+                  });
+              }
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
         />
-
+      </View>
+      <View style={styles.section}>
         <Button
           title={inprogress ? 'Getting...' : 'Check Balance'}
           onPress={async () => {
@@ -935,18 +968,18 @@ const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   imageShow: {
-    width: 200,
+    width: 100,
     height: 200,
-    padding: 5,
+    padding: 0,
   },
   sectionContainer: {
-    marginTop: 32,
+    marginTop: 0,
     paddingHorizontal: 24,
   },
   sectionTitle: {
@@ -954,7 +987,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   sectionDescription: {
-    marginTop: 8,
+    marginTop: 0,
     fontSize: 18,
     fontWeight: '400',
   },
@@ -962,14 +995,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   container: {
-    flex: 1,
+    position: 'relative',
+    height: 1000,
     backgroundColor: 'white',
-    padding: 10,
+    padding: 0,
   },
   section: {
-    marginTop: 20,
+    position: 'relative',
+    marginTop: 5,
+    marginLeft: 60,
   },
-  input: { borderWidth: 1, borderColor: 'gray', marginVertical: 5 },
 });
 
 export default App;

@@ -114,8 +114,8 @@ RCT_EXTERN_METHOD(listRecentCidsAsString:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(batchUploadManifest:(NSArray *)cidArray
-                  withPoolId:(NSNumber *) poolId
-                  withReplicationFactor:(NSNumber *) replicationFactor
+                  withPoolId:(NSString *) poolIdStr
+                  withReplicationFactor:(NSString *) replicationFactorStr
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
@@ -142,7 +142,7 @@ RCT_EXTERN_METHOD(cancelPoolJoin:(NSString *)poolID
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(listPoolJoinRequests:(NSNumber *)poolID
+RCT_EXTERN_METHOD(listPoolJoinRequests:(NSString *)poolIDStr
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
@@ -151,7 +151,7 @@ RCT_EXTERN_METHOD(leavePool:(NSString *)poolID
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 
-RCT_EXTERN_METHOD(listAvailableReplicationRequests:(NSNumber *)poolID
+RCT_EXTERN_METHOD(listAvailableReplicationRequests:(NSString *)poolIDStr
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 

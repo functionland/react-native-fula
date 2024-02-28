@@ -1346,10 +1346,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void listPoolJoinRequests(long poolID, Promise promise) {
+  public void listPoolJoinRequests(String poolIDStr, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "listPoolJoinRequests: poolID = " + poolID);
+      Log.d("ReactNative", "listPoolJoinRequests: poolID = " + poolIDStr);
       try {
+        long poolID = Long.parseLong(poolIDStr);
         byte[] result = this.fula.poolRequests(poolID);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -1377,10 +1378,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void listAvailableReplicationRequests(long poolID, Promise promise) {
+  public void listAvailableReplicationRequests(String poolIDStr, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "listAvailableReplicationRequests: poolID = " + poolID);
+      Log.d("ReactNative", "listAvailableReplicationRequests: poolID = " + poolIDStr);
       try {
+        long poolID = Long.parseLong(poolIDStr);
         byte[] result = this.fula.manifestAvailable(poolID);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -1454,9 +1456,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void batchUploadManifest(ReadableArray cidArray, long poolId, long replicationFactor, Promise promise) {
+  public void batchUploadManifest(ReadableArray cidArray, String poolIDStr, String replicationFactorStr, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       try {
+        long poolID = Long.parseLong(poolIDStr);
+        long replicationFactor = Long.parseLong(replicationFactorStr);
         if (this.fula != null) {
           StringBuilder cidStrBuilder = new StringBuilder();
           for (int i = 0; i < cidArray.size(); i++) {
@@ -1467,7 +1471,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
           }
 
           byte[] cidsBytes = cidStrBuilder.toString().getBytes(StandardCharsets.UTF_8);
-          this.fula.batchUploadManifest(cidsBytes, poolId, replicationFactor);
+          this.fula.batchUploadManifest(cidsBytes, poolID, replicationFactor);
           promise.resolve(true); // Indicate success
         } else {
           throw new Exception("BatchUploadManifest: Fula is not initialized");
