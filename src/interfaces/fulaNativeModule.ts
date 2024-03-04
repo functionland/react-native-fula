@@ -74,6 +74,11 @@ interface FulaNativeModule {
     poolID: string,
     replicationFactor: string
   ) => Promise<string>;
+  replicateInPool: (
+    cid: string[],
+    account: string,
+    poolID: string
+  ) => Promise<string>;
   newStoreRequest: (
     seed: string,
     poolID: number,

@@ -10,10 +10,9 @@ import {
 const App = () => {
   const inprogress = false;
   const [newRootCid, setNewRootCid] = React.useState<string>('');
-  const root_cid =
-    'bafyr4ihelqywjivn3lrveiyaqjdfnz5vkg6hji6rk7qzp7srwkq5f4jz2y';
+  const root_cid = '';
   const seed =
-    '0xmd93c00b5v99f99ti871r8r17r2rt66ee277777ge1be6fb47709b691efb0e777';
+    '0xb82cc245d889913ee01f48ad161ba8473cac9e516026488493ed20296721a2a5';
 
   const initComplete = true;
 
@@ -69,11 +68,10 @@ const App = () => {
   // const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
   //const bloxPeerId = '12D3KooWAN5FaAnC4d1GhAvoYxyUXdrkCGqux1NB6Pr4cZXn813E'; //test aws server
 
-  const bloxAddr =
-    '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' +
-    bloxPeerId;
+  // const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
   //const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
-
+  const bloxAddr =
+    '/dns4/1.pools.test.fula.network/tcp/40001/p2p/12D3KooWHb38UxY8akVGWZBuFtS3NJ7rJUwd36t3cfkoY7EbgNt9';
   const initFula = async () => {
     try {
       return fula.init(
@@ -963,6 +961,70 @@ const App = () => {
               } else {
                 console.log('wait for init to complete');
               }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Replicate In Pool'}
+          onPress={async () => {
+            try {
+              chainApi.init().then(async (api: any) => {
+                console.log('api created');
+                if (api) {
+                  let accountId = await chainApi.getAccountIdFromSeed(seed);
+                  console.log('uploading manifests: ' + accountId);
+                  fula
+                    .replicateRecentCids(api, seed, 1, 6)
+                    .then((res: any) => {
+                      console.log('res received');
+                      console.log(res);
+                      blockchain
+                        .replicateInPool(res.cids, accountId, 1)
+                        .then((res2) => {
+                          console.log('res2 received');
+                          console.log(res2);
+                        });
+                    })
+                    .catch((e: any) => {
+                      console.log('res failed');
+                      console.log(e);
+                    });
+                }
+              });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Putting & Getting...' : 'Test Replicate In Pool'}
+          onPress={async () => {
+            try {
+              chainApi.init().then(async (api: any) => {
+                console.log('api created');
+                if (api) {
+                  let accountId = await chainApi.getAccountIdFromSeed(seed);
+                  console.log('uploading manifests: ' + accountId);
+                  blockchain
+                    .replicateInPool(
+                      [
+                        'bafyr4iciwfqaspaehqress5xs4yrk26pzz7l5recheeo6bryafmy5vjbdi',
+                        'bafyr4iaozpubahy4yh5si4runr3temnp4ndysqspqxrjbmybqn3gv2pzli',
+                      ],
+                      accountId,
+                      1
+                    )
+                    .then((res2) => {
+                      console.log('res2 received');
+                      console.log(res2);
+                    });
+                }
+              });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}

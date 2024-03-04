@@ -351,9 +351,10 @@ export const replicateRecentCids = async (
   seed: string,
   poolId: number,
   replicationNo: number = 4
-): Promise<{ status: boolean; msg: string }> => {
+): Promise<{ status: boolean; msg: string; cids: string[] }> => {
   let status = true;
   let msg = '';
+  let recentCids: string[] = [];
   if (!api) {
     api = await chainApiInit();
   }
@@ -365,7 +366,7 @@ export const replicateRecentCids = async (
       const accountBal = await checkAccountBalance(api, account);
       console.log('account balance: ' + accountBal);
       if (accountBal !== '0') {
-        const recentCids = await listRecentCidsAsString();
+        recentCids = await listRecentCidsAsString();
         console.log(recentCids);
         if (recentCids) {
           console.log({
@@ -384,7 +385,7 @@ export const replicateRecentCids = async (
           );
           console.log('batchUploadManifest res received');
           console.log(res);
-          if (res && res.hash) {
+          if (res?.hash) {
             const signedBlock = await api.rpc.chain.getBlock(res.hash);
             if (signedBlock?.block?.extrinsics?.length) {
               await clearCidsFromRecent(recentCids);
@@ -424,7 +425,7 @@ export const replicateRecentCids = async (
 
   // Return a value (true/false) depending on the outcome of the function
   // For example:
-  return { status: status, msg: msg }; // or false, depending on your logic
+  return { status: status, msg: msg, cids: recentCids }; // or false, depending on your logic
 };
 
 /**

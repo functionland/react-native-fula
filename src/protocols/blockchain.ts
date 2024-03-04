@@ -315,6 +315,40 @@ export const batchUploadManifest = (
   return res1;
 };
 
+export const replicateInPool = (
+  cids_i: string[],
+  account_i: string,
+  poolId_i: string | number
+): Promise<string[]> => {
+  console.log(
+    'replicateInPool in react-native started',
+    poolId_i,
+    account_i,
+    cids_i
+  );
+  if (typeof poolId_i === 'number') {
+    poolId_i = poolId_i.toString();
+  }
+
+  let res1 = Fula.replicateInPool(cids_i, account_i, poolId_i)
+    .then((res) => {
+      try {
+        let jsonRes: string[] = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          return res;
+        }
+      }
+    })
+    .catch((err) => {
+      return err;
+    });
+  return res1;
+};
+
 /*
 It takes four arguments:
 

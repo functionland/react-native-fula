@@ -10,7 +10,7 @@ const types = {
 };
 
 export const init = async (
-  wsAddress: string = 'wss://node3.functionyard.fula.network'
+  wsAddress: string = 'wss://node3.test.fula.network'
 ): Promise<ApiPromise> => {
   const provider = new WsProvider(wsAddress);
   const api = await ApiPromise.create({ types, provider }).catch((err) => {
@@ -57,7 +57,7 @@ function createManifest(
   const serializedManifest = manifest_metadata.map((item) => serialize(item)); // Implement `serialize` accordingly
 
   // Serialize cids to Uint8Array or string
-  const serializedCids = cids.map((cid) => serialize(cid)); // Implement `serialize` accordingly
+  //const serializedCids = cids.map((cid) => serialize(cid)); // Implement `serialize` accordingly
 
   // Create arrays for `poolId` and `replicationFactor`
   const poolIds = new Array(cids.length).fill(poolId);
@@ -65,7 +65,7 @@ function createManifest(
 
   const batchUploadManifest = {
     manifest: serializedManifest,
-    cids: serializedCids,
+    cids: cids,
     poolId: poolIds,
     replicationFactor: replicationFactors,
   };
@@ -111,11 +111,11 @@ export const batchUploadManifest = async (
         return new Promise<{ hash: string }>((resolve, reject) => {
           submitExtrinsic
             .signAndSend(userKey, { nonce: -1 }, ({ status }) => {
-              if (status.isInBlock || status.isFinalized) {
+              if (status.isFinalized) {
                 if (unsub) {
                   unsub(); // Call unsub before resolving the promise
                 }
-                resolve({ hash: status.asInBlock.toString() });
+                resolve({ hash: status.asFinalized.toString() });
               }
             })
             .then((unsubFn) => {

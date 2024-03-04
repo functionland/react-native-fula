@@ -1483,6 +1483,33 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void replicateInPool(ReadableArray cidArray, String account, String poolIDStr, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        long poolID = Long.parseLong(poolIDStr);
+        if (this.fula != null) {
+          StringBuilder cidStrBuilder = new StringBuilder();
+          for (int i = 0; i < cidArray.size(); i++) {
+            if (i > 0) {
+              cidStrBuilder.append("|");
+            }
+            cidStrBuilder.append(cidArray.getString(i));
+          }
+
+          byte[] cidsBytes = cidStrBuilder.toString().getBytes(StandardCharsets.UTF_8);
+          byte[] res = this.fula.replicateInPool(cidsBytes, account, poolID);
+          String receivedJsonString = new String(res, StandardCharsets.UTF_8);
+          promise.resolve(receivedJsonString); // Indicate success
+        } else {
+          throw new Exception("replicateInPool: Fula is not initialized");
+        }
+      } catch (Exception e) {
+        Log.d("ReactNative", "replicateInPool failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
+      }
+    });
+  }
 
   ////////////////////////////////////////////////////////////////
   ///////////////// Blox Hardware Methods ////////////////////////
