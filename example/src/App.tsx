@@ -876,7 +876,7 @@ const App = () => {
                 if (api && initComplete) {
                   console.log('get the list of cids');
                   fula
-                    .listRecentCidsAsString()
+                    .listRecentCidsAsStringWithChildren()
                     .then((res: any) => {
                       console.log('res received');
                       console.log(res);

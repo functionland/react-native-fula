@@ -1430,6 +1430,42 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  private void listRecentCidsAsStringWithChildren(Promise promise) throws Exception {
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        if (this.fula != null) {
+          Log.d("ReactNative", "listRecentCidsAsStringWithChildren");
+          fulamobile.StringIterator recentLinks = this.fula.listRecentCidsAsStringWithChildren();
+          ArrayList<String> recentLinksList = new ArrayList<>();
+          while (recentLinks.hasNext()) {
+            recentLinksList.add(recentLinks.next());
+          }
+          if (!recentLinksList.isEmpty()) {
+            // return the whole list
+            Log.d("ReactNative", "listRecentCidsAsStringWithChildren found: "+ recentLinksList);
+            WritableArray recentLinksArray = Arguments.createArray();
+            for (String link : recentLinksList) {
+              recentLinksArray.pushString(link);
+            }
+            promise.resolve(recentLinksArray);
+          } else {
+            promise.resolve(false);
+          }
+        } else {
+          throw new Exception("listRecentCidsAsStringWithChildren: Fula is not initialized");
+        }
+      } catch (Exception e) {
+        Log.d("ReactNative", "listRecentCidsAsStringWithChildren failed with Error: " + e.getMessage());
+        try {
+          throw (e);
+        } catch (Exception ex) {
+          throw new RuntimeException(ex);
+        }
+      }
+    });
+  }
+
+  @ReactMethod
   public void clearCidsFromRecent(ReadableArray cidArray, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
     try {

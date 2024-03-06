@@ -1061,6 +1061,41 @@ class FulaModule: NSObject {
         }
     }
 
+    @objc(listRecentCidsAsStringWithChildren:withRejecter:)
+    func listRecentCidsAsStringWithChildren(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                guard let fulaClient = self.fula else {
+                    throw MyError.runtimeError("Fula client is not initialized")
+                }
+
+                let recentLinksIterator = try fulaClient.listRecentCidsAsStringWithChildren()
+                var recentLinksList = [String]()
+
+                while recentLinksIterator.hasNext() {
+                    var error: NSError?
+                    let nextLink = try recentLinksIterator.next(&error)
+
+                    if let error = error {
+                        throw error
+                    }
+
+                    recentLinksList.append(nextLink)
+                }
+
+                if !recentLinksList.isEmpty {
+                    // Return the whole list
+                    resolve(recentLinksList)
+                } else {
+                    resolve(false)
+                }
+            } catch let error {
+                print("ReactNative", "listRecentCidsAsStringWithChildren failed with Error: \(error.localizedDescription)")
+                reject("ERR_FULA_LIST_RECENT_CIDS_WITH_CHILDREN", "Failed to list recent CIDs as string with children", error)
+            }
+        }
+    }
+
     @objc(batchUploadManifest:withPoolId:withReplicationFactor:withResolver:withRejecter:)
     func batchUploadManifest(cidArray: NSArray, poolIDStr: String, replicationFactorStr: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.global(qos: .default).async {

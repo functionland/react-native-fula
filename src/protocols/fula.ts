@@ -127,6 +127,10 @@ export const listRecentCidsAsString = (): Promise<string[]> => {
   return Fula.listRecentCidsAsString();
 };
 
+export const listRecentCidsAsStringWithChildren = (): Promise<string[]> => {
+  return Fula.listRecentCidsAsStringWithChildren();
+};
+
 /**
  * Clears the cids that ar recent
  */
@@ -366,7 +370,7 @@ export const replicateRecentCids = async (
       const accountBal = await checkAccountBalance(api, account);
       console.log('account balance: ' + accountBal);
       if (accountBal !== '0') {
-        recentCids = await listRecentCidsAsString();
+        recentCids = await listRecentCidsAsStringWithChildren();
         console.log(recentCids);
         if (recentCids) {
           console.log({
@@ -446,7 +450,7 @@ export const replicateRecentCidsBlox = async (
     const accountBal = '1';
     console.log('account balance: ' + accountBal);
     if (accountBal !== '0') {
-      const recentCids = await listRecentCidsAsString();
+      const recentCids = await listRecentCidsAsStringWithChildren();
       console.log(recentCids);
       if (recentCids) {
         console.log({

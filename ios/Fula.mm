@@ -113,6 +113,9 @@ RCT_EXTERN_METHOD(clearCidsFromRecent:(NSArray *)cidArray
 RCT_EXTERN_METHOD(listRecentCidsAsString:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(listRecentCidsAsStringWithChildren:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(batchUploadManifest:(NSArray *)cidArray
                   withPoolId:(NSString *) poolIdStr
                   withReplicationFactor:(NSString *) replicationFactorStr
