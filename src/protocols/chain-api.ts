@@ -10,7 +10,7 @@ const types = {
 };
 
 export const init = async (
-  wsAddress: string = 'wss://node3.test.fula.network'
+  wsAddress: string = 'wss://node3.functionyard.fula.network'
 ): Promise<ApiPromise> => {
   const provider = new WsProvider(wsAddress);
   const api = await ApiPromise.create({ types, provider }).catch((err) => {
