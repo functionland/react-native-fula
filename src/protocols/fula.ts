@@ -449,7 +449,6 @@ export const replicateRecentCidsBlox = async (
     //const accountBal = await getAccountBalanceBlox();
     const accountBal = '1';
     console.log('account balance: ' + accountBal);
-    if (accountBal !== '0') {
       const recentCids = await listRecentCidsAsStringWithChildren();
       console.log(recentCids);
       if (recentCids) {
@@ -486,10 +485,6 @@ export const replicateRecentCidsBlox = async (
         status = false;
         msg = 'No recent Cids found';
       }
-    } else {
-      status = false;
-      msg = 'Account balance is not enough or account does not exists';
-    }
   } catch (e: any) {
     console.log('res failed');
     console.log(e);
