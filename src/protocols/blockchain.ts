@@ -1,6 +1,6 @@
 import Fula from '../interfaces/fulaNativeModule';
 import type * as BType from '../types/blockchain';
-
+import { ApiPromise } from '@polkadot/api';
 /*
 createAccount: This function takes a seed argument, which is used to create an account. The seed must start with "/". The function returns a promise of an object that contains the seed and the account that was created.
 */
@@ -205,7 +205,7 @@ export const cancelPoolJoin = (
   return res1;
 };
 export const listPoolJoinRequests = (
-  poolID: number
+  poolID: string
 ): Promise<BType.PoolRequestsResponse> => {
   console.log('listPoolJoinRequests in react-native started', poolID);
   let res1 = Fula.listPoolJoinRequests(poolID)
@@ -275,23 +275,65 @@ replicationFactor is the number of copies of the content to be stored.
 cid is the content identifier of the content to be replicated.
 It returns a promise of BType.ManifestUploadResponse which includes the uploader, storage, ManifestMetadata, and poolID
           */
-export const newReplicationRequest = (
-  seed: string,
-  poolID: number,
-  replicationFactor: number,
-  cid: string
-): Promise<BType.ManifestUploadResponse> => {
+export const batchUploadManifest = (
+  api: ApiPromise | undefined, //this is just for compatibility with chainAPI inputs and is not used
+  seed: string, //this is just for compatibility with chainAPI inputs and is not used
+  cids_i: string[],
+  poolId_i: string | number,
+  replicationFactor_i: string | number
+): Promise<BType.ManifestBatchUploadResponse> => {
   console.log(
     'newReplicationRequest in react-native started',
+    api,
     seed,
-    poolID,
-    replicationFactor,
-    cid
+    poolId_i,
+    replicationFactor_i,
+    cids_i
   );
-  let res1 = Fula.newReplicationRequest(seed, poolID, replicationFactor, cid)
+  if (typeof poolId_i === 'number') {
+    poolId_i = poolId_i.toString();
+  }
+  if (typeof replicationFactor_i === 'number') {
+    replicationFactor_i = replicationFactor_i.toString();
+  }
+  let res1 = Fula.batchUploadManifest(cids_i, poolId_i, replicationFactor_i)
     .then((res) => {
       try {
-        let jsonRes: BType.ManifestUploadResponse = JSON.parse(res);
+        let jsonRes: BType.ManifestBatchUploadResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          return res;
+        }
+      }
+    })
+    .catch((err) => {
+      return err;
+    });
+  return res1;
+};
+
+export const replicateInPool = (
+  cids_i: string[],
+  account_i: string,
+  poolId_i: string | number
+): Promise<string[]> => {
+  console.log(
+    'replicateInPool in react-native started',
+    poolId_i,
+    account_i,
+    cids_i
+  );
+  if (typeof poolId_i === 'number') {
+    poolId_i = poolId_i.toString();
+  }
+
+  let res1 = Fula.replicateInPool(cids_i, account_i, poolId_i)
+    .then((res) => {
+      try {
+        let jsonRes: string[] = JSON.parse(res);
         return jsonRes;
       } catch (e) {
         try {
@@ -355,7 +397,7 @@ poolID is the ID of the pool for which the replication requests are listed
 It returns a promise of BType.ManifestUploadResponse[] which is an array of the replication requests, including the uploader, storage, ManifestMetadata, and poolID
 */
 export const listAvailableReplicationRequests = (
-  poolID: number
+  poolID: string
 ): Promise<BType.ManifestUploadResponse[]> => {
   console.log(
     'listAvailableReplicationRequests in react-native started',

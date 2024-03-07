@@ -26,6 +26,7 @@ interface FulaNativeModule {
   checkFailedActions: (retry: boolean, timeout: number) => Promise<boolean>;
   listFailedActions: (cids: string[]) => Promise<string[]>;
   listRecentCidsAsString: () => Promise<string[]>;
+  listRecentCidsAsStringWithChildren: () => Promise<string[]>;
   clearCidsFromRecent: (cids: string[]) => Promise<boolean>;
   checkConnection: (timeout: number) => Promise<boolean>;
   get: (key: string) => Promise<string>;
@@ -62,18 +63,22 @@ interface FulaNativeModule {
   joinPool: (poolID: string) => Promise<string>;
   leavePool: (poolID: string) => Promise<string>;
   cancelPoolJoin: (poolID: string) => Promise<string>;
-  listPoolJoinRequests: (poolID: number) => Promise<string>;
+  listPoolJoinRequests: (poolID: string) => Promise<string>;
   votePoolJoinRequest: (
     seed: string,
     poolID: number,
     account: string,
     accept: boolean
   ) => Promise<string>;
-  newReplicationRequest: (
-    seed: string,
-    poolID: number,
-    replicationFactor: number,
-    cid: string
+  batchUploadManifest: (
+    cid: string[],
+    poolID: string,
+    replicationFactor: string
+  ) => Promise<string>;
+  replicateInPool: (
+    cid: string[],
+    account: string,
+    poolID: string
   ) => Promise<string>;
   newStoreRequest: (
     seed: string,
@@ -81,7 +86,7 @@ interface FulaNativeModule {
     uploader: string,
     cid: string
   ) => Promise<string>;
-  listAvailableReplicationRequests: (poolID: number) => Promise<string>;
+  listAvailableReplicationRequests: (poolID: string) => Promise<string>;
   removeReplicationRequest: (
     seed: string,
     poolID: number,

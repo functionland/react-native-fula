@@ -1346,10 +1346,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void listPoolJoinRequests(long poolID, Promise promise) {
+  public void listPoolJoinRequests(String poolIDStr, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "listPoolJoinRequests: poolID = " + poolID);
+      Log.d("ReactNative", "listPoolJoinRequests: poolID = " + poolIDStr);
       try {
+        long poolID = Long.parseLong(poolIDStr);
         byte[] result = this.fula.poolRequests(poolID);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -1377,10 +1378,11 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void listAvailableReplicationRequests(long poolID, Promise promise) {
+  public void listAvailableReplicationRequests(String poolIDStr, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
-      Log.d("ReactNative", "listAvailableReplicationRequests: poolID = " + poolID);
+      Log.d("ReactNative", "listAvailableReplicationRequests: poolID = " + poolIDStr);
       try {
+        long poolID = Long.parseLong(poolIDStr);
         byte[] result = this.fula.manifestAvailable(poolID);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -1428,6 +1430,42 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  private void listRecentCidsAsStringWithChildren(Promise promise) throws Exception {
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        if (this.fula != null) {
+          Log.d("ReactNative", "listRecentCidsAsStringWithChildren");
+          fulamobile.StringIterator recentLinks = this.fula.listRecentCidsAsStringWithChildren();
+          ArrayList<String> recentLinksList = new ArrayList<>();
+          while (recentLinks.hasNext()) {
+            recentLinksList.add(recentLinks.next());
+          }
+          if (!recentLinksList.isEmpty()) {
+            // return the whole list
+            Log.d("ReactNative", "listRecentCidsAsStringWithChildren found: "+ recentLinksList);
+            WritableArray recentLinksArray = Arguments.createArray();
+            for (String link : recentLinksList) {
+              recentLinksArray.pushString(link);
+            }
+            promise.resolve(recentLinksArray);
+          } else {
+            promise.resolve(false);
+          }
+        } else {
+          throw new Exception("listRecentCidsAsStringWithChildren: Fula is not initialized");
+        }
+      } catch (Exception e) {
+        Log.d("ReactNative", "listRecentCidsAsStringWithChildren failed with Error: " + e.getMessage());
+        try {
+          throw (e);
+        } catch (Exception ex) {
+          throw new RuntimeException(ex);
+        }
+      }
+    });
+  }
+
+  @ReactMethod
   public void clearCidsFromRecent(ReadableArray cidArray, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
     try {
@@ -1453,6 +1491,61 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void batchUploadManifest(ReadableArray cidArray, String poolIDStr, String replicationFactorStr, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        long poolID = Long.parseLong(poolIDStr);
+        long replicationFactor = Long.parseLong(replicationFactorStr);
+        if (this.fula != null) {
+          StringBuilder cidStrBuilder = new StringBuilder();
+          for (int i = 0; i < cidArray.size(); i++) {
+            if (i > 0) {
+              cidStrBuilder.append("|");
+            }
+            cidStrBuilder.append(cidArray.getString(i));
+          }
+
+          byte[] cidsBytes = cidStrBuilder.toString().getBytes(StandardCharsets.UTF_8);
+          this.fula.batchUploadManifest(cidsBytes, poolID, replicationFactor);
+          promise.resolve(true); // Indicate success
+        } else {
+          throw new Exception("BatchUploadManifest: Fula is not initialized");
+        }
+      } catch (Exception e) {
+        Log.d("ReactNative", "BatchUploadManifest failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
+      }
+    });
+  }
+
+  @ReactMethod
+  public void replicateInPool(ReadableArray cidArray, String account, String poolIDStr, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      try {
+        long poolID = Long.parseLong(poolIDStr);
+        if (this.fula != null) {
+          StringBuilder cidStrBuilder = new StringBuilder();
+          for (int i = 0; i < cidArray.size(); i++) {
+            if (i > 0) {
+              cidStrBuilder.append("|");
+            }
+            cidStrBuilder.append(cidArray.getString(i));
+          }
+
+          byte[] cidsBytes = cidStrBuilder.toString().getBytes(StandardCharsets.UTF_8);
+          byte[] res = this.fula.replicateInPool(cidsBytes, account, poolID);
+          String receivedJsonString = new String(res, StandardCharsets.UTF_8);
+          promise.resolve(receivedJsonString); // Indicate success
+        } else {
+          throw new Exception("replicateInPool: Fula is not initialized");
+        }
+      } catch (Exception e) {
+        Log.d("ReactNative", "replicateInPool failed with Error: " + e.getMessage());
+        promise.reject("Error", e.getMessage());
+      }
+    });
+  }
 
   ////////////////////////////////////////////////////////////////
   ///////////////// Blox Hardware Methods ////////////////////////

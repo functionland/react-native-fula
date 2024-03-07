@@ -145,7 +145,6 @@ export const getFolderSize = (
   return res;
 };
 
-
 export const getDatastoreSize = (): Promise<BType.GetDatastoreSizeResponse> => {
   console.log('getDatastoreSize in react-native started');
   let res = Fula.getDatastoreSize()

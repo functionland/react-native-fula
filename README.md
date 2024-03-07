@@ -197,6 +197,24 @@ curl -H "Content-Type: application/json" -d "{\"id\":\"1\", \"jsonrpc\":\"2.0\",
 yarn build:polkadot
 ```
 
+## Testing
+
+Open a cmd or terminal as admin (sudo)
+
+```
+corepack enable
+```
+
+Then cd to the `react-native-fula` folder (no need for admin, sudo) and run:
+```
+yarn install
+```
+
+to run the example app, run:
+```
+yarn example android
+```
+
 ## Roadmap
 
 Please note the following might not be done in order:
@@ -205,7 +223,7 @@ Please note the following might not be done in order:
 - [x] Add WNFS tree encryption key generation from an input (deterministically)
 - [x] Improve ead function to use a stream. ( :100: v1 Release here )
 - [x] Connect to backend
-- [ ] Connect to Blockchain codes using APIs
+- [x] Connect to Blockchain codes using APIs
 
 ## Other related libraries
 
