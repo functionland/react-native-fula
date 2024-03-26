@@ -1104,11 +1104,15 @@ class FulaModule: NSObject {
                     throw MyError.runtimeError("Fula client is not initialized")
                 }
                 guard let poolID = Int64(poolIDStr) else {
-                    reject("ERR_FULA", "Invalid poolID - not a valid number: \(poolIDStr)")
+                    let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Invalid poolID - not a valid number: \(poolIDStr)"])
+                    reject("ERR_FULA", "Invalid poolID - not a valid number: \(poolIDStr)", error)
                     return
                 }
                 guard let replicationFactor = Int64(replicationFactorStr) else {
-                    reject("ERR_FULA", "Invalid replicationFactorStr - not a valid number: \(replicationFactorStr)")
+                    let error = NSError(domain: "FULAErrorDomain",
+                                        code: 1002,
+                                        userInfo: [NSLocalizedDescriptionKey: "Invalid replicationFactor - not a valid number: \(replicationFactorStr)"])
+                    reject("ERR_FULA", "Invalid replicationFactorStr - not a valid number: \(replicationFactorStr)", error)
                     return
                 }
 
@@ -1119,7 +1123,8 @@ class FulaModule: NSObject {
                     throw MyError.runtimeError("Unable to encode CIDs as data")
                 }
 
-                try fulaClient.batchUploadManifest(cidsData, poolID, replicationFactor)
+                // Adjusted call to match the expected method signature and argument types
+                try fulaClient.batchUploadManifest(cidsData, poolID: Int(poolID), replicationFactor: Int(replicationFactor))
                 resolve(true)
             } catch let error {
                 print("ReactNative", "batchUploadManifest failed with Error: \(error.localizedDescription)")
@@ -1201,43 +1206,54 @@ class FulaModule: NSObject {
     }
 
     @objc(listPoolJoinRequests:withResolver:withRejecter:)
-    func listPoolJoinRequests(poolIDStr: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+    func listPoolJoinRequests(poolIDStr: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         print("ReactNative", "listPoolJoinRequests: poolIDStr = ", poolIDStr)
         do {
-            if let poolID = Int64(poolIDStr) {
-              // Conversion successful - use longPoolID
-
-              let result = try fula!.poolRequests(poolID)
-              let resultString = result.toUTF8String()!
-              resolve(resultString)
+            if let poolID = Int64(poolIDStr), let intPoolID = Int(exactly: poolID) {
+                // Conversion to Int successful - use intPoolID
+                let result = try fula!.poolRequests(intPoolID)
+                let resultString = result.toUTF8String()!
+                resolve(resultString)
             } else {
-                // Handle invalid input (e.g., "abc", "123.45")
-                reject("ERR_FULA", "Invalid poolIDStr - not a valid number: \(poolIDStr)")
+                // Handle invalid input or Int64 not convertible to Int
+                let error = NSError(domain: "FULAErrorDomain",
+                                    code: 1003,
+                                    userInfo: [NSLocalizedDescriptionKey: "Invalid poolIDStr - not a valid number or too large: \(poolIDStr)"])
+                reject("ERR_FULA", "Invalid poolIDStr - not a valid number or too large: \(poolIDStr)", error)
             }
         } catch let error {
             print("listPoolJoinRequests", error.localizedDescription)
-            reject("ERR_FULA", "listPoolJoinRequests", error)
+            let nsError = error as NSError
+            reject("ERR_FULA", "Failed listPoolJoinRequests due to error", nsError)
         }
-
     }
 
     @objc(listAvailableReplicationRequests:withResolver:withRejecter:)
-    func listAvailableReplicationRequests(poolIDStr: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
+    func listAvailableReplicationRequests(poolIDStr: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         print("ReactNative", "listAvailableReplicationRequests: poolIDStr = ", poolIDStr)
         do {
-            guard let poolID = Int64(poolIDStr) else {
-                reject("ERR_FULA", "Invalid poolID - not a valid number: \(poolIDStr)")
+            guard let poolID = Int64(poolIDStr), let intPoolID = Int(exactly: poolID) else {
+                let error = NSError(domain: "FULAErrorDomain",
+                                    code: 1004, // Use appropriate error code
+                                    userInfo: [NSLocalizedDescriptionKey: "Invalid poolID - not a valid number: \(poolIDStr)"])
+                reject("ERR_FULA", "Invalid poolID - not a valid number: \(poolIDStr)", error)
                 return
             }
-            let result = try fula!.manifestAvailable(poolID)
-            let resultString = result.toUTF8String()!
+            let result = try fula!.manifestAvailable(intPoolID)
+            guard let resultString = result.toUTF8String() else {
+                let error = NSError(domain: "FULAErrorDomain",
+                                    code: 1005, // Use appropriate error code
+                                    userInfo: [NSLocalizedDescriptionKey: "Failed to convert result to UTF8 String"])
+                reject("ERR_FULA", "Conversion Error", error)
+                return
+            }
             resolve(resultString)
-        } catch let error {
+        } catch let error as NSError {
             print("listAvailableReplicationRequests", error.localizedDescription)
-            reject("ERR_FULA", "listAvailableReplicationRequests", error)
+            reject("ERR_FULA", "listAvailableReplicationRequests failed with error: \(error.localizedDescription)", error)
         }
-
     }
+
 
     @objc(bloxFreeSpace:withRejecter:)
     func bloxFreeSpace( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
@@ -1388,17 +1404,27 @@ class FulaModule: NSObject {
       }
   }
 
-  @objc(fetchContainerLogs:tailCount:withResolver:withRejecter:)
-  func fetchContainerLogs(containerName: String, tailCount: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
-      do {
-          let result = try fula!.fetchContainerLogs(containerName, tailCount)
-          let resultString = result.toUTF8String()!
-          resolve(resultString)
-      } catch let error {
-          print("fetchContainerLogs", error.localizedDescription)
-          reject("ERR_FULA", "fetchContainerLogs", error)
-      }
-  }
+    @objc(fetchContainerLogs:tailCount:withResolver:withRejecter:)
+    func fetchContainerLogs(containerName: String, tailCount: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+        do {
+            // Since fetchContainerLogs expects a String for tailCount, pass it directly
+            let result = try fula!.fetchContainerLogs(containerName, tailCount: tailCount)
+            guard let resultString = result.toUTF8String() else {
+                // Handle the case where result.toUTF8String() returns nil
+                let error = NSError(domain: "FULAErrorDomain",
+                                    code: 1007, // Choose a suitable error code
+                                    userInfo: [NSLocalizedDescriptionKey: "Failed to convert log data to string."])
+                reject("ERR_FULA", "Log Conversion Error", error)
+                return
+            }
+            resolve(resultString)
+        } catch let error as NSError {
+            print("fetchContainerLogs", error.localizedDescription)
+            reject("ERR_FULA", "fetchContainerLogs failed", error)
+        }
+    }
+
+
 
   @objc(getFolderSize:withResolver:withRejecter:)
   func getFolderSize(folderPath: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
@@ -1412,17 +1438,18 @@ class FulaModule: NSObject {
       }
   }
 
-  @objc(getDatastoreSize:withResolver:withRejecter:)
-  func getDatastoreSize(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
-      do {
-          let result = try fula!.getDatastoreSize()
-          let resultString = result.toUTF8String()!
-          resolve(resultString)
-      } catch let error {
-          print("getDatastoreSize", error.localizedDescription)
-          reject("ERR_FULA", "getDatastoreSize", error)
-      }
-  }
+    @objc(getDatastoreSizeWithResolver:withRejecter:)
+    func getDatastoreSize(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+        do {
+            let result = try fula!.getDatastoreSize()
+            let resultString = result.toUTF8String()!
+            resolve(resultString)
+        } catch let error {
+            print("getDatastoreSize", error.localizedDescription)
+            let nsError = error as NSError
+            reject("ERR_FULA", "Failed to get datastore size", nsError)
+        }
+    }
 
   //Add Replicate In Pool (replicateInPool)
 
