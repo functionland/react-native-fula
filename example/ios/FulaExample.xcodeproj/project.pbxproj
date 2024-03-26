@@ -12,6 +12,14 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		737FFE2E2BB38AA10031CE03 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE2D2BB38AA10031CE03 /* OpenSSL.xcframework */; };
+		737FFE2F2BB38AA10031CE03 /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE2D2BB38AA10031CE03 /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		737FFE322BB38C2C0031CE03 /* double-conversion.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE312BB38C2C0031CE03 /* double-conversion.xcframework */; };
+		737FFE332BB38C2C0031CE03 /* double-conversion.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE312BB38C2C0031CE03 /* double-conversion.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		737FFE352BB38D030031CE03 /* glog.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE342BB38D030031CE03 /* glog.xcframework */; };
+		737FFE362BB38D030031CE03 /* glog.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE342BB38D030031CE03 /* glog.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		737FFE382BB38D5D0031CE03 /* hermes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE372BB38D5D0031CE03 /* hermes.xcframework */; };
+		737FFE392BB38D5D0031CE03 /* hermes.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE372BB38D5D0031CE03 /* hermes.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		73C6FF7D2BB365D90086E783 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 73C6FF7C2BB365D90086E783 /* libresolv.tbd */; };
 		7699B88040F8A987B510C191 /* libPods-FulaExample-FulaExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-FulaExample-FulaExampleTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -26,6 +34,23 @@
 			remoteInfo = FulaExample;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		737FFE302BB38AA10031CE03 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				737FFE332BB38C2C0031CE03 /* double-conversion.xcframework in Embed Frameworks */,
+				737FFE392BB38D5D0031CE03 /* hermes.xcframework in Embed Frameworks */,
+				737FFE2F2BB38AA10031CE03 /* OpenSSL.xcframework in Embed Frameworks */,
+				737FFE362BB38D030031CE03 /* glog.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* FulaExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FulaExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -42,6 +67,10 @@
 		5709B34CF0A7D63546082F79 /* Pods-FulaExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FulaExample.release.xcconfig"; path = "Target Support Files/Pods-FulaExample/Pods-FulaExample.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-FulaExample-FulaExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FulaExample-FulaExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-FulaExample-FulaExampleTests/Pods-FulaExample-FulaExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-FulaExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FulaExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		737FFE2D2BB38AA10031CE03 /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = "Pods/OpenSSL-Universal/Frameworks/OpenSSL.xcframework"; sourceTree = "<group>"; };
+		737FFE312BB38C2C0031CE03 /* double-conversion.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = "double-conversion.xcframework"; path = "Pods/Flipper-DoubleConversion/Frameworks/double-conversion.xcframework"; sourceTree = "<group>"; };
+		737FFE342BB38D030031CE03 /* glog.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = glog.xcframework; path = "Pods/Flipper-Glog/Frameworks/glog.xcframework"; sourceTree = "<group>"; };
+		737FFE372BB38D5D0031CE03 /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework"; sourceTree = "<group>"; };
 		73C6FF7C2BB365D90086E783 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FulaExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-FulaExample-FulaExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FulaExample-FulaExampleTests.release.xcconfig"; path = "Target Support Files/Pods-FulaExample-FulaExampleTests/Pods-FulaExample-FulaExampleTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -61,8 +90,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				737FFE2E2BB38AA10031CE03 /* OpenSSL.xcframework in Frameworks */,
+				737FFE382BB38D5D0031CE03 /* hermes.xcframework in Frameworks */,
 				73C6FF7D2BB365D90086E783 /* libresolv.tbd in Frameworks */,
+				737FFE322BB38C2C0031CE03 /* double-conversion.xcframework in Frameworks */,
 				0C80B921A6F3F58F76C31292 /* libPods-FulaExample.a in Frameworks */,
+				737FFE352BB38D030031CE03 /* glog.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +135,10 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				737FFE372BB38D5D0031CE03 /* hermes.xcframework */,
+				737FFE342BB38D030031CE03 /* glog.xcframework */,
+				737FFE312BB38C2C0031CE03 /* double-conversion.xcframework */,
+				737FFE2D2BB38AA10031CE03 /* OpenSSL.xcframework */,
 				73C6FF7C2BB365D90086E783 /* libresolv.tbd */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-FulaExample.a */,
@@ -188,6 +225,7 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				737FFE302BB38AA10031CE03 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -273,7 +311,7 @@
 		};
 		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -283,7 +321,7 @@
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-FulaExample/Pods-FulaExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FulaExample/Pods-FulaExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
@@ -351,7 +389,7 @@
 		};
 		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -361,7 +399,7 @@
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-FulaExample/Pods-FulaExample-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FulaExample/Pods-FulaExample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
