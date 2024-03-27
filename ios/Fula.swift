@@ -135,7 +135,30 @@ class FulaModule: NSObject {
         return convertIntToByte(keyInt)
     }
 
-    @objc func registerLifecycleListener() {
+    @objc func applicationWillResignActive() {
+        // Log that the app will resign active
+        os_log("Application will resign active", log: OSLog.viewCycle, type: .info)
+    }
+
+    @objc func applicationDidEnterBackground() {
+        // Log that the app has entered the background
+        os_log("Application did enter background", log: OSLog.viewCycle, type: .info)
+    }
+
+    @objc func applicationWillTerminate() {
+        // Attempt to shut down Fula cleanly (similar to onHostDestroy)
+        os_log("Application will terminate - shutting down Fula", log: OSLog.viewCycle, type: .info)
+        do {
+            if let fulaClient = fula {
+                try fulaClient.shutdown()
+                os_log("Fula shutdown successfully.", log: OSLog.viewCycle, type: .info)
+            }
+        } catch {
+            os_log("Error shutting down Fula: %{public}@", log: OSLog.viewCycle, type: .error, String(describing: error))
+        }
+    }
+
+    @objc func registerLifecycleListener(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applicationWillResignActive),
@@ -153,29 +176,14 @@ class FulaModule: NSObject {
             selector: #selector(applicationWillTerminate),
             name: UIApplication.willTerminateNotification,
             object: nil)
+
+        // Assuming the operation is always successful
+        resolve(true)
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-
-    @objc func applicationWillResignActive() {
-        // Handle app will resign active (similar to onHostPause)
-    }
-
-    @objc func applicationDidEnterBackground() {
-        // Handle app entered background
-    }
-
-    @objc func applicationWillTerminate() {
-        // Attempt to shut down Fula cleanly (similar to onHostDestroy)
-        do {
-            try shutdownInternal()
-        } catch {
-            print("Error shutting down Fula: \(error)")
-        }
-    }
-
 
     @objc(checkConnection:withResolver:withRejecter:)
     func checkConnection(timeout: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {

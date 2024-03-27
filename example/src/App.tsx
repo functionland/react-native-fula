@@ -21,12 +21,13 @@ const App = () => {
       console.log = () => null;
       //console.error = () => null
     }
-    fula
-      .registerLifecycleListener()
-      .then(() => console.log('Lifecycle listener registered'))
-      .catch((error) =>
-        console.error('Failed to register lifecycle listener', error)
-      );
+    if(fula.registerLifecycleListener) {
+      fula
+        .registerLifecycleListener()?.then(() => console.log('Lifecycle listener registered'))
+        .catch((error) =>
+          console.error('Failed to register lifecycle listener', error)
+        );
+    }
   }, []);
 
   let RNFS = require('react-native-fs');
@@ -68,10 +69,9 @@ const App = () => {
   // const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
   //const bloxPeerId = '12D3KooWAN5FaAnC4d1GhAvoYxyUXdrkCGqux1NB6Pr4cZXn813E'; //test aws server
 
-  // const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
-  //const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
-  const bloxAddr =
-    '/dns4/1.pools.test.fula.network/tcp/40001/p2p/12D3KooWHb38UxY8akVGWZBuFtS3NJ7rJUwd36t3cfkoY7EbgNt9';
+  //const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
+  const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
+  //const bloxAddr = '/dns4/1.pools.test.fula.network/tcp/40001/p2p/12D3KooWHb38UxY8akVGWZBuFtS3NJ7rJUwd36t3cfkoY7EbgNt9';
   const initFula = async () => {
     try {
       return fula.init(

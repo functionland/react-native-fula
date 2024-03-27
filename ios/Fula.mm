@@ -2,7 +2,7 @@
 
 @interface RCT_EXTERN_MODULE(FulaModule, NSObject)
 
-RCT_EXTERN_METHOD(registerLifecycleListener)
+RCT_EXTERN_METHOD(registerLifecycleListener:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(checkConnection: (nonnull NSNumber *) timeout
                   withResolver:(RCTPromiseResolveBlock)resolve
