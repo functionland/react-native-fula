@@ -158,7 +158,8 @@ class FulaModule: NSObject {
         }
     }
 
-    @objc func registerLifecycleListener(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc(registerLifecycleListener:withRejecter:)
+    func registerLifecycleListener(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applicationWillResignActive),
