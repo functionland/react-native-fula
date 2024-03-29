@@ -451,10 +451,12 @@ class FulaModule: NSObject {
 
     func createNewrootCid(identity: Data) throws -> Void {
         let hash32 = identity.sha256()
-        print("ReactNative", "wnfsKey=" , identity.toHex() , "; hash32 = " , hash32.toHex())
+        NSLog("ReactNative createNewrootCid wnfsKey= \(identity.toHex()) , hash32 = \(hash32.toHex())")
         if (self.fula != nil) {
+            NSLog("ReactNative createNewrootCid self.fula not null")
             try self.fula?.flush()
         }
+        NSLog("ReactNative fula flushed")
         rootCid = try self.wnfs?.Init(wnfsKey: hash32)
         NSLog("ReactNative privateForest is created: \(rootCid!)")
         wnfsKey = identity
@@ -588,7 +590,7 @@ class FulaModule: NSObject {
                     }
                 } catch let error {
                     NSLog("ReactNative Failed to create new Fula instance: \(error.localizedDescription)")
-                    throw MyError.runtimeError("Failed to create new Fula instance")
+                    throw MyError.runtimeError("ReactNative Failed to create new Fula instance")
                 }
             }
             NSLog("ReactNative peerIdentity returned: \(peerIdentity)")
@@ -623,12 +625,14 @@ class FulaModule: NSObject {
                 self.client = Client(clientInput: self.fula!)
                 self.wnfs = Wnfs(putFn: { cid, data in
                     guard let c = self.client else {
-                        throw MyError.runtimeError("wnfs: fula client not ready")
+                        NSLog("ReactNative wnfs put: fula client not ready")
+                        throw MyError.runtimeError("ReactNative wnfs: fula client not ready")
                     }
                     try c.put(cid, data)
                 }, getFn: { cid in
                     guard let c = self.client else {
-                        throw MyError.runtimeError("wnfs: fula client not ready")
+                        NSLog("ReactNative wnfs get: fula client not ready")
+                        throw MyError.runtimeError("ReactNative wnfs: fula client not ready")
                     }
                     return try c.get(cid)
                 })
@@ -790,7 +794,7 @@ class FulaModule: NSObject {
 
             //JSONArray jsonArray = new JSONArray(res)
             guard let s = res?.toUTF8String() else {
-                throw MyError.runtimeError("converting bytes to utf8 string")
+                throw MyError.runtimeError("ReactNative converting bytes to utf8 string")
             }
             NSLog("ReactNative ls: res = \(s)")
             resolve(s)
@@ -900,7 +904,7 @@ class FulaModule: NSObject {
                 // FIXME: dhouldn't we output an NSData object instead?
                 let res = try self.wnfs?.ReadFile(cid: rootCid!, remotePath: path)
                 guard let resString = res?.toUTF8String() else{
-                    throw MyError.runtimeError("converting bytes to utf8 string")
+                    throw MyError.runtimeError(" ReactNative converting bytes to utf8 string")
                 }
                 resolve(resString)
             } catch let error {
@@ -997,7 +1001,7 @@ class FulaModule: NSObject {
                 try self.fula?.flush()
             } else {
                 print("ReactNative", "pushInternal error: key wasn't found or fula is not initialized")
-                throw MyError.runtimeError("pushInternal error: key wasn't found or fula is not initialized")
+                throw MyError.runtimeError("ReactNative pushInternal error: key wasn't found or fula is not initialized")
             }
         } catch let error {
             print("ReactNative", "pushInternal", error.localizedDescription)
@@ -1039,7 +1043,7 @@ class FulaModule: NSObject {
                 return key
             } else {
                 print("ReactNative", "putInternal Error: fula is not initialized")
-                throw MyError.runtimeError("putInternal Error: fula is not initialized")
+                throw MyError.runtimeError("ReactNative putInternal Error: fula is not initialized")
             }
         } catch let error {
             print("ReactNative", "putInternal", error.localizedDescription)
@@ -1060,7 +1064,7 @@ class FulaModule: NSObject {
                 resolve(true)
             } else {
                 print("ReactNative", "setAuth error: fula is not initialized")
-                throw MyError.runtimeError("fula is not initialized")
+                throw MyError.runtimeError("ReactNative fula is not initialized")
             }
             resolve(false)
         } catch let error {
@@ -1075,14 +1079,14 @@ class FulaModule: NSObject {
         DispatchQueue.global(qos: .default).async {
             do {
                 guard let fulaClient = self.fula else {
-                    throw MyError.runtimeError("Fula client is not initialized")
+                    throw MyError.runtimeError("ReactNative Fula client is not initialized")
                 }
 
                 // Concatenate all CID strings into a single string separated by "|"
                 let concatenatedCids = (cidArray as? [String])?.joined(separator: "|")
 
                 guard let cidsData = concatenatedCids?.data(using: .utf8) else {
-                    throw MyError.runtimeError("Unable to encode CIDs as data")
+                    throw MyError.runtimeError("ReactNative Unable to encode CIDs as data")
                 }
 
                 try fulaClient.clearCids(fromRecent: cidsData)
@@ -1100,7 +1104,7 @@ class FulaModule: NSObject {
         DispatchQueue.global(qos: .default).async {
             do {
                 guard let fulaClient = self.fula else {
-                    throw MyError.runtimeError("Fula client is not initialized")
+                    throw MyError.runtimeError("ReactNative Fula client is not initialized")
                 }
 
                 let recentLinksIterator = try fulaClient.listRecentCidsAsString()
@@ -1135,7 +1139,7 @@ class FulaModule: NSObject {
         DispatchQueue.global(qos: .default).async {
             do {
                 guard let fulaClient = self.fula else {
-                    throw MyError.runtimeError("Fula client is not initialized")
+                    throw MyError.runtimeError("ReactNative Fula client is not initialized")
                 }
 
                 let recentLinksIterator = try fulaClient.listRecentCidsAsStringWithChildren()
@@ -1170,7 +1174,7 @@ class FulaModule: NSObject {
         DispatchQueue.global(qos: .default).async {
             do {
                 guard let fulaClient = self.fula else {
-                    throw MyError.runtimeError("Fula client is not initialized")
+                    throw MyError.runtimeError("ReactNative Fula client is not initialized")
                 }
                 guard let poolID = Int64(poolIDStr) else {
                     let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Invalid poolID - not a valid number: \(poolIDStr)"])
@@ -1189,7 +1193,7 @@ class FulaModule: NSObject {
                 let concatenatedCids = (cidArray as? [String])?.joined(separator: "|")
 
                 guard let cidsData = concatenatedCids?.data(using: .utf8) else {
-                    throw MyError.runtimeError("Unable to encode CIDs as data")
+                    throw MyError.runtimeError("ReactNative Unable to encode CIDs as data")
                 }
 
                 // Adjusted call to match the expected method signature and argument types
