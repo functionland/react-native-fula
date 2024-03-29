@@ -716,6 +716,39 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
+          title={inprogress ? 'Getting...' : 'Get Folder Size'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send Foldersize command'
+                    );
+                    fxblox
+                      .getFolderSize('/uniondrive/chain')
+                      .then((res: any) => {
+                        console.log('Foldersize received');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('Foldersize failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
           title={inprogress ? 'Getting...' : 'Get Node Logs'}
           onPress={async () => {
             try {
