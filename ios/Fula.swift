@@ -534,7 +534,7 @@ class FulaModule: NSObject {
             NSLog("ReactNative peerIdentity is set:  \(fulaConfig!.identity!.toHex())")
             fulaConfig!.bloxAddr = bloxAddr
             NSLog("ReactNative bloxAddr is set:  \(fulaConfig!.bloxAddr)")
-            fulaConfig!.exchange = "fula"
+            fulaConfig!.exchange = exchange
             fulaConfig!.syncWrites = autoFlush
             if (useRelay) {
                 fulaConfig!.allowTransientConnection = true
@@ -545,7 +545,7 @@ class FulaModule: NSObject {
                 do {
                     try shutdownInternal()
                     NSLog("ReactNative Creating a new Fula instance shutdown done")
-                    self.fula = FulamobileClient(fulaConfig)
+                    self.fula = FulamobileClient()
                     NSLog("ReactNative FulamobileClient created")
                     if (self.fula != nil) {
                         NSLog("ReactNative Creating a new Fula instance fula is not null, flushing")
