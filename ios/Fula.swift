@@ -519,7 +519,9 @@ class FulaModule: NSObject {
 
     func newClientInternal(identity: Data, storePath: String?, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool, refresh: Bool) throws -> Data {
         do {
+            OSLog.viewCycle.info("ReactNative fula newClientInternal refresh=\(refresh)")
             fulaConfig = FulamobileConfig()
+            print("ReactNative", "cofig is set: ")
             if (storePath == nil || storePath!.isEmpty) {
                 fulaConfig!.storePath = fulaStorePath
             } else {
@@ -561,6 +563,7 @@ class FulaModule: NSObject {
     func initInternal(identity: Data, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, _rootCid: String, useRelay: Bool, refresh: Bool) throws -> [String] {
 
         do {
+            OSLog.viewCycle.info("ReactNative fula initInternal=\(refresh)")
             if (fula == nil || refresh) {
                 try newClientInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, useRelay: useRelay, refresh: refresh)
                 OSLog.viewCycle.info("ReactNative fula initialized: \(self.fula!.id_())")
