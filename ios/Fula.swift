@@ -1514,18 +1514,32 @@ class FulaModule: NSObject {
       }
   }
 
-    @objc(getDatastoreSizeWithResolver:withRejecter:)
-    func getDatastoreSize(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
-        do {
-            let result = try self.fula!.getDatastoreSize()
-            let resultString = result.toUTF8String()!
-            resolve(resultString)
-        } catch let error {
-            print("getDatastoreSize", error.localizedDescription)
-            let nsError = error as NSError
-            reject("ERR_FULA", "Failed to get datastore size", nsError)
+    @objc
+    func getDatastoreSize(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.global(qos: .background).async {
+            // Safely unwrap `self.fula` using `guard let`
+            guard let fulaClient = self.fula else {
+                let error = NSError(domain: "FulaModuleError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Fula client is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_NOT_INITIALIZED", "Fula client is not initialized", error)
+                }
+                return
+            }
+
+            do {
+                let result = try fulaClient.getDatastoreSize()
+                let resultString = String(decoding: result, as: UTF8.self)
+                DispatchQueue.main.async {
+                    resolve(resultString)
+                }
+            } catch let error {
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Failed to get datastore size: \(error.localizedDescription)", error)
+                }
+            }
         }
     }
+
 
   //Add Replicate In Pool (replicateInPool)
 
