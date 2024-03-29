@@ -545,7 +545,13 @@ class FulaModule: NSObject {
                 do {
                     try shutdownInternal()
                     NSLog("ReactNative Creating a new Fula instance shutdown done")
-                    self.fula = FulamobileClient(fulaConfig)
+                    var error: NSError?
+                    let client = FulamobileNewClient(fulaConfig, &error)
+                    if let error = error {
+                        throw error
+                    }
+
+                    self.fula = client
                     NSLog("ReactNative FulamobileClient created")
                     if (self.fula != nil) {
                         NSLog("ReactNative Creating a new Fula instance fula is not null, flushing")
