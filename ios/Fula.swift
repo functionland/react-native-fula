@@ -188,23 +188,23 @@ class FulaModule: NSObject {
 
     @objc(checkConnection:withResolver:withRejecter:)
     func checkConnection(timeout: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        OSLog.viewCycle.info("ReactNative checkConnection started with timeout=\(timeout)")
+        NSLog("ReactNative checkConnection started with timeout=\(timeout)")
 
         if let timeoutInt = timeout as? Int {
             if fula != nil {
                 DispatchQueue.global(qos: .default).async {
                     do {
                         let connectionStatus = try self.checkConnectionInternal(timeout: timeoutInt)
-                        OSLog.viewCycle.info("ReactNative checkConnection ended \(connectionStatus)")
+                        NSLog("ReactNative checkConnection ended \(connectionStatus)")
                         resolve(connectionStatus)
                     }
                     catch let error {
-                        OSLog.viewCycle.info("ReactNative checkConnection failed with Error: \(error.localizedDescription)")
+                        NSLog("ReactNative checkConnection failed with Error: \(error.localizedDescription)")
                         resolve(false)
                     }
                 }
             } else {
-                OSLog.viewCycle.info("ReactNative checkConnection fula is null")
+                NSLog("ReactNative checkConnection fula is null")
                 resolve(false)
             }
         } else {
@@ -216,7 +216,7 @@ class FulaModule: NSObject {
 
     @objc(newClient:withStorePath:withBloxAddr:withExchange:withAutoFlush:withUseRelay:withRefresh:withResolver:withRejecter:)
     func newClient(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool, refresh: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void  {
-            print("ReactNative", "newClient storePath= " , storePath , " bloxAddr= " , bloxAddr , " exchange= " , exchange , " autoFlush= " , autoFlush , " useRelay= " , useRelay , " refresh= " , refresh);
+            print("ReactNative", "newClient storePath= " , storePath , " bloxAddr= " , bloxAddr , " exchange= " , exchange , " autoFlush= " , autoFlush , " useRelay= " , useRelay , " refresh= " , refresh)
             do {
                 print("ReactNative", "newClient storePath= ", storePath)
                 let identity = toByte(identityString)
@@ -257,23 +257,23 @@ class FulaModule: NSObject {
     @objc(initFula:withStorePath:withBloxAddr:withExchange:withAutoFlush:withRootConfig:withUseRelay:withRefresh:withResolver:withRejecter:)
     func initFula(identityString: String, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, rootConfig: String, useRelay: Bool, refresh: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
 
-        OSLog.viewCycle.info("ReactNative - init started")
+        NSLog("ReactNative - init started")
 
         do {
 
             var resultData = Dictionary<String, String>()
-            OSLog.viewCycle.info("ReactNative init storePath= \(storePath)")
+            NSLog("ReactNative init storePath= \(storePath)")
             let identity = self.toByte(identityString)
-            OSLog.viewCycle.info("ReactNative init identity= \(identityString)")
+            NSLog("ReactNative init identity= \(identityString)")
             let obj = try initInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, _rootCid: rootConfig, useRelay: useRelay, refresh: refresh)
-            OSLog.viewCycle.info("ReactNative init object created: [  \(obj[0]), \(obj[1]), \(obj[2]) ]")
+            NSLog("ReactNative init object created: [  \(obj[0]), \(obj[1]), \(obj[2]) ]")
             resultData["peerId"] = obj[0]
             resultData["rootCid"] = obj[1]
             resultData["wnfs_key"] = obj[2]
             resolve(resultData as NSDictionary)
 
         } catch let error {
-            OSLog.viewCycle.info("ReactNative init failed with Error: \(error.localizedDescription)")
+            NSLog("ReactNative init failed with Error: \(error.localizedDescription)")
             reject("ERR_FULA", "init failed", error)
         }
 
@@ -297,7 +297,7 @@ class FulaModule: NSObject {
     }
 
     func checkConnectionInternal(timeout: Int) throws -> Bool {
-        OSLog.viewCycle.info("ReactNative checkConnectionInternal started with timeout: \(timeout)")
+        NSLog("ReactNative checkConnectionInternal started with timeout: \(timeout)")
         var connectionStatus = false
 
         if let fula = self.fula {
@@ -306,13 +306,13 @@ class FulaModule: NSObject {
 
             queue.async {
                 do {
-                    OSLog.viewCycle.info("ReactNative connectToBlox started")
+                    NSLog("ReactNative connectToBlox started")
                     try fula.connectToBlox()
                     connectionStatus = true
-                    OSLog.viewCycle.info("ReactNative checkConnectionInternal succeeded")
+                    NSLog("ReactNative checkConnectionInternal succeeded")
                     semaphore.signal()
                 } catch let error {
-                    OSLog.viewCycle.info("ReactNative checkConnectionInternal failed with Error: \(error.localizedDescription)")
+                    NSLog("ReactNative checkConnectionInternal failed with Error: \(error.localizedDescription)")
                     semaphore.signal()
                 }
             }
@@ -320,13 +320,13 @@ class FulaModule: NSObject {
             let timeoutResult = semaphore.wait(timeout: .now() + .seconds(timeout))
             switch timeoutResult {
             case .timedOut:
-                OSLog.viewCycle.info("ReactNative checkConnectionInternal timed out")
+                NSLog("ReactNative checkConnectionInternal timed out")
                 return false
             case .success:
                 return connectionStatus
             }
         } else {
-            OSLog.viewCycle.info("ReactNative checkConnectionInternal failed because fula is not initialized")
+            NSLog("ReactNative checkConnectionInternal failed because fula is not initialized")
             return false
         }
     }
@@ -339,24 +339,24 @@ class FulaModule: NSObject {
                 }
 
                 if !retry {
-                    OSLog.viewCycle.info("ReactNative checkFailedActions without retry")
+                    NSLog("ReactNative checkFailedActions without retry")
                     let failedLinks = try fula.listFailedPushes()
 
                     let nextFailedLink = try failedLinks.next()
                     if nextFailedLink != nil {
                         // Assuming nextFailedLink is of type Data; replace `toHex()` with an appropriate method to convert Data to a hex string
-                        OSLog.viewCycle.info("ReactNative checkFailedActions found")
+                        NSLog("ReactNative checkFailedActions found")
                         resolve(true)
                     } else {
                         resolve(false)
                     }
                 } else {
-                    OSLog.viewCycle.info("ReactNative checkFailedActions with retry")
+                    NSLog("ReactNative checkFailedActions with retry")
                     let retryResults = try retryFailedActionsInternal(timeout: timeout)  // Ensure retryFailedActionsInternal accepts a timeout parameter
                     resolve(!retryResults)
                 }
             } catch let error {
-                OSLog.viewCycle.info("ReactNative checkFailedActions failed with Error: \(error.localizedDescription)")
+                NSLog("ReactNative checkFailedActions failed with Error: \(error.localizedDescription)")
                 reject("ERR_FULA", "CheckFailedActions failed", error)
             }
     }
@@ -364,10 +364,10 @@ class FulaModule: NSObject {
 
 
     func retryFailedActionsInternal(timeout: Int) throws -> Bool {
-        OSLog.viewCycle.info("ReactNative retryFailedActionsInternal started")
+        NSLog("ReactNative retryFailedActionsInternal started")
 
         guard let fula = fula else {
-            OSLog.viewCycle.info("ReactNative retryFailedActionsInternal failed because fula is not initialized")
+            NSLog("ReactNative retryFailedActionsInternal failed because fula is not initialized")
             return false
         }
 
@@ -376,22 +376,22 @@ class FulaModule: NSObject {
 
             if connectionCheck {
                 do {
-                    OSLog.viewCycle.info("ReactNative retryFailedPushes started")
+                    NSLog("ReactNative retryFailedPushes started")
                     try fula.retryFailedPushes()
-                    OSLog.viewCycle.info("ReactNative flush started")
+                    NSLog("ReactNative flush started")
                     try fula.flush()
                     return true
                 } catch let error {
                     try fula.flush()
-                    OSLog.viewCycle.info("ReactNative retryFailedActionsInternal failed with Error: \(error.localizedDescription)")
+                    NSLog("ReactNative retryFailedActionsInternal failed with Error: \(error.localizedDescription)")
                     return false
                 }
             } else {
-                OSLog.viewCycle.info("ReactNative retryFailedActionsInternal failed because blox is offline")
+                NSLog("ReactNative retryFailedActionsInternal failed because blox is offline")
                 return false
             }
         } catch let error {
-            OSLog.viewCycle.info("ReactNative retryFailedActionsInternal failed with Error: \(error.localizedDescription)")
+            NSLog("ReactNative retryFailedActionsInternal failed with Error: \(error.localizedDescription)")
             return false
         }
     }
@@ -427,7 +427,7 @@ class FulaModule: NSObject {
 
     func createNewrootCid(identity: Data) throws -> Void {
         let hash32 = identity.sha256()
-        print("ReactNative", "wnfsKey=" , identity.toHex() , "; hash32 = " , hash32.toHex());
+        print("ReactNative", "wnfsKey=" , identity.toHex() , "; hash32 = " , hash32.toHex())
         if (fula != nil) {
             try fula?.flush()
         }
@@ -439,16 +439,16 @@ class FulaModule: NSObject {
     }
 
     func loadWnfs(_ _wnfsKey: Data , _ _rootCid: String) throws {
-        OSLog.viewCycle.info("ReactNative loadWnfs called: rootCid=\(_rootCid)")
+        NSLog("ReactNative loadWnfs called: rootCid=\(_rootCid)")
         let hash32 = _wnfsKey.sha256()
-        OSLog.viewCycle.info("ReactNative wnfsKey= \(_wnfsKey.toHex()) ; hash32 = \(hash32.toHex())");
+        NSLog("ReactNative wnfsKey= \(_wnfsKey.toHex()) ; hash32 = \(hash32.toHex())")
         try wnfs?.LoadWithWNFSKey(wnfsKey: hash32, cid: _rootCid)
         rootCid = _rootCid
         wnfsKey = _wnfsKey
         if (fula != nil) {
             try fula?.flush()
         }
-        OSLog.viewCycle.info("ReactNative loadWnfs completed")
+        NSLog("ReactNative loadWnfs completed")
         try encryptAndStoreConfig()
     }
 
@@ -456,26 +456,26 @@ class FulaModule: NSObject {
     func encryptAndStoreConfig() throws {
         do {
             if let identityEncryptedGlobalUnwrapped = identityEncryptedGlobal {
-                OSLog.viewCycle.info("ReactNative encryptAndStoreConfig started")
+                NSLog("ReactNative encryptAndStoreConfig started")
 
                 if let rootCidUnwrapped = rootCid, let wnfsKeyUnwrapped = wnfsKey, let secretKeyGlobalUnwrapped = secretKeyGlobal {
-                    OSLog.viewCycle.info("ReactNative encryptAndStoreConfig started with rootCid: \(rootCidUnwrapped.toUint8Array()) and wnfsKey:\(wnfsKeyUnwrapped)")
+                    NSLog("ReactNative encryptAndStoreConfig started with rootCid: \(rootCidUnwrapped.toUint8Array()) and wnfsKey:\(wnfsKeyUnwrapped)")
 
                     let cid_encrypted = try Cryptography.encryptMsg(rootCidUnwrapped.toUint8Array(), secretKeyGlobalUnwrapped)
-                    OSLog.viewCycle.info("ReactNative encryptAndStoreConfig cid_encrypted: \(cid_encrypted)")
+                    NSLog("ReactNative encryptAndStoreConfig cid_encrypted: \(cid_encrypted)")
 
                     let wnfs_key_encrypted = try Cryptography.encryptMsg(wnfsKeyUnwrapped.toUint8Array(), secretKeyGlobalUnwrapped)
-                    OSLog.viewCycle.info("ReactNative encryptAndStoreConfig wnfs_key_encrypted: \(wnfs_key_encrypted)")
+                    NSLog("ReactNative encryptAndStoreConfig wnfs_key_encrypted: \(wnfs_key_encrypted)")
 
                     userDataHelper.add("cid_encrypted_" + identityEncryptedGlobalUnwrapped, cid_encrypted)
                     userDataHelper.add("wnfs_key_encrypted_" + identityEncryptedGlobalUnwrapped, wnfs_key_encrypted)
                 } else {
                     // Handle the case where rootCid, wnfsKey, or secretKeyGlobal is nil
-                    OSLog.viewCycle.info("ReactNative encryptAndStoreConfig failed because one of the values is nil")
+                    NSLog("ReactNative encryptAndStoreConfig failed because one of the values is nil")
                 }
             }
         } catch let error {
-            OSLog.viewCycle.info("ReactNative encryptAndStoreConfig failed with Error: \(error.localizedDescription)")
+            NSLog("ReactNative encryptAndStoreConfig failed with Error: \(error.localizedDescription)")
             throw error
         }
     }
@@ -519,21 +519,21 @@ class FulaModule: NSObject {
 
     func newClientInternal(identity: Data, storePath: String?, bloxAddr: String, exchange: String, autoFlush: Bool, useRelay: Bool, refresh: Bool) throws -> Data {
         do {
-            OSLog.viewCycle.info("ReactNative fula newClientInternal refresh=\(refresh)")
+            NSLog("ReactNative fula newClientInternal refresh=\(refresh)")
             fulaConfig = FulamobileConfig()
-            print("ReactNative", "cofig is set: ")
+            NSLog("ReactNative: cofig is set")
             if (storePath == nil || storePath!.isEmpty) {
                 fulaConfig!.storePath = fulaStorePath
             } else {
                 fulaConfig!.storePath = storePath!
             }
-            print("ReactNative", "storePath is set: " + fulaConfig!.storePath)
+            NSLog("ReactNative storePath is set:  \(fulaConfig!.storePath)")
 
             let peerIdentity = try createPeerIdentity(privateKey: identity)
             fulaConfig!.identity = peerIdentity
-            print("ReactNative", "peerIdentity is set: " + fulaConfig!.identity!.toHex())
+            NSLog("ReactNative peerIdentity is set:  \(fulaConfig!.identity!.toHex())")
             fulaConfig!.bloxAddr = bloxAddr
-            print("ReactNative", "bloxAddr is set: " + fulaConfig!.bloxAddr)
+            NSLog("ReactNative bloxAddr is set:  \(fulaConfig!.bloxAddr)")
             fulaConfig!.exchange = exchange
             fulaConfig!.syncWrites = autoFlush
             if (useRelay) {
@@ -541,21 +541,24 @@ class FulaModule: NSObject {
                 fulaConfig!.forceReachabilityPrivate = true
             }
             if (fula == nil || refresh) {
-                print("ReactNative", "Creating a new Fula instance");
+                NSLog("ReactNative Creating a new Fula instance")
                 do {
-                try shutdownInternal();
-                fula = FulamobileClient(fulaConfig)
-                if (fula != nil) {
-                    try fula?.flush();
-                }
+                    try shutdownInternal()
+                    NSLog("ReactNative Creating a new Fula instance shutdown done")
+                    fula = FulamobileClient(fulaConfig)
+                    NSLog("ReactNative FulamobileClient created")
+                    if (fula != nil) {
+                        NSLog("ReactNative Creating a new Fula instance fula is not null, flushing")
+                        try fula?.flush()
+                    }
                 } catch let error {
-                print("ReactNative", "Failed to create new Fula instance: " , error.localizedDescription);
-                throw MyError.runtimeError("Failed to create new Fula instance")
+                    NSLog("ReactNative Failed to create new Fula instance: \(error.localizedDescription)")
+                    throw MyError.runtimeError("Failed to create new Fula instance")
                 }
             }
             return peerIdentity
         } catch let error {
-            print("ReactNative", "newclientInternal failed with Error: ", error.localizedDescription)
+            NSLog("ReactNative newclientInternal failed with Error: \(error.localizedDescription)")
             throw error
         }
     }
@@ -563,10 +566,13 @@ class FulaModule: NSObject {
     func initInternal(identity: Data, storePath: String, bloxAddr: String, exchange: String, autoFlush: Bool, _rootCid: String, useRelay: Bool, refresh: Bool) throws -> [String] {
 
         do {
-            OSLog.viewCycle.info("ReactNative fula initInternal=\(refresh)")
+            os_log("ReactNative: This is an info message.", log: OSLog.viewCycle, type: .info)
+            NSLog("ReactNative: This is a simple log message.")
+
+            NSLog("ReactNative fula initInternal=\(refresh)")
             if (fula == nil || refresh) {
                 try newClientInternal(identity: identity, storePath: storePath, bloxAddr: bloxAddr, exchange: exchange, autoFlush: autoFlush, useRelay: useRelay, refresh: refresh)
-                OSLog.viewCycle.info("ReactNative fula initialized: \(self.fula!.id_())")
+                NSLog("ReactNative fula initialized: \(self.fula!.id_())")
             }
             if(client == nil || refresh) {
                 client = Client(clientInput: fula!)
@@ -581,7 +587,7 @@ class FulaModule: NSObject {
                     }
                     return try c.get(cid)
                 })
-                OSLog.viewCycle.info("ReactNative wnfs initialized")
+                NSLog("ReactNative wnfs initialized")
             }
 
             let secretKey = try Cryptography.generateKey(identity)
@@ -590,35 +596,35 @@ class FulaModule: NSObject {
             secretKeyGlobal = secretKey
 
             if (rootCid == nil || rootCid!.isEmpty) {
-                OSLog.viewCycle.info("ReactNative rootCid is empty.")
+                NSLog("ReactNative rootCid is empty.")
                 //Load from keystore
 
                 let cid_encrypted_fetched = userDataHelper.getValue("cid_encrypted_"+identity_encrypted)
-                OSLog.viewCycle.info("ReactNative Here1")
+                NSLog("ReactNative Here1")
                 var cid: Array<UInt8>? = nil
                 if(cid_encrypted_fetched != nil && !cid_encrypted_fetched!.isEmpty) {
-                    OSLog.viewCycle.info("ReactNative decrypting cid= \(cid_encrypted_fetched!) with secret \(secretKey.toHex())")
+                    NSLog("ReactNative decrypting cid= \(cid_encrypted_fetched!) with secret \(secretKey.toHex())")
                     cid = try Cryptography.decryptMsg(cid_encrypted_fetched!, secretKey)
                 }
-                print("ReactNative", "Here2")
+                NSLog("ReactNative Here2")
                 //print("ReactNative", "Attempted to fetch cid from keystore cid="+cid+" & wnfs_key="+wnfs_key)
                 if(cid == nil || cid!.isEmpty){
-                    OSLog.viewCycle.info("ReactNative cid or wnfs key was not found")
+                    NSLog("ReactNative cid or wnfs key was not found")
                     if(!_rootCid.isEmpty){
-                        OSLog.viewCycle.info("ReactNative Re-setting cid from input: \(_rootCid)")
+                        NSLog("ReactNative Re-setting cid from input: \(_rootCid)")
                         cid = _rootCid.toUint8Array()
                     }
 
                 }
                 if(cid == nil || cid!.isEmpty){
-                        OSLog.viewCycle.info("ReactNative Tried to recover cid but was not successful. Creating ones")
+                        NSLog("ReactNative Tried to recover cid but was not successful. Creating ones")
                         try createNewrootCid(identity: identity)
                 } else {
-                    OSLog.viewCycle.info("ReactNative Found cid and wnfs key in keychain store")
-                    OSLog.viewCycle.info("ReactNative Recovered cid and private ref from keychain store. cid=\(cid!) & wnfs_key=\(identity)")
+                    NSLog("ReactNative Found cid and wnfs key in keychain store")
+                    NSLog("ReactNative Recovered cid and private ref from keychain store. cid=\(cid!) & wnfs_key=\(identity)")
                     try loadWnfs(identity, cid!.toData().toUTF8String()!)
                 }
-                OSLog.viewCycle.info("ReactNative creating/reloading rootCid completed")
+                NSLog("ReactNative creating/reloading rootCid completed")
 
                 /*
                  byte[] testbyte = convertStringToByte("-104,40,24,-93,24,100,24,114,24,111,24,111,24,116,24,-126,24,-126,0,0,24,-128,24,103,24,118,24,101,24,114,24,115,24,105,24,111,24,110,24,101,24,48,24,46,24,49,24,46,24,48,24,105,24,115,24,116,24,114,24,117,24,99,24,116,24,117,24,114,24,101,24,100,24,104,24,97,24,109,24,116")
@@ -631,22 +637,22 @@ class FulaModule: NSObject {
                  */
 
 
-                OSLog.viewCycle.info("ReactNative rootCid is created: cid=\(self.rootCid!) & wnfs_key=\(self.wnfsKey!.toHex())")
+                NSLog("ReactNative rootCid is created: cid=\(self.rootCid!) & wnfs_key=\(self.wnfsKey!.toHex())")
             } else {
-                OSLog.viewCycle.info("ReactNative rootCid existed: cid=\(self.rootCid!) & wnfs_key=\(self.wnfsKey!.toHex())")
+                NSLog("ReactNative rootCid existed: cid=\(self.rootCid!) & wnfs_key=\(self.wnfsKey!.toHex())")
             }
             let peerId = fula!.id_()
             var obj = [String]()
             obj.append(peerId)
             obj.append(rootCid!)
             obj.append(wnfsKey!.toHex())
-            OSLog.viewCycle.info("ReactNative initInternal is completed successfully")
+            NSLog("ReactNative initInternal is completed successfully")
             if (fula != nil) {
                 try fula?.flush()
             }
             return obj
         } catch let error {
-            OSLog.viewCycle.info("ReactNative init internal failed with Error: \(error.localizedDescription)")
+            NSLog("ReactNative init internal failed with Error: \(error.localizedDescription)")
             throw error
         }
     }
@@ -654,7 +660,7 @@ class FulaModule: NSObject {
 
     @objc(mkdir:withResolver:withRejecter:)
     func mkdir(path: String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-        print("ReactNative", "mkdir: path = " + path)
+        NSLog("ReactNative mkdir: path = \(path)")
         do {
             let cid = try wnfs?.MkDir(cid: rootCid!, remotePath: path)
             if(cid != nil) {
@@ -665,7 +671,7 @@ class FulaModule: NSObject {
                 }
                 resolve(rootCid)
             } else {
-                print("ReactNative", "mkdir Error: config is nil")
+                NSLog("ReactNative mkdir Error: config is nil")
                 reject("ERR_WNFS", "Can't make dir", nil)
             }
 
@@ -684,7 +690,7 @@ class FulaModule: NSObject {
          // localFilename: a string containing full path and filename of local file on hte device (e.g /usr/bin/cat.jpg)
          // Returns: new cid of the root after this file is placed in the tree
          */
-        print("ReactNative", "writeFile to : path = " + fulaTargetFilename + ", from: " + localFilename)
+        NSLog("ReactNative writeFile to : path = \(fulaTargetFilename) + from: \(localFilename)")
         do {
             let cid = try wnfs?.WriteFileFromPath(cid: rootCid!, remotePath: fulaTargetFilename, fileUrl: URL.init(string: localFilename)!)
             if(cid != nil) {
@@ -695,7 +701,7 @@ class FulaModule: NSObject {
                 }
                 resolve(rootCid)
             } else {
-                print("ReactNative", "writeFile Error: config is nil")
+                NSLog("ReactNative writeFile Error: config is nil")
                 reject("ERR_WNFS", "writeFile Error: config is nil", nil)
             }
         } catch let error {
@@ -707,8 +713,8 @@ class FulaModule: NSObject {
     @objc(writeFileContent:withContentString:withResolver:withRejecter:)
     func writeFileContent(path: String, contentString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
 
-        print("ReactNative", "writeFile: contentString = " + contentString)
-        print("ReactNative", "writeFile: path = " + path)
+        NSLog("ReactNative writeFile: contentString = \(contentString)")
+        NSLog("ReactNative writeFile: path = \(path)")
         do {
             let content = convertStringToByte(contentString)
             let cid = try wnfs?.WriteFile(cid: rootCid!, remotePath: path, data: content.toData())
@@ -727,7 +733,7 @@ class FulaModule: NSObject {
 
     @objc(ls:withResolver:withRejecter:)
     func ls(path: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
-        print("ReactNative", "ls: path = " + path)
+        NSLog("ReactNative ls: path = \(path)")
         do {
             let res =  try wnfs?.Ls(cid: rootCid!, remotePath: path)
 
@@ -735,7 +741,7 @@ class FulaModule: NSObject {
             guard let s = res?.toUTF8String() else {
                 throw MyError.runtimeError("converting bytes to utf8 string")
             }
-            print("ReactNative", "ls: res = " + s)
+            NSLog("ReactNative ls: res = \(s)")
             resolve(s)
         } catch let error {
             print("ls", error.localizedDescription)
@@ -1153,15 +1159,18 @@ class FulaModule: NSObject {
             try shutdownInternal()
             resolve(true)
         } catch let error {
-            print("ReactNative", "shutdown", error.localizedDescription)
+            NSLog("ReactNative shutdown \(error.localizedDescription)")
             reject("ERR_FULA", "shutdown", error)
         }
 
     }
 
     func shutdownInternal() throws {
+        NSLog("ReactNative shutdownInternal")
         if(fula != nil) {
+            NSLog("ReactNative shutdownInternal fula is not null")
             try fula?.shutdown()
+            NSLog("ReactNative shutdownInternal fula.shutdown called")
             fula = nil
             client = nil
             wnfs = nil
