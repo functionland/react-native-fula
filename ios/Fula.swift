@@ -1372,7 +1372,7 @@ class FulaModule: NSObject {
       }
   }
 
-    @objc(assetsBalance:assetId:classId:withResolver:withRejecter:)
+    @objc(assetsBalance:withAssetId:withClassId:withResolver:withRejecter:)
     func assetsBalance(account: String, assetId: String, classId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard let assetIdInt = Int(assetId), let classIdInt = Int(classId) else {
             reject("ERR_FULA", "Invalid assetId or classId", nil)
