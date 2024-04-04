@@ -398,12 +398,12 @@ class FulaModule: NSObject {
 
     func createPeerIdentity(privateKey: Data) throws -> Data {
         let secretKey = try Cryptography.generateKey(privateKey)
-        
+
         var encryptedKey: String? = userDataHelper.getValue(FulaModule.PRIVATE_KEY_STORE_ID)
         NSLog("ReactNative createPeerIdentity encryptedKey=\(encryptedKey ?? "nil")")
         if encryptedKey == nil {
             let privateKeyString = String(data: privateKey, encoding: .utf8) ?? ""
-    
+
             guard !privateKeyString.isEmpty else {
                 throw NSError(domain: "KeyGenerationError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Private key string conversion failed"])
             }
@@ -415,7 +415,7 @@ class FulaModule: NSObject {
             NSLog("ReactNative createPeerIdentity encryptedKey2=\(encryptedKey)")
             userDataHelper.add(FulaModule.PRIVATE_KEY_STORE_ID, encryptedKey ?? "")
         }
-        
+
         // Assuming decryptMsg returns Data or throws an error if decryption fails
         guard let encryptedKeyData = encryptedKey, !encryptedKeyData.isEmpty else {
             throw NSError(domain: "DecryptionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Encrypted key is empty"])
@@ -429,12 +429,12 @@ class FulaModule: NSObject {
     func decryptLibp2pIdentity(_ encryptedLibp2pId: String, with encryptionSecretKey: Data) throws -> String {
         // Convert Data to [UInt8]
         let secretKeyBytes = [UInt8](encryptionSecretKey)
-        
+
         // Attempt decryption
         guard let decryptedBytes = try? Cryptography.decryptMsg(encryptedLibp2pId, secretKeyBytes) else {
             throw NSError(domain: "DecryptionError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to decrypt Libp2p ID"])
         }
-        
+
         // Assuming decryptedBytes is an array of UInt8
         return String(decoding: decryptedBytes, as: UTF8.self)
     }
@@ -1505,6 +1505,25 @@ class FulaModule: NSObject {
         do {
             // Since fetchContainerLogs expects a String for tailCount, pass it directly
             let result = try self.fula!.fetchContainerLogs(containerName, tailCount: tailCount)
+            guard let resultString = result.toUTF8String() else {
+                // Handle the case where result.toUTF8String() returns nil
+                let error = NSError(domain: "FULAErrorDomain",
+                                    code: 1007, // Choose a suitable error code
+                                    userInfo: [NSLocalizedDescriptionKey: "Failed to convert log data to string."])
+                reject("ERR_FULA", "Log Conversion Error", error)
+                return
+            }
+            resolve(resultString)
+        } catch let error as NSError {
+            print("fetchContainerLogs", error.localizedDescription)
+            reject("ERR_FULA", "fetchContainerLogs failed", error)
+        }
+    }
+    @objc(findBestAndTargetInLogs:withTailCount:withResolver:withRejecter:)
+    func findBestAndTargetInLogs(containerName: String, tailCount: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        do {
+            // Since fetchContainerLogs expects a String for tailCount, pass it directly
+            let result = try self.fula!.findBestAndTargetInLogs(containerName, tailCount: tailCount)
             guard let resultString = result.toUTF8String() else {
                 // Handle the case where result.toUTF8String() returns nil
                 let error = NSError(domain: "FULAErrorDomain",

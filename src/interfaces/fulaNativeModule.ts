@@ -125,6 +125,10 @@ interface FulaNativeModule {
     containerName: string,
     tailCount: string
   ) => Promise<string>;
+  findBestAndTargetInLogs: (
+    containerName: string,
+    tailCount: string
+  ) => Promise<string>;
   getFolderSize: (folderPath: string) => Promise<string>;
   getDatastoreSize: () => Promise<string>;
   bloxFreeSpace: () => Promise<string>;

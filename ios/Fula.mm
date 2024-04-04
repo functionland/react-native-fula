@@ -186,6 +186,11 @@ RCT_EXTERN_METHOD(fetchContainerLogs:(NSString *)containerName
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(findBestAndTargetInLogs:(NSString *)containerName
+                  withTailCount:(NSString *)tailCount
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(getFolderSize:(NSString *)folderPath
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)

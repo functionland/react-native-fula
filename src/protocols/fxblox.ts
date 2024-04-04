@@ -118,6 +118,34 @@ export const fetchContainerLogs = (
   return res;
 };
 
+export const findBestAndTargetInLogs = (
+  containerName: string,
+  tailCount: string
+): Promise<BType.FindBestAndTargetInLogsResponse> => {
+  console.log('findBestAndTargetInLogs in react-native started');
+  let res = Fula.findBestAndTargetInLogs(containerName, tailCount)
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.FindBestAndTargetInLogsResponse = JSON.parse(res1);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in findBestAndTargetInLogs:', e1);
+          throw e1; // Rethrow the error to maintain the rejection state
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error findBestAndTargetInLogs:', err);
+      throw err; // Rethrow the error to maintain the rejection state
+    });
+  return res;
+};
+
 export const getFolderSize = (
   folderPath: string
 ): Promise<BType.GetFolderPathResponse> => {

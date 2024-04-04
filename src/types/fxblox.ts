@@ -21,6 +21,12 @@ export interface FetchContainerLogsResponse {
   msg: string;
 }
 
+export interface FindBestAndTargetInLogsResponse {
+  best: string;
+  target: string;
+  err: string;
+}
+
 export interface GetFolderPathResponse {
   folder_path: string;
   size: string;
