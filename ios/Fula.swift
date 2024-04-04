@@ -1372,15 +1372,25 @@ class FulaModule: NSObject {
 
 
   @objc(getAccount:withRejecter:)
-  func getAccount(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-      do {
-          let account = try self.fula!.getAccount()
-          let accountString = String(data: account, encoding: .utf8)
-          resolve(accountString)
-      } catch let error {
-          reject("ERR_FULA", "getAccount: \(error.localizedDescription)", error)
-      }
-  }
+    func getAccount(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard let fulaClient = self.fula else {
+            let error = NSError(domain: "FulaModuleError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fula client is not initialized"])
+            reject("ERR_FULA_NOT_INITIALIZED", "Fula client is not initialized", error)
+            return
+        }
+
+        do {
+            let account = try fulaClient.getAccount()
+            guard let accountString = String(data: account, encoding: .utf8) else {
+                let conversionError = NSError(domain: "FulaModuleError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Unable to convert account data to String"])
+                reject("ERR_FULA_CONVERSION_FAILED", "Unable to convert account data to String", conversionError)
+                return
+            }
+            resolve(accountString)
+        } catch let error {
+            reject("ERR_FULA", "getAccount: \(error.localizedDescription)", error)
+        }
+    }
 
     @objc(assetsBalance:withAssetId:withClassId:withResolver:withRejecter:)
     func assetsBalance(account: String, assetId: String, classId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
