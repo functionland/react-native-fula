@@ -1332,17 +1332,27 @@ class FulaModule: NSObject {
 
 
     @objc(bloxFreeSpace:withRejecter:)
-    func bloxFreeSpace( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+    func bloxFreeSpace(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         print("ReactNative", "bloxFreeSpace")
+        guard let fulaClient = self.fula else {
+            print("bloxFreeSpace", "fula client is nil")
+            let error = NSError(domain: "FulaModuleError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Fula client is not initialized"])
+            reject("ERR_FULA_NOT_INITIALIZED", "Fula client is not initialized", error)
+            return
+        }
+
         do {
-            let result = try self.fula!.bloxFreeSpace()
-            let resultString = result.toUTF8String()!
+            let result = try fulaClient.bloxFreeSpace()
+            guard let resultString = result.toUTF8String() else {
+                let error = NSError(domain: "FulaModuleError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert result to String"])
+                reject("ERR_FULA_RESULT_CONVERSION", "Failed to convert result to String", error)
+                return
+            }
             resolve(resultString)
         } catch let error {
             print("bloxFreeSpace", error.localizedDescription)
             reject("ERR_FULA", "bloxFreeSpace", error)
         }
-
     }
 
     @objc(transferToFula:wallet:chain:withResolver:withRejecter:)
