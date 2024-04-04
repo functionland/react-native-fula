@@ -1480,8 +1480,8 @@ class FulaModule: NSObject {
       }
   }
 
-    @objc(fetchContainerLogs:tailCount:withResolver:withRejecter:)
-    func fetchContainerLogs(containerName: String, tailCount: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+    @objc(fetchContainerLogs:withTailCount:withResolver:withRejecter:)
+    func fetchContainerLogs(containerName: String, tailCount: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         do {
             // Since fetchContainerLogs expects a String for tailCount, pass it directly
             let result = try self.fula!.fetchContainerLogs(containerName, tailCount: tailCount)
