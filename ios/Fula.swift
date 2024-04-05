@@ -1523,7 +1523,7 @@ class FulaModule: NSObject {
     func findBestAndTargetInLogs(containerName: String, tailCount: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         do {
             // Since fetchContainerLogs expects a String for tailCount, pass it directly
-            let result = try self.fula!.findBestAndTargetInLogs(containerName, tailCount: tailCount)
+            let result = try self.fula!.findBestAndTarget(inLogs: containerName, tailCount: tailCount)
             guard let resultString = result.toUTF8String() else {
                 // Handle the case where result.toUTF8String() returns nil
                 let error = NSError(domain: "FULAErrorDomain",
