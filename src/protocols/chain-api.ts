@@ -333,7 +333,12 @@ export const manifestNewBatch = async (
         .catch((err) => {
           console.log(err);
         });
-      if (!manifestInfo || manifestInfo == '' || manifestInfo == null) {
+      if (
+        !manifestInfo ||
+        manifestInfo.isEmpty ||
+        manifestInfo.toString() === '' ||
+        manifestInfo == null
+      ) {
         newCids.push(cid);
       } else {
         let formattedManifestInfo: BType.ManifestResponse = JSON.parse(
