@@ -4,6 +4,7 @@ import {
   checkAccountBalance,
   getAccountIdFromSeed,
   batchUploadManifest,
+  manifestNewBatch,
 } from './chain-api';
 import { batchUploadManifest as batchUploadManifestBlox } from './blockchain';
 import { ApiPromise } from '@polkadot/api';
@@ -355,10 +356,16 @@ export const replicateRecentCids = async (
   seed: string,
   poolId: number,
   replicationNo: number = 4
-): Promise<{ status: boolean; msg: string; cids: string[] }> => {
+): Promise<{
+  status: boolean;
+  msg: string;
+  cids: string[];
+  allCids: string[];
+}> => {
   let status = true;
   let msg = '';
   let recentCids: string[] = [];
+  let newCids: string[] = [];
   if (!api) {
     api = await chainApiInit();
   }
@@ -380,10 +387,11 @@ export const replicateRecentCids = async (
             poolId,
             replicationNo,
           });
+          newCids = await manifestNewBatch(api, poolId, account, recentCids);
           const res = await batchUploadManifest(
             api,
             seed,
-            recentCids,
+            newCids,
             poolId,
             replicationNo
           );
@@ -429,7 +437,7 @@ export const replicateRecentCids = async (
 
   // Return a value (true/false) depending on the outcome of the function
   // For example:
-  return { status: status, msg: msg, cids: recentCids }; // or false, depending on your logic
+  return { status: status, msg: msg, cids: newCids, allCids: recentCids }; // or false, depending on your logic
 };
 
 /**
@@ -449,42 +457,42 @@ export const replicateRecentCidsBlox = async (
     //const accountBal = await getAccountBalanceBlox();
     const accountBal = '1';
     console.log('account balance: ' + accountBal);
-      const recentCids = await listRecentCidsAsStringWithChildren();
-      console.log(recentCids);
-      if (recentCids) {
-        console.log({
-          api,
-          seed,
-          recentCids,
-          poolId,
-          replicationNo,
-        });
-        const res = await batchUploadManifestBlox(
-          api,
-          seed,
-          recentCids,
-          poolId,
-          replicationNo
-        );
-        console.log('batchUploadManifest res received');
-        console.log(res);
-        if (res) {
-          if (typeof res === 'object' && 'pool_id' in res) {
-            msg = res.storer;
-          } else {
-            status = false;
-            msg =
-              'Unexpected response from batchUploadManifestBlox: ' +
-              JSON.stringify(res);
-          }
+    const recentCids = await listRecentCidsAsStringWithChildren();
+    console.log(recentCids);
+    if (recentCids) {
+      console.log({
+        api,
+        seed,
+        recentCids,
+        poolId,
+        replicationNo,
+      });
+      const res = await batchUploadManifestBlox(
+        api,
+        seed,
+        recentCids,
+        poolId,
+        replicationNo
+      );
+      console.log('batchUploadManifest res received');
+      console.log(res);
+      if (res) {
+        if (typeof res === 'object' && 'pool_id' in res) {
+          msg = res.storer;
         } else {
           status = false;
-          msg = 'hash is not returned';
+          msg =
+            'Unexpected response from batchUploadManifestBlox: ' +
+            JSON.stringify(res);
         }
       } else {
         status = false;
-        msg = 'No recent Cids found';
+        msg = 'hash is not returned';
       }
+    } else {
+      status = false;
+      msg = 'No recent Cids found';
+    }
   } catch (e: any) {
     console.log('res failed');
     console.log(e);

@@ -306,3 +306,50 @@ export const getAccountIdFromSeed = async (seed: string): Promise<string> => {
     return Promise.reject(err);
   }
 };
+
+/*
+  listPools: This function takes start index and length and returns a promise of an object that contains a list of pools. Each pool in the list contains the poolID, owner, poolName, parent, and participants of the pool
+  */
+export const manifestNewBatch = async (
+  api: ApiPromise | undefined,
+  poolId: number,
+  uploader: string,
+  cids: string[]
+): Promise<string[]> => {
+  console.log('manifestAvailableBatch in react-native started');
+  let newCids: string[] = [];
+  try {
+    if (api === undefined) {
+      api = await init();
+    }
+    // Type guard to assure TypeScript that api is not undefined
+    if (!api?.query?.fula?.manifests) {
+      throw new Error('Failed to initialize api or api.query.fula');
+    }
+
+    for (const cid of cids) {
+      const manifestInfo = await api.query.fula
+        .manifests(poolId, cid)
+        .catch((err) => {
+          console.log(err);
+        });
+      if (!manifestInfo || manifestInfo == '' || manifestInfo == null) {
+        newCids.push(cid);
+      } else {
+        let formattedManifestInfo: BType.ManifestResponse = JSON.parse(
+          JSON.stringify(manifestInfo.toHuman())
+        );
+        if (
+          formattedManifestInfo?.usersData?.some(
+            (user) => user.uploader === uploader
+          )
+        ) {
+          newCids.push(formattedManifestInfo.manifestMetadata.job.uri);
+        }
+      }
+    }
+    return Promise.resolve(newCids);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};

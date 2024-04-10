@@ -112,3 +112,15 @@ export interface BloxFreeSpaceResponse {
   used: number;
   used_percentage: number;
 }
+
+export interface UserData {
+  uploader: string;
+  storers: string[];
+  replicationFactor: number;
+}
+
+export interface ManifestResponse {
+  usersData: UserData[];
+  manifestMetadata: ManifestMetadata;
+  size_?: number | null; // The question mark indicates that this field is optional.
+}
