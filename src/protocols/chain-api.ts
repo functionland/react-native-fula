@@ -341,6 +341,7 @@ export const manifestNewBatch = async (
       ) {
         newCids.push(cid);
       } else {
+        let addCid = true;
         let formattedManifestInfo: BType.ManifestResponse = JSON.parse(
           JSON.stringify(manifestInfo.toHuman())
         );
@@ -349,7 +350,19 @@ export const manifestNewBatch = async (
             (user) => user.uploader === uploader
           )
         ) {
-          newCids.push(formattedManifestInfo.manifestMetadata.job.uri);
+          addCid = false;
+        }
+        if (addCid && formattedManifestInfo?.manifestMetadata) {
+          try {
+            let manifestMetaData: BType.ManifestMetadata = JSON.parse(
+              formattedManifestInfo?.manifestMetadata
+            );
+            if (manifestMetaData?.job?.uri) {
+              newCids.push(manifestMetaData.job.uri);
+            }
+          } catch (e) {
+            console.log('error while parsing manifestMetadata');
+          }
         }
       }
     }

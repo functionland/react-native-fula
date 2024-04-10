@@ -121,6 +121,6 @@ export interface UserData {
 
 export interface ManifestResponse {
   usersData: UserData[];
-  manifestMetadata: ManifestMetadata;
+  manifestMetadata: string;
   size_?: number | null; // The question mark indicates that this field is optional.
 }
