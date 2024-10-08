@@ -197,3 +197,150 @@ export const getDatastoreSize = (): Promise<BType.GetDatastoreSizeResponse> => {
     });
   return res;
 };
+
+export const listPlugins = (): Promise<BType.ListPluginsResponse> => {
+  console.log('listPlugins in react-native started');
+  let res = Fula.listPlugins()
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.ListPluginsResponse = JSON.parse(res1);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in listPlugins:', e1);
+          throw e1;
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error listPlugins:', err);
+      throw err;
+    });
+  return res;
+};
+
+export const listActivePlugins =
+  (): Promise<BType.ListActivePluginsResponse> => {
+    console.log('listActivePlugins in react-native started');
+    let res = Fula.listActivePlugins()
+      .then((res1) => {
+        try {
+          console.log('res1 received');
+          console.log(res1);
+          let jsonRes: BType.ListActivePluginsResponse = JSON.parse(res1);
+          if (jsonRes.status) {
+            return jsonRes;
+          } else {
+            console.error('Error getting listActivePlugins:', jsonRes.msg);
+            throw jsonRes;
+          }
+        } catch (e) {
+          try {
+            return JSON.parse(res1);
+          } catch (e1) {
+            console.error('Error parsing res in listActivePlugins:', e1);
+            throw e1;
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('Error listActivePlugins:', err);
+        throw err;
+      });
+    return res;
+  };
+
+export const installPlugin = (
+  pluginName: string,
+  params: string
+): Promise<BType.InstallPluginResponse> => {
+  console.log('installPlugin in react-native started');
+  let res = Fula.installPlugin(pluginName, params)
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.InstallPluginResponse = JSON.parse(res1);
+        if (jsonRes.status) {
+          return jsonRes;
+        } else {
+          throw jsonRes;
+        }
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in installPlugin:', e1);
+          throw e1;
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error installPlugin:', err);
+      throw err;
+    });
+  return res;
+};
+
+export const uninstallPlugin = (
+  pluginName: string
+): Promise<BType.UninstallPluginResponse> => {
+  console.log('uninstallPlugin in react-native started');
+  let res = Fula.uninstallPlugin(pluginName)
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.UninstallPluginResponse = JSON.parse(res1);
+        if (jsonRes.status) {
+          return jsonRes;
+        } else {
+          throw jsonRes;
+        }
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in uninstallPlugin:', e1);
+          throw e1;
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error uninstallPlugin:', err);
+      throw err;
+    });
+  return res;
+};
+
+export const showPluginStatus = (
+  pluginName: string,
+  lines: number
+): Promise<BType.ShowPluginStatusResponse> => {
+  console.log('showPluginStatus in react-native started');
+  let res = Fula.showPluginStatus(pluginName, lines)
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.ShowPluginStatusResponse = JSON.parse(res1);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in showPluginStatus:', e1);
+          throw e1;
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error showPluginStatus:', err);
+      throw err;
+    });
+  return res;
+};

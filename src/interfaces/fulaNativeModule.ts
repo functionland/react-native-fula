@@ -135,6 +135,13 @@ interface FulaNativeModule {
   wifiRemoveall: () => Promise<string>;
   reboot: () => Promise<string>;
   partition: () => Promise<string>;
+
+  // Plugin related functions
+  listPlugins: () => Promise<string>;
+  listActivePlugins: () => Promise<string>;
+  installPlugin: (pluginName: string, params: string) => Promise<string>;
+  uninstallPlugin: (pluginName: string) => Promise<string>;
+  showPluginStatus: (pluginName: string, lines: number) => Promise<string>;
 }
 
 const LINKING_ERROR =

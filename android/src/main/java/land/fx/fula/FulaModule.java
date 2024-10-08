@@ -1181,7 +1181,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         }
         promise.resolve(false);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1230,7 +1230,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1245,7 +1245,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1262,7 +1262,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1277,7 +1277,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1292,7 +1292,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1307,7 +1307,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1323,7 +1323,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1339,7 +1339,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1355,7 +1355,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1371,7 +1371,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1387,7 +1387,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         String resultString = toString(result);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1561,7 +1561,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "result string="+resultString);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1577,7 +1577,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "result string="+resultString);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1657,7 +1657,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "result string="+resultString);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1673,7 +1673,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "result string="+resultString);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1689,7 +1689,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
         Log.d("ReactNative", "result string="+resultString);
         promise.resolve(resultString);
       } catch (Exception e) {
-        Log.d("ReactNative", e.getMessage());
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
         promise.reject(e);
       }
     });
@@ -1724,6 +1724,82 @@ public class FulaModule extends ReactContextBaseJavaModule {
       Log.d("ReactNative", "ERROR:" + e.getMessage());
       promise.reject(e);
     }
+  }
+
+  // Plugin Methods
+  @ReactMethod
+  public void listPlugins(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "listPlugins");
+      try {
+        byte[] result = this.fula.listPlugins();
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void listActivePlugins(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "listActivePlugins");
+      try {
+        byte[] result = this.fula.listActivePlugins();
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void installPlugin(String pluginName, String params, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "installPlugin: pluginName = " + pluginName + ", params = " + params);
+      try {
+        byte[] result = this.fula.installPlugin(pluginName, params);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void uninstallPlugin(String pluginName, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "uninstallPlugin: pluginName = " + pluginName);
+      try {
+        byte[] result = this.fula.uninstallPlugin(pluginName);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void showPluginStatus(String pluginName, int lines, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "showPluginStatus: pluginName = " + pluginName + ", lines = " + lines);
+      try {
+        byte[] result = this.fula.showPluginStatus(pluginName, lines);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
   }
 
 }

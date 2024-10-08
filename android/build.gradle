@@ -98,8 +98,8 @@ dependencies {
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
   //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-native:+"
-  implementation 'com.github.functionland:fula-build-aar:v1.54.10' // From jitpack.io
+  implementation "com.facebook.react:react-android:+"
+  implementation 'com.github.functionland:fula-build-aar:v1.54.13' // From jitpack.io
   implementation 'com.github.functionland:wnfs-android:v1.8.1' // From jitpack.io
   implementation 'commons-io:commons-io:20030203.000550'
   implementation 'commons-codec:commons-codec:1.15'

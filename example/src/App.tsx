@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, ScrollView, View, Button } from 'react-native';
+import { installPlugin, listPlugins } from '../../src/protocols/fxblox';
 
 import {
   fula,
@@ -69,8 +70,8 @@ const App = () => {
   // const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
   //const bloxPeerId = '12D3KooWAN5FaAnC4d1GhAvoYxyUXdrkCGqux1NB6Pr4cZXn813E'; //test aws server
 
-  const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
-  //const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
+  // const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
+  const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
   //const bloxAddr = '/dns4/1.pools.test.fula.network/tcp/40001/p2p/12D3KooWHb38UxY8akVGWZBuFtS3NJ7rJUwd36t3cfkoY7EbgNt9';
   const initFula = async () => {
     try {
@@ -1058,6 +1059,106 @@ const App = () => {
                     });
                 }
               });
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Getting...' : 'Test List Active Plugins'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send list plugin'
+                    );
+                    fxblox
+                      .listActivePlugins()
+                      .then((res: any) => {
+                        console.log('list active plugins received');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('list plugins failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Getting...' : 'Test Install Plugins'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send install plugin'
+                    );
+                    fxblox
+                      .installPlugin('streamr-node', 'contractAddress====test')
+                      .then((res: any) => {
+                        console.log('install plugins received');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('install plugins failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Getting...' : 'Test Uninstall Plugins'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send uninstall plugin'
+                    );
+                    fxblox
+                      .uninstallPlugin('streamr-node')
+                      .then((res: any) => {
+                        console.log('uninstall plugins received');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('uninstall plugins failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
