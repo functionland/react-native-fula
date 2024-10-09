@@ -409,3 +409,35 @@ export const getInstallOutput = (
     });
   return res;
 };
+
+export const updatePlugin = (
+  pluginName: string
+): Promise<BType.UpdatePluginResponse> => {
+  console.log('updatePlugin in react-native started');
+  let res = Fula.updatePlugin(pluginName)
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.UpdatePluginResponse = JSON.parse(res1);
+        if (jsonRes.status) {
+          return jsonRes;
+        } else {
+          console.error('Error updating plugin:', jsonRes.msg);
+          throw jsonRes;
+        }
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in updatePlugin:', e1);
+          throw e1;
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error updatePlugin:', err);
+      throw err;
+    });
+  return res;
+};

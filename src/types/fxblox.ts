@@ -106,11 +106,16 @@ export interface GetInstallOutputResponse {
   msg:
     | string
     | {
-    [key: string]: string;
-  };
+        [key: string]: string;
+      };
 }
 
 export interface GetInstallStatusResponse {
+  status: boolean;
+  msg: string;
+}
+
+export interface UpdatePluginResponse {
   status: boolean;
   msg: string;
 }

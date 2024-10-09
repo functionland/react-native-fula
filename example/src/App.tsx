@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, ScrollView, View, Button } from 'react-native';
 import { installPlugin, listPlugins, getInstallOutput, getInstallStatus } from '../../src/protocols/fxblox';
+import { updatePlugin } from '../../.history/src/protocols/fxblox_20241009155857';
 
 import {
   fula,
@@ -1220,6 +1221,40 @@ const App = () => {
                       })
                       .catch((e: any) => {
                         console.log('getInstallStatus plugins failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Getting...' : 'Test Update Plugin'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send updatePlugin'
+                    );
+                    fxblox
+                      .updatePlugin('streamr-node')
+                      .then((res: any) => {
+                        console.log('updatePlugin received');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('updatePlugin failed');
                         console.log(e);
                       });
                   }

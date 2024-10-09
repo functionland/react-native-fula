@@ -1832,4 +1832,19 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void updatePlugin(String pluginName, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "updatePlugin: pluginName = " + pluginName);
+      try {
+        byte[] result = this.fula.updatePlugin(pluginName);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
 }
