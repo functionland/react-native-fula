@@ -344,3 +344,68 @@ export const showPluginStatus = (
     });
   return res;
 };
+
+export const getInstallStatus = (
+  pluginName: string
+): Promise<BType.GetInstallStatusResponse> => {
+  console.log('getInstallStatus in react-native started');
+  let res = Fula.getInstallStatus(pluginName)
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.GetInstallStatusResponse = JSON.parse(res1);
+        if (jsonRes.status) {
+          return jsonRes;
+        } else {
+          console.error('Error getting install status:', jsonRes.msg);
+          throw jsonRes;
+        }
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in getInstallStatus:', e1);
+          throw e1;
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error getInstallStatus:', err);
+      throw err;
+    });
+  return res;
+};
+
+export const getInstallOutput = (
+  pluginName: string,
+  params: string
+): Promise<BType.GetInstallOutputResponse> => {
+  console.log('getInstallOutput in react-native started');
+  let res = Fula.getInstallOutput(pluginName, params)
+    .then((res1) => {
+      try {
+        console.log('res1 received');
+        console.log(res1);
+        let jsonRes: BType.GetInstallOutputResponse = JSON.parse(res1);
+        if (jsonRes.status) {
+          return jsonRes;
+        } else {
+          console.error('Error getting install output:', jsonRes.msg);
+          throw jsonRes;
+        }
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in getInstallOutput:', e1);
+          throw e1;
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error getInstallOutput:', err);
+      throw err;
+    });
+  return res;
+};

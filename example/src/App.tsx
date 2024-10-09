@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, ScrollView, View, Button } from 'react-native';
-import { installPlugin, listPlugins } from '../../src/protocols/fxblox';
+import { installPlugin, listPlugins, getInstallOutput, getInstallStatus } from '../../src/protocols/fxblox';
 
 import {
   fula,
@@ -1152,6 +1152,74 @@ const App = () => {
                       })
                       .catch((e: any) => {
                         console.log('uninstall plugins failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Getting...' : 'Test Get Output Plugins'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send getInstallOutput plugin'
+                    );
+                    fxblox
+                      .getInstallOutput('streamr-node', 'contractAddress')
+                      .then((res: any) => {
+                        console.log('getInstallOutput plugins received');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('getInstallOutput plugins failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Getting...' : 'Test Get Install Status Plugins'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log(
+                      'initialization is completed. send getInstallStatus plugin'
+                    );
+                    fxblox
+                      .getInstallStatus('streamr-node')
+                      .then((res: any) => {
+                        console.log('getInstallStatus plugins received');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('getInstallStatus plugins failed');
                         console.log(e);
                       });
                   }

@@ -100,3 +100,17 @@ export interface PluginParam {
   name: string;
   value: string;
 }
+
+export interface GetInstallOutputResponse {
+  status: boolean;
+  msg:
+    | string
+    | {
+    [key: string]: string;
+  };
+}
+
+export interface GetInstallStatusResponse {
+  status: boolean;
+  msg: string;
+}

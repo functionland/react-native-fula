@@ -1802,4 +1802,34 @@ public class FulaModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void getInstallOutput(String pluginName, String params, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "getInstallOutput: pluginName = " + pluginName + ", params = " + params);
+      try {
+        byte[] result = this.fula.getInstallOutput(pluginName, params);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getInstallStatus(String pluginName, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "getInstallStatus: pluginName = " + pluginName);
+      try {
+        byte[] result = this.fula.getInstallStatus(pluginName);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
 }

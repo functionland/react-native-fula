@@ -142,6 +142,8 @@ interface FulaNativeModule {
   installPlugin: (pluginName: string, params: string) => Promise<string>;
   uninstallPlugin: (pluginName: string) => Promise<string>;
   showPluginStatus: (pluginName: string, lines: number) => Promise<string>;
+  getInstallOutput: (pluginName: string, params: string) => Promise<string>;
+  getInstallStatus: (pluginName: string) => Promise<string>;
 }
 
 const LINKING_ERROR =
