@@ -1580,7 +1580,176 @@ class FulaModule: NSObject {
     }
 
 
-  //Add Replicate In Pool (replicateInPool)
+  @objc(listPlugins:withRejecter:)
+func listPlugins(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.global(qos: .background).async {
+        do {
+            let result = try self.fula!.listPlugins()
+            let resultString = result.toUTF8String()!
+            DispatchQueue.main.async {
+                resolve(resultString)
+            }
+        } catch let error {
+            print("listPlugins", error.localizedDescription)
+            DispatchQueue.main.async {
+                reject("ERR_FULA", "listPlugins", error)
+            }
+        }
+    }
+}
+
+@objc(listActivePlugins:withRejecter:)
+func listActivePlugins(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.global(qos: .background).async {
+        do {
+            let result = try self.fula!.listActivePlugins()
+            let resultString = result.toUTF8String()!
+            DispatchQueue.main.async {
+                resolve(resultString)
+            }
+        } catch let error {
+            print("listActivePlugins", error.localizedDescription)
+            DispatchQueue.main.async {
+                reject("ERR_FULA", "listActivePlugins", error)
+            }
+        }
+    }
+}
+
+@objc(installPlugin:withParams:withResolver:withRejecter:)
+func installPlugin(pluginName: String, params: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.global(qos: .background).async {
+        do {
+            let result = try self.fula!.installPlugin(pluginName, params: params)
+            let resultString = result.toUTF8String()!
+            DispatchQueue.main.async {
+                resolve(resultString)
+            }
+        } catch let error {
+            print("installPlugin", error.localizedDescription)
+            DispatchQueue.main.async {
+                reject("ERR_FULA", "installPlugin", error)
+            }
+        }
+    }
+}
+
+@objc(uninstallPlugin:withResolver:withRejecter:)
+func uninstallPlugin(pluginName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.global(qos: .background).async {
+        do {
+            let result = try self.fula!.uninstallPlugin(pluginName)
+            let resultString = result.toUTF8String()!
+            DispatchQueue.main.async {
+                resolve(resultString)
+            }
+        } catch let error {
+            print("uninstallPlugin", error.localizedDescription)
+            DispatchQueue.main.async {
+                reject("ERR_FULA", "uninstallPlugin", error)
+            }
+        }
+    }
+}
+
+@objc(showPluginStatus:withLines:withResolver:withRejecter:)
+func showPluginStatus(pluginName: String, lines: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.global(qos: .background).async {
+        do {
+            let result = try self.fula!.showPluginStatus(pluginName, lines: lines)
+            let resultString = result.toUTF8String()!
+            DispatchQueue.main.async {
+                resolve(resultString)
+            }
+        } catch let error {
+            print("showPluginStatus", error.localizedDescription)
+            DispatchQueue.main.async {
+                reject("ERR_FULA", "showPluginStatus", error)
+            }
+        }
+    }
+}
+
+@objc(getInstallOutput:withParams:withResolver:withRejecter:)
+func getInstallOutput(pluginName: String, params: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.global(qos: .background).async {
+        do {
+            let result = try self.fula!.getInstallOutput(pluginName, params: params)
+            let resultString = result.toUTF8String()!
+            DispatchQueue.main.async {
+                resolve(resultString)
+            }
+        } catch let error {
+            print("getInstallOutput", error.localizedDescription)
+            DispatchQueue.main.async {
+                reject("ERR_FULA", "getInstallOutput", error)
+            }
+        }
+    }
+}
+
+@objc(getInstallStatus:withResolver:withRejecter:)
+func getInstallStatus(pluginName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.global(qos: .background).async {
+        do {
+            let result = try self.fula!.getInstallStatus(pluginName)
+            let resultString = result.toUTF8String()!
+            DispatchQueue.main.async {
+                resolve(resultString)
+            }
+        } catch let error {
+            print("getInstallStatus", error.localizedDescription)
+            DispatchQueue.main.async {
+                reject("ERR_FULA", "getInstallStatus", error)
+            }
+        }
+    }
+}
+
+@objc(updatePlugin:withResolver:withRejecter:)
+func updatePlugin(pluginName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.global(qos: .background).async {
+        do {
+            let result = try self.fula!.updatePlugin(pluginName)
+            let resultString = result.toUTF8String()!
+            DispatchQueue.main.async {
+                resolve(resultString)
+            }
+        } catch let error {
+            print("updatePlugin", error.localizedDescription)
+            DispatchQueue.main.async {
+                reject("ERR_FULA", "updatePlugin", error)
+            }
+        }
+    }
+}
+
+@objc(replicateInPool:withAccount:withPoolID:withResolver:withRejecter:)
+func replicateInPool(cidArray: [String], account: String, poolID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.global(qos: .background).async {
+        do {
+            guard let poolIDLong = Int64(poolID) else {
+                throw NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Invalid poolID"])
+            }
+
+            let cidString = cidArray.joined(separator: "|")
+            let cidsBytes = cidString.data(using: .utf8)!
+
+            let result = try self.fula!.replicateInPool(cidsBytes, account: account, poolID: poolIDLong)
+            let resultString = String(data: result, encoding: .utf8)!
+
+            DispatchQueue.main.async {
+                resolve(resultString)
+            }
+        } catch let error {
+            print("replicateInPool", error.localizedDescription)
+            DispatchQueue.main.async {
+                reject("ERR_FULA", "replicateInPool failed", error)
+            }
+        }
+    }
+}
+
 
 }
 
