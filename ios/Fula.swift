@@ -1732,10 +1732,15 @@ func replicateInPool(cidArray: [String], account: String, poolID: String, resolv
                 throw NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Invalid poolID"])
             }
 
+            // Convert Int64 to Int, checking for overflow
+            guard let poolIDInt = Int(exactly: poolIDLong) else {
+                throw NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "PoolID is too large for Int"])
+            }
+
             let cidString = cidArray.joined(separator: "|")
             let cidsBytes = cidString.data(using: .utf8)!
 
-            let result = try self.fula!.replicateInPool(cidsBytes, account: account, poolID: poolIDLong)
+            let result = try self.fula!.replicateInPool(cidsBytes, account: account, poolID: poolIDInt)
             let resultString = String(data: result, encoding: .utf8)!
 
             DispatchQueue.main.async {
