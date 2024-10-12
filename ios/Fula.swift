@@ -1740,8 +1740,13 @@ func replicateInPool(cidArray: [String], account: String, poolID: String, resolv
             let cidString = cidArray.joined(separator: "|")
             let cidsBytes = cidString.data(using: .utf8)!
 
-            let result = try self.fula!.replicateInPool(cidsBytes, account: account, poolID: poolIDInt)
-            let resultString = String(data: result, encoding: .utf8)!
+            guard let result = try self.fula!.replicateInPool(cidsBytes, account: account, poolID: poolIDInt) else {
+                throw NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Replication result is nil"])
+            }
+
+            guard let resultString = String(data: result, encoding: .utf8) else {
+                throw NSError(domain: "FULAErrorDomain", code: 1004, userInfo: [NSLocalizedDescriptionKey: "Failed to decode result data to string"])
+            }
 
             DispatchQueue.main.async {
                 resolve(resultString)
