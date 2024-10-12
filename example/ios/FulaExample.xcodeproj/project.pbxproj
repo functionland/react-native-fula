@@ -14,8 +14,6 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		735FDADE2BB3A2CD001E82C7 /* hermes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 735FDADD2BB3A2CD001E82C7 /* hermes.xcframework */; };
 		735FDADF2BB3A2CD001E82C7 /* hermes.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 735FDADD2BB3A2CD001E82C7 /* hermes.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		737FFE2E2BB38AA10031CE03 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE2D2BB38AA10031CE03 /* OpenSSL.xcframework */; };
-		737FFE2F2BB38AA10031CE03 /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE2D2BB38AA10031CE03 /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		737FFE322BB38C2C0031CE03 /* double-conversion.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE312BB38C2C0031CE03 /* double-conversion.xcframework */; };
 		737FFE332BB38C2C0031CE03 /* double-conversion.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE312BB38C2C0031CE03 /* double-conversion.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		737FFE352BB38D030031CE03 /* glog.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE342BB38D030031CE03 /* glog.xcframework */; };
@@ -23,6 +21,8 @@
 		73C6FF7D2BB365D90086E783 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 73C6FF7C2BB365D90086E783 /* libresolv.tbd */; };
 		7699B88040F8A987B510C191 /* libPods-FulaExample-FulaExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-FulaExample-FulaExampleTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		843D2E6D2CB8E52400649ABF /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE2D2BB38AA10031CE03 /* OpenSSL.xcframework */; };
+		843D2E6E2CB8E52400649ABF /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 737FFE2D2BB38AA10031CE03 /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +44,7 @@
 			files = (
 				737FFE332BB38C2C0031CE03 /* double-conversion.xcframework in Embed Frameworks */,
 				735FDADF2BB3A2CD001E82C7 /* hermes.xcframework in Embed Frameworks */,
-				737FFE2F2BB38AA10031CE03 /* OpenSSL.xcframework in Embed Frameworks */,
+				843D2E6E2CB8E52400649ABF /* OpenSSL.xcframework in Embed Frameworks */,
 				737FFE362BB38D030031CE03 /* glog.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -90,7 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				737FFE2E2BB38AA10031CE03 /* OpenSSL.xcframework in Frameworks */,
+				843D2E6D2CB8E52400649ABF /* OpenSSL.xcframework in Frameworks */,
 				735FDADE2BB3A2CD001E82C7 /* hermes.xcframework in Frameworks */,
 				73C6FF7D2BB365D90086E783 /* libresolv.tbd in Frameworks */,
 				737FFE322BB38C2C0031CE03 /* double-conversion.xcframework in Frameworks */,
@@ -645,8 +645,14 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -711,8 +717,14 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

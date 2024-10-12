@@ -59,7 +59,7 @@ target 'FulaExample' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
+    # __apply_Xcode_12_5_M1_post_install_workaround(installer)
 
     # Second part, 'installer' used in place of 'pi'
     installer.pods_project.targets.each do |t|

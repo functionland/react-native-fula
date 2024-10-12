@@ -70,7 +70,7 @@ PODS:
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
-  - Fula (1.54.9)
+  - Fula (1.54.16)
   - glog (0.3.5)
   - hermes-engine (0.72.3):
     - hermes-engine/Pre-built (= 0.72.3)
@@ -377,9 +377,9 @@ PODS:
   - React-jsinspector (0.72.3)
   - React-logger (0.72.3):
     - glog
-  - react-native-fula (1.54.16):
+  - react-native-fula (1.54.24):
     - CryptoSwift (~> 1.7.1)
-    - Fula (~> 1.54.9)
+    - Fula (~> 1.54.10)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - Wnfs (= 1.1.1)
@@ -694,7 +694,7 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   FlipperKit: 2efad7007d6745a3f95e4034d547be637f89d3f6
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  Fula: dfc7d1f91525d5d6801d5cf2ca9b874594b1a6e1
+  Fula: 4b50e740f27e79a68ef6e4e5ba450da09a7645b0
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: 10fbd3f62405c41ea07e71973ea61e1878d07322
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
@@ -714,7 +714,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
-  react-native-fula: 7ab4a129685d7a66d4b52c6f7a3955e21a6f8ac8
+  react-native-fula: a7ae2ea0cb9512a82ddcc02ec5df76daa2dfeeaf
   React-NativeModulesApple: c57f3efe0df288a6532b726ad2d0322a9bf38472
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
@@ -739,6 +739,6 @@ SPEC CHECKSUMS:
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: ee0b05dae8e3d93432d3290cab829ff91c5c2f73
+PODFILE CHECKSUM: 716407594f9a9fca895d20c71f658b3e6bfde2d2
 
 COCOAPODS: 1.15.2
