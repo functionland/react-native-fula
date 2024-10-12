@@ -1738,9 +1738,9 @@ func replicateInPool(cidArray: [String], account: String, poolID: String, resolv
             }
 
             let cidString = cidArray.joined(separator: "|")
-            let cidsBytes = cidString.data(using: .utf8)!
+            let cidsBytes = cidString.data(using: .utf8)
 
-            guard let result = try self.fula!.replicateInPool(cidsBytes, account: account, poolID: poolIDInt) else {
+            guard let result = self.fula?.replicate(inPool: cidsBytes, account: account, poolID: poolIDInt) else {
                 throw NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Replication result is nil"])
             }
 
