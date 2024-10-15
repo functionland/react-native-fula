@@ -10230,11 +10230,6 @@ tsutils@^3.21.0:
   dependencies:
     tslib "^1.8.1"
 
-turbo-windows-64@1.10.16:
-  version "1.10.16"
-  resolved "https://registry.npmjs.org/turbo-windows-64/-/turbo-windows-64-1.10.16.tgz"
-  integrity sha512-+jsf68krs0N66FfC4/zZvioUap/Tq3sPFumnMV+EBo8jFdqs4yehd6+MxIwYTjSQLIcpH8KoNMB0gQYhJRLZzw==
-
 turbo@^1.10.7:
   version "1.10.16"
   resolved "https://registry.npmjs.org/turbo/-/turbo-1.10.16.tgz"
