@@ -1972,7 +1972,11 @@ func replicateInPool(cidArray: [String], account: String, poolID: String, resolv
 
             let result: Data
             do {
-                result = try fula.replicate(inPool: cidsBytes, account: account, poolID: poolIDInt)
+                if let replicationResult = try fula.replicate(inPool: cidsBytes, account: account, poolID: poolIDInt) {
+                    result = replicationResult
+                } else {
+                    throw NSError(domain: "FULAErrorDomain", code: 1007, userInfo: [NSLocalizedDescriptionKey: "Replication result is nil"])
+                }
             } catch {
                 print("Error replicating in pool: \(error)")
                 DispatchQueue.main.async {
