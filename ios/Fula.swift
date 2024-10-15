@@ -1579,20 +1579,34 @@ class FulaModule: NSObject {
         }
     }
 
-
-  @objc(listPlugins:withRejecter:)
+@objc(listPlugins:withRejecter:)
 func listPlugins(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {
         do {
-            let result = try self.fula!.listPlugins()
-            let resultString = result.toUTF8String()!
+            guard let fula = self.fula else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Fula not initialized", error)
+                }
+                return
+            }
+
+            let result = try fula.listPlugins()
+            guard let resultString = result.toUTF8String() else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Failed to convert plugin list to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Plugin List Conversion Error", error)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 resolve(resultString)
             }
         } catch let error {
             print("listPlugins", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "listPlugins", error)
+                reject("ERR_FULA", "listPlugins failed", error)
             }
         }
     }
@@ -1602,15 +1616,30 @@ func listPlugins(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RC
 func listActivePlugins(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {
         do {
-            let result = try self.fula!.listActivePlugins()
-            let resultString = result.toUTF8String()!
+            guard let fula = self.fula else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Fula not initialized", error)
+                }
+                return
+            }
+
+            let result = try fula.listActivePlugins()
+            guard let resultString = result.toUTF8String() else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Failed to convert active plugin list to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Active Plugin List Conversion Error", error)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 resolve(resultString)
             }
         } catch let error {
             print("listActivePlugins", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "listActivePlugins", error)
+                reject("ERR_FULA", "listActivePlugins failed", error)
             }
         }
     }
@@ -1656,15 +1685,30 @@ func uninstallPlugin(pluginName: String, resolve: @escaping RCTPromiseResolveBlo
 func showPluginStatus(pluginName: String, lines: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {
         do {
-            let result = try self.fula!.showPluginStatus(pluginName, lines: lines)
-            let resultString = result.toUTF8String()!
+            guard let fula = self.fula else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Fula not initialized", error)
+                }
+                return
+            }
+
+            let result = try fula.showPluginStatus(pluginName, lines: lines)
+            guard let resultString = result.toUTF8String() else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Failed to convert plugin status to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Plugin Status Conversion Error", error)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 resolve(resultString)
             }
         } catch let error {
             print("showPluginStatus", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "showPluginStatus", error)
+                reject("ERR_FULA", "showPluginStatus failed", error)
             }
         }
     }
@@ -1674,15 +1718,30 @@ func showPluginStatus(pluginName: String, lines: Int, resolve: @escaping RCTProm
 func getInstallOutput(pluginName: String, params: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {
         do {
-            let result = try self.fula!.getInstallOutput(pluginName, params: params)
-            let resultString = result.toUTF8String()!
+            guard let fula = self.fula else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Fula not initialized", error)
+                }
+                return
+            }
+
+            let result = try fula.getInstallOutput(pluginName, params: params)
+            guard let resultString = result.toUTF8String() else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Failed to convert install output to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Install Output Conversion Error", error)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 resolve(resultString)
             }
         } catch let error {
             print("getInstallOutput", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "getInstallOutput", error)
+                reject("ERR_FULA", "getInstallOutput failed", error)
             }
         }
     }
@@ -1692,15 +1751,30 @@ func getInstallOutput(pluginName: String, params: String, resolve: @escaping RCT
 func getInstallStatus(pluginName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {
         do {
-            let result = try self.fula!.getInstallStatus(pluginName)
-            let resultString = result.toUTF8String()!
+            guard let fula = self.fula else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Fula not initialized", error)
+                }
+                return
+            }
+
+            let result = try fula.getInstallStatus(pluginName)
+            guard let resultString = result.toUTF8String() else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Failed to convert install status to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Install Status Conversion Error", error)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 resolve(resultString)
             }
         } catch let error {
             print("getInstallStatus", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "getInstallStatus", error)
+                reject("ERR_FULA", "getInstallStatus failed", error)
             }
         }
     }
