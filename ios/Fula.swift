@@ -1624,8 +1624,26 @@ func listActivePlugins(resolve: @escaping RCTPromiseResolveBlock, reject: @escap
                 return
             }
 
-            let result = try fula.listActivePlugins()
-            guard let resultString = result.toUTF8String() else {
+            let result: Data
+            do {
+                result = try fula.listActivePlugins()
+            } catch {
+                print("Error listing active plugins: \(error)")
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Failed to list active plugins", error)
+                }
+                return
+            }
+
+            guard !result.isEmpty else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Active plugin list is empty"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA", "Empty Active Plugin List", error)
+                }
+                return
+            }
+
+            guard let resultString = String(data: result, encoding: .utf8) else {
                 let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Failed to convert active plugin list to string"])
                 DispatchQueue.main.async {
                     reject("ERR_FULA", "Active Plugin List Conversion Error", error)
@@ -1637,9 +1655,9 @@ func listActivePlugins(resolve: @escaping RCTPromiseResolveBlock, reject: @escap
                 resolve(resultString)
             }
         } catch let error {
-            print("listActivePlugins", error.localizedDescription)
+            print("listActivePlugins unexpected error:", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "listActivePlugins failed", error)
+                reject("ERR_FULA", "listActivePlugins failed unexpectedly", error)
             }
         }
     }
@@ -1649,15 +1667,30 @@ func listActivePlugins(resolve: @escaping RCTPromiseResolveBlock, reject: @escap
 func installPlugin(pluginName: String, params: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {
         do {
-            let result = try self.fula!.installPlugin(pluginName, params: params)
-            let resultString = result.toUTF8String()!
+            guard let fula = self.fula else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_NOT_INITIALIZED", "Fula not initialized", error)
+                }
+                return
+            }
+
+            let result = try fula.installPlugin(pluginName, params: params)
+            guard let resultString = result.toUTF8String() else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Failed to convert install result to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_RESULT_CONVERSION", "Install Result Conversion Error", error)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 resolve(resultString)
             }
         } catch let error {
-            print("installPlugin", error.localizedDescription)
+            print("installPlugin error:", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "installPlugin", error)
+                reject("ERR_FULA_INSTALL_PLUGIN", "Failed to install plugin: \(pluginName)", error)
             }
         }
     }
@@ -1667,15 +1700,30 @@ func installPlugin(pluginName: String, params: String, resolve: @escaping RCTPro
 func uninstallPlugin(pluginName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {
         do {
-            let result = try self.fula!.uninstallPlugin(pluginName)
-            let resultString = result.toUTF8String()!
+            guard let fula = self.fula else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_NOT_INITIALIZED", "Fula not initialized", error)
+                }
+                return
+            }
+
+            let result = try fula.uninstallPlugin(pluginName)
+            guard let resultString = result.toUTF8String() else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Failed to convert uninstall result to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_RESULT_CONVERSION", "Uninstall Result Conversion Error", error)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 resolve(resultString)
             }
         } catch let error {
-            print("uninstallPlugin", error.localizedDescription)
+            print("uninstallPlugin error:", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "uninstallPlugin", error)
+                reject("ERR_FULA_UNINSTALL_PLUGIN", "Failed to uninstall plugin: \(pluginName)", error)
             }
         }
     }
@@ -1688,16 +1736,34 @@ func showPluginStatus(pluginName: String, lines: Int, resolve: @escaping RCTProm
             guard let fula = self.fula else {
                 let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
                 DispatchQueue.main.async {
-                    reject("ERR_FULA", "Fula not initialized", error)
+                    reject("ERR_FULA_NOT_INITIALIZED", "Fula not initialized", error)
                 }
                 return
             }
 
-            let result = try fula.showPluginStatus(pluginName, lines: lines)
-            guard let resultString = result.toUTF8String() else {
-                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Failed to convert plugin status to string"])
+            let result: Data
+            do {
+                result = try fula.showPluginStatus(pluginName, lines: lines)
+            } catch {
+                print("Error showing plugin status: \(error)")
                 DispatchQueue.main.async {
-                    reject("ERR_FULA", "Plugin Status Conversion Error", error)
+                    reject("ERR_FULA_SHOW_PLUGIN_STATUS", "Failed to show plugin status", error)
+                }
+                return
+            }
+
+            guard !result.isEmpty else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Plugin status result is empty"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_EMPTY_RESULT", "Empty Plugin Status Result", error)
+                }
+                return
+            }
+
+            guard let resultString = String(data: result, encoding: .utf8) else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Failed to convert plugin status to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_RESULT_CONVERSION", "Plugin Status Conversion Error", error)
                 }
                 return
             }
@@ -1705,10 +1771,10 @@ func showPluginStatus(pluginName: String, lines: Int, resolve: @escaping RCTProm
             DispatchQueue.main.async {
                 resolve(resultString)
             }
-        } catch let error {
-            print("showPluginStatus", error.localizedDescription)
+        } catch {
+            print("showPluginStatus unexpected error:", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "showPluginStatus failed", error)
+                reject("ERR_FULA_SHOW_PLUGIN_STATUS", "showPluginStatus failed unexpectedly", error)
             }
         }
     }
@@ -1721,16 +1787,34 @@ func getInstallOutput(pluginName: String, params: String, resolve: @escaping RCT
             guard let fula = self.fula else {
                 let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
                 DispatchQueue.main.async {
-                    reject("ERR_FULA", "Fula not initialized", error)
+                    reject("ERR_FULA_NOT_INITIALIZED", "Fula not initialized", error)
                 }
                 return
             }
 
-            let result = try fula.getInstallOutput(pluginName, params: params)
-            guard let resultString = result.toUTF8String() else {
-                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Failed to convert install output to string"])
+            let result: Data
+            do {
+                result = try fula.getInstallOutput(pluginName, params: params)
+            } catch {
+                print("Error getting install output: \(error)")
                 DispatchQueue.main.async {
-                    reject("ERR_FULA", "Install Output Conversion Error", error)
+                    reject("ERR_FULA_GET_INSTALL_OUTPUT", "Failed to get install output", error)
+                }
+                return
+            }
+
+            guard !result.isEmpty else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Install output is empty"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_EMPTY_RESULT", "Empty Install Output", error)
+                }
+                return
+            }
+
+            guard let resultString = String(data: result, encoding: .utf8) else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Failed to convert install output to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_RESULT_CONVERSION", "Install Output Conversion Error", error)
                 }
                 return
             }
@@ -1738,10 +1822,10 @@ func getInstallOutput(pluginName: String, params: String, resolve: @escaping RCT
             DispatchQueue.main.async {
                 resolve(resultString)
             }
-        } catch let error {
-            print("getInstallOutput", error.localizedDescription)
+        } catch {
+            print("getInstallOutput unexpected error:", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "getInstallOutput failed", error)
+                reject("ERR_FULA_GET_INSTALL_OUTPUT", "getInstallOutput failed unexpectedly", error)
             }
         }
     }
@@ -1754,16 +1838,34 @@ func getInstallStatus(pluginName: String, resolve: @escaping RCTPromiseResolveBl
             guard let fula = self.fula else {
                 let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
                 DispatchQueue.main.async {
-                    reject("ERR_FULA", "Fula not initialized", error)
+                    reject("ERR_FULA_NOT_INITIALIZED", "Fula not initialized", error)
                 }
                 return
             }
 
-            let result = try fula.getInstallStatus(pluginName)
-            guard let resultString = result.toUTF8String() else {
+            let result: Data
+            do {
+                result = try fula.getInstallStatus(pluginName)
+            } catch {
+                print("Error getting install status: \(error)")
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_GET_INSTALL_STATUS", "Failed to get install status", error)
+                }
+                return
+            }
+
+            guard !result.isEmpty else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Install status result is empty"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_EMPTY_RESULT", "Empty Install Status Result", error)
+                }
+                return
+            }
+
+            guard let resultString = String(data: result, encoding: .utf8) else {
                 let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Failed to convert install status to string"])
                 DispatchQueue.main.async {
-                    reject("ERR_FULA", "Install Status Conversion Error", error)
+                    reject("ERR_FULA_RESULT_CONVERSION", "Install Status Conversion Error", error)
                 }
                 return
             }
@@ -1771,10 +1873,10 @@ func getInstallStatus(pluginName: String, resolve: @escaping RCTPromiseResolveBl
             DispatchQueue.main.async {
                 resolve(resultString)
             }
-        } catch let error {
-            print("getInstallStatus", error.localizedDescription)
+        } catch {
+            print("getInstallStatus unexpected error:", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "getInstallStatus failed", error)
+                reject("ERR_FULA_GET_INSTALL_STATUS", "getInstallStatus failed unexpectedly", error)
             }
         }
     }
@@ -1784,15 +1886,48 @@ func getInstallStatus(pluginName: String, resolve: @escaping RCTPromiseResolveBl
 func updatePlugin(pluginName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {
         do {
-            let result = try self.fula!.updatePlugin(pluginName)
-            let resultString = result.toUTF8String()!
+            guard let fula = self.fula else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_NOT_INITIALIZED", "Fula not initialized", error)
+                }
+                return
+            }
+
+            let result: Data
+            do {
+                result = try fula.updatePlugin(pluginName)
+            } catch {
+                print("Error updating plugin: \(error)")
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_UPDATE_PLUGIN", "Failed to update plugin: \(pluginName)", error)
+                }
+                return
+            }
+
+            guard !result.isEmpty else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Update plugin result is empty"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_EMPTY_RESULT", "Empty Update Plugin Result", error)
+                }
+                return
+            }
+
+            guard let resultString = String(data: result, encoding: .utf8) else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Failed to convert update plugin result to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_RESULT_CONVERSION", "Update Plugin Result Conversion Error", error)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 resolve(resultString)
             }
-        } catch let error {
-            print("updatePlugin", error.localizedDescription)
+        } catch {
+            print("updatePlugin unexpected error:", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "updatePlugin", error)
+                reject("ERR_FULA_UPDATE_PLUGIN", "updatePlugin failed unexpectedly", error)
             }
         }
     }
@@ -1802,33 +1937,73 @@ func updatePlugin(pluginName: String, resolve: @escaping RCTPromiseResolveBlock,
 func replicateInPool(cidArray: [String], account: String, poolID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {
         do {
-            guard let poolIDLong = Int64(poolID) else {
-                throw NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Invalid poolID"])
+            guard let fula = self.fula else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Fula instance is not initialized"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_NOT_INITIALIZED", "Fula not initialized", error)
+                }
+                return
             }
 
-            // Convert Int64 to Int, checking for overflow
+            guard let poolIDLong = Int64(poolID) else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Invalid poolID"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_INVALID_POOL_ID", "Invalid poolID", error)
+                }
+                return
+            }
+
             guard let poolIDInt = Int(exactly: poolIDLong) else {
-                throw NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "PoolID is too large for Int"])
+                let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "PoolID is too large for Int"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_POOL_ID_OVERFLOW", "PoolID is too large", error)
+                }
+                return
             }
 
             let cidString = cidArray.joined(separator: "|")
-            let cidsBytes = cidString.data(using: .utf8)
+            guard let cidsBytes = cidString.data(using: .utf8) else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1004, userInfo: [NSLocalizedDescriptionKey: "Failed to encode CIDs as data"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_CID_ENCODING", "Failed to encode CIDs", error)
+                }
+                return
+            }
 
-            guard let result = self.fula?.replicate(inPool: cidsBytes, account: account, poolID: poolIDInt) else {
-                throw NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Replication result is nil"])
+            let result: Data
+            do {
+                result = try fula.replicate(inPool: cidsBytes, account: account, poolID: poolIDInt)
+            } catch {
+                print("Error replicating in pool: \(error)")
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_REPLICATION", "Failed to replicate in pool", error)
+                }
+                return
+            }
+
+            guard !result.isEmpty else {
+                let error = NSError(domain: "FULAErrorDomain", code: 1005, userInfo: [NSLocalizedDescriptionKey: "Replication result is empty"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_EMPTY_RESULT", "Empty replication result", error)
+                }
+                return
             }
 
             guard let resultString = String(data: result, encoding: .utf8) else {
-                throw NSError(domain: "FULAErrorDomain", code: 1004, userInfo: [NSLocalizedDescriptionKey: "Failed to decode result data to string"])
+                let error = NSError(domain: "FULAErrorDomain", code: 1006, userInfo: [NSLocalizedDescriptionKey: "Failed to decode result data to string"])
+                DispatchQueue.main.async {
+                    reject("ERR_FULA_RESULT_DECODING", "Failed to decode result", error)
+                }
+                return
             }
 
             DispatchQueue.main.async {
                 resolve(resultString)
             }
-        } catch let error {
-            print("replicateInPool", error.localizedDescription)
+        } catch {
+            print("replicateInPool unexpected error:", error.localizedDescription)
             DispatchQueue.main.async {
-                reject("ERR_FULA", "replicateInPool failed", error)
+                reject("ERR_FULA_REPLICATE_IN_POOL", "replicateInPool failed unexpectedly", error)
             }
         }
     }
