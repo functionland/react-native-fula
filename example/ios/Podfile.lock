@@ -946,9 +946,9 @@ PODS:
   - React-Mapbuffer (0.73.0):
     - glog
     - React-debug
-  - react-native-fula (1.54.26):
+  - react-native-fula (1.54.29):
     - CryptoSwift (~> 1.7.1)
-    - Fula (~> 1.54.10)
+    - Fula (~> 1.54.16)
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1367,7 +1367,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 9f6fb9ed9f03a0fb961ab8dc2e0e0ee0dc729e77
   React-logger: 008caec0d6a587abc1e71be21bfac5ba1662fe6a
   React-Mapbuffer: 58fe558faf52ecde6705376700f848d0293d1cef
-  react-native-fula: b0edbc77c1d37993954c0d5877fef3067ce7ffce
+  react-native-fula: 957e044e4756e5148460df83f107b74d04a69736
   React-nativeconfig: a063483672b8add47a4875b0281e202908ff6747
   React-NativeModulesApple: 169506a5fd708ab22811f76ee06a976595c367a1
   React-perflogger: b61e5db8e5167f5e70366e820766c492847c082e
