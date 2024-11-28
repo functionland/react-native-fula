@@ -1220,12 +1220,18 @@ class FulaModule: NSObject {
 
     }
 
-    func shutdownInternal() throws {
+    func shutdownInternal() {
         NSLog("ReactNative shutdownInternal")
-        if(self.fula != nil) {
+        if self.fula != nil {
             NSLog("ReactNative shutdownInternal fula is not null")
-            try self.fula?.shutdown()
-            NSLog("ReactNative shutdownInternal fula.shutdown called")
+            do {
+                try self.fula?.shutdown()
+                NSLog("ReactNative shutdownInternal fula.shutdown called")
+            } catch {
+                // Handle specific errors if needed or log them
+                NSLog("ReactNative shutdownInternal error: \(error.localizedDescription)")
+            }
+            // Ensure resources are cleaned up regardless of errors
             self.fula = nil
             self.client = nil
             self.wnfs = nil

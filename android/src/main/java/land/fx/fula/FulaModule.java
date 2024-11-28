@@ -1197,8 +1197,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
       }
     } catch (Exception e) {
-      Log.d("ReactNative", "shutdownInternal"+ e.getMessage());
-      throw (e);
+      Log.d("ReactNative", "shutdownInternal error: "+ e.getMessage());
     }
   }
 
