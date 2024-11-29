@@ -1222,7 +1222,7 @@ class FulaModule: NSObject {
 
     @objc
     func deleteDsLock(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let lockFilePath = (fulaConfig.getStorePath() as NSString).appendingPathComponent("LOCK")
+        let lockFilePath = (fulaConfig!.storePath as NSString).appendingPathComponent("LOCK")
         let fileManager = FileManager.default
 
         do {
