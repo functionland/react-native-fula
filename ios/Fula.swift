@@ -1220,6 +1220,26 @@ class FulaModule: NSObject {
 
     }
 
+    @objc
+    func deleteDsLock(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let lockFilePath = (fulaConfig.getStorePath() as NSString).appendingPathComponent("LOCK")
+        let fileManager = FileManager.default
+
+        do {
+            if fileManager.fileExists(atPath: lockFilePath) {
+                try fileManager.removeItem(atPath: lockFilePath)
+                NSLog("ReactNative: Lock file deleted successfully.")
+                resolve(true)
+            } else {
+                NSLog("ReactNative: Lock file does not exist.")
+                resolve(false) // Resolve with false if the file doesn't exist
+            }
+        } catch let error as NSError {
+            NSLog("ReactNative: Failed to delete lock file: \(error.localizedDescription)")
+            reject("delete_error", "Failed to delete lock file", error)
+        }
+    }
+
     func shutdownInternal() {
         NSLog("ReactNative shutdownInternal")
         if self.fula != nil {

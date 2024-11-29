@@ -348,6 +348,10 @@ export const isReady = (filesystemCheck: boolean = true): Promise<boolean> => {
   return Fula.isReady(filesystemCheck);
 };
 
+export const deleteDsLock = (): Promise<void> => {
+  return Fula.deleteDsLock();
+}
+
 /**
  * replicate replicates data on the nework
  */

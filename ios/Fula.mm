@@ -231,6 +231,9 @@ RCT_EXTERN_METHOD(updatePlugin:(NSString *)pluginName
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(deleteDsLock:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(replicateInPool:(NSArray *)cidArray
                   withAccount:(NSString *)account
                   withPoolID:(NSString *)poolIDStr

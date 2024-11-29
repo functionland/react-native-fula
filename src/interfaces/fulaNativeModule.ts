@@ -145,6 +145,7 @@ interface FulaNativeModule {
   getInstallOutput: (pluginName: string, params: string) => Promise<string>;
   getInstallStatus: (pluginName: string) => Promise<string>;
   updatePlugin: (pluginName: string) => Promise<string>;
+  deleteDsLock: () => Promise<void>;
 }
 
 const LINKING_ERROR =

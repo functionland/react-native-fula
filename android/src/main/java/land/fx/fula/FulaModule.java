@@ -253,6 +253,22 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void deleteDsLock() {
+    String lockFilePath = fulaConfig.getStorePath() + "/LOCK";
+    Path lockFile = Paths.get(lockFilePath);
+    try {
+        if (Files.exists(lockFile)) {
+            Files.delete(lockFile);
+            Log.d("ReactNative", "Lock file deleted successfully.");
+        } else {
+            Log.d("ReactNative", "Lock file does not exist.");
+        }
+    } catch (Exception e) {
+        Log.d("ReactNative", "Failed to delete lock file: " + e.getMessage());
+    }
+  }
+
+  @ReactMethod
   public void isReady(boolean filesystemCheck, Promise promise) {
     Log.d("ReactNative", "isReady started");
     ThreadUtils.runOnExecutor(() -> {
