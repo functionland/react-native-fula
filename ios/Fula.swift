@@ -1569,13 +1569,32 @@ class FulaModule: NSObject {
 
   @objc(getFolderSize:withResolver:withRejecter:)
   func getFolderSize(folderPath: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      // Validate the folder path
+      guard !folderPath.isEmpty else {
+          reject("ERR_INVALID_PATH", "The folder path is empty.", nil)
+          return
+      }
+
       do {
-          let result = try self.fula!.getFolderSize(folderPath)
-          let resultString = result.toUTF8String()!
-          resolve(resultString)
+          // Ensure fula is not nil before calling getFolderSize
+          guard let fula = self.fula else {
+              reject("ERR_FULA", "Fula instance is not initialized.", nil)
+              return
+          }
+
+          // Attempt to get the folder size
+          let result = try fula.getFolderSize(folderPath)
+
+          // Convert the result to a UTF-8 string safely
+          if let resultString = result.toUTF8String() {
+              resolve(resultString)
+          } else {
+              reject("ERR_CONVERSION", "Failed to convert result to UTF-8 string.", nil)
+          }
       } catch let error {
-          print("getFolderSize", error.localizedDescription)
-          reject("ERR_FULA", "getFolderSize", error)
+          // Log and reject with detailed error information
+          print("getFolderSize error:", error.localizedDescription)
+          reject("ERR_FULA", "Failed to get folder size: \(error.localizedDescription)", error)
       }
   }
 
