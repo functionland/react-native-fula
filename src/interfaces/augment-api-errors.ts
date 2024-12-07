@@ -202,6 +202,7 @@ declare module '@polkadot/api-base/types/errors' {
       AccountNotUploader: AugmentedError<ApiType>;
       ErrorPickingAccountToChallenge: AugmentedError<ApiType>;
       ErrorPickingCIDToChallenge: AugmentedError<ApiType>;
+      FileAlreadyUploadedbyUser: AugmentedError<ApiType>;
       InvalidArrayLength: AugmentedError<ApiType>;
       ManifestAlreadyExist: AugmentedError<ApiType>;
       ManifestNotFound: AugmentedError<ApiType>;
@@ -249,6 +250,20 @@ declare module '@polkadot/api-base/types/errors' {
        * Cannot signal forced change so soon after last.
        **/
       TooSoon: AugmentedError<ApiType>;
+      /**
+       * Generic error
+       **/
+      [key: string]: AugmentedError<ApiType>;
+    };
+    imOnline: {
+      /**
+       * Duplicated heartbeat.
+       **/
+      DuplicatedHeartbeat: AugmentedError<ApiType>;
+      /**
+       * Non existent public key.
+       **/
+      InvalidKey: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
@@ -418,6 +433,16 @@ declare module '@polkadot/api-base/types/errors' {
        * and the new runtime.
        **/
       SpecVersionNeedsToIncrease: AugmentedError<ApiType>;
+      /**
+       * Generic error
+       **/
+      [key: string]: AugmentedError<ApiType>;
+    };
+    utility: {
+      /**
+       * Too many calls batched.
+       **/
+      TooManyCalls: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
