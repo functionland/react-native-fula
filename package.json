@@ -80,7 +80,8 @@
     "release-it": "^17.10.0",
     "ts-node": "^10.9.1",
     "turbo": "^1.10.7",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "@polkadot/typegen": "^15.0.1"
   },
   "resolutions": {
     "@types/react": "17.0.21"
