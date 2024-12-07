@@ -38,8 +38,8 @@
     "bootstrap": "yarn example && yarn install && yarn example pods",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build",
     "build:polkadot": "yarn generate:defs && yarn generate:meta",
-    "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --input ./src/interfaces --endpoint ./edgeware.json",
-    "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --endpoint ./edgeware.json --output ./src/interfaces"
+    "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --package sample-polkadotjs-typegen/interfaces --input ./src/interfaces --endpoint ./edgeware.json",
+    "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package sample-polkadotjs-typegen/interfaces --endpoint ./edgeware.json --output ./src/interfaces"
   },
   "keywords": [
     "react-native",
@@ -80,7 +80,7 @@
     "release-it": "^17.10.0",
     "ts-node": "^10.9.1",
     "turbo": "^1.10.7",
-    "typescript": "^5.0.2"
+    "typescript": "^5.7.2"
   },
   "resolutions": {
     "@types/react": "17.0.21"
