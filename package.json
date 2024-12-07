@@ -7,6 +7,18 @@
   "types": "lib/typescript/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "example"
+    ],
+    "nohoist": [
+      "**/react-native",
+      "**/react-native/**",
+      "**/react",
+      "**/react/**"
+    ]
+  },
   "files": [
     "src",
     "lib",
@@ -32,7 +44,7 @@
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "prepack": "bob build",
     "release": "release-it",
-    "example": "yarn --cwd example",
+    "example": "yarn workspace FulaExample",
     "build:android": "cd example/android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
     "build:ios": "cd example/ios && xcodebuild -workspace FulaExample.xcworkspace -scheme FulaExample -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO",
     "bootstrap": "yarn example && yarn install && yarn example pods",
@@ -57,7 +69,12 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-export-namespace-from": "^7.16.7",
+    "@babel/core": "^7.26.0",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
+    "@babel/plugin-transform-class-static-block": "^7.26.0",
+    "@babel/plugin-transform-runtime": "^7.25.9",
+    "@babel/runtime": "^7.26.0",
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
     "@react-native-community/eslint-config": "^3.0.2",
@@ -86,15 +103,11 @@
     "@types/react": "17.0.21"
   },
   "peerDependencies": {
-    "@babel/core": "^7.0.0-0",
-    "@babel/preset-env": "^7.1.6",
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
     "react": "*",
     "react-native": "0.73.0"
   },
-  "engines": {
-    "node": ">= 16.0.0"
-  },
-  "packageManager": "yarn@1.22.21",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
@@ -169,12 +182,15 @@
     ]
   },
   "dependencies": {
-    "@polkadot/api": "^9.11.3",
-    "@polkadot/keyring": "^10.2.6",
-    "@polkadot/typegen": "^10.10.1",
-    "@polkadot/util": "^10.2.6",
-    "@polkadot/util-crypto": "^10.2.6",
-    "text-encoding": "^0.7.0",
-    "yarn": "^1.22.21"
-  }
+    "@polkadot/api": "^15.0.1",
+    "@polkadot/keyring": "^13.2.3",
+    "@polkadot/typegen": "^15.0.1",
+    "@polkadot/util": "^13.2.3",
+    "@polkadot/util-crypto": "^13.2.3",
+    "text-encoding": "^0.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "yarn@3.6.4"
 }
