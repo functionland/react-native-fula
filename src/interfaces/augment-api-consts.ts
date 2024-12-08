@@ -42,12 +42,12 @@ declare module '@polkadot/api-base/types/consts' {
     balances: {
       /**
        * The minimum amount required to keep an account open. MUST BE GREATER THAN ZERO!
-       * 
+       *
        * If you *really* need it to be zero, you can enable the feature `insecure_zero_ed` for
        * this pallet. However, you do so at your own risk: this will open up a major DoS vector.
        * In case you have multiple sources of provider references, you may also get unexpected
        * behaviour if you set this to zero.
-       * 
+       *
        * Bottom line: Do yourself a favour and make it at least one!
        **/
       existentialDeposit: u128 & AugmentedConst<ApiType>;
@@ -108,7 +108,7 @@ declare module '@polkadot/api-base/types/consts' {
       maxAuthorities: u32 & AugmentedConst<ApiType>;
       /**
        * The maximum number of entries to keep in the set id to session index mapping.
-       * 
+       *
        * Since the `SetIdSession` map is only used for validating equivocations this
        * value should relate to the bonding duration of whatever staking system is
        * being used (if any). If equivocation handling is not enabled then this value
@@ -123,7 +123,7 @@ declare module '@polkadot/api-base/types/consts' {
     imOnline: {
       /**
        * A configuration for base priority of unsigned transactions.
-       * 
+       *
        * This is exposed so that it can be tuned for particular runtime, when
        * multiple pallets send unsigned transactions.
        **/
@@ -170,7 +170,7 @@ declare module '@polkadot/api-base/types/consts' {
       maximumWeight: SpWeightsWeightV2Weight & AugmentedConst<ApiType>;
       /**
        * The maximum number of scheduled calls in the queue for a single block.
-       * 
+       *
        * NOTE:
        * + Dependent pallets' benchmarks might require a higher limit for the setting. Set a
        * higher limit under `runtime-benchmarks` feature.
@@ -200,7 +200,7 @@ declare module '@polkadot/api-base/types/consts' {
       dbWeight: SpWeightsRuntimeDbWeight & AugmentedConst<ApiType>;
       /**
        * The designated SS58 prefix of this chain.
-       * 
+       *
        * This replaces the "ss58Format" property declared in the chain spec. Reason is
        * that the runtime should know about the prefix in order to make use of it as
        * an identifier of the chain.
@@ -232,21 +232,21 @@ declare module '@polkadot/api-base/types/consts' {
       /**
        * A fee mulitplier for `Operational` extrinsics to compute "virtual tip" to boost their
        * `priority`
-       * 
+       *
        * This value is multipled by the `final_fee` to obtain a "virtual tip" that is later
        * added to a tip component in regular `priority` calculations.
        * It means that a `Normal` transaction can front-run a similarly-sized `Operational`
        * extrinsic (with no tip), by including a tip value greater than the virtual tip.
-       * 
+       *
        * ```rust,ignore
        * // For `Normal`
        * let priority = priority_calc(tip);
-       * 
+       *
        * // For `Operational`
        * let virtual_tip = (inclusion_fee + tip) * OperationalFeeMultiplier;
        * let priority = priority_calc(tip + virtual_tip);
        * ```
-       * 
+       *
        * Note that since we use `final_fee` the multiplier applies also to the regular `tip`
        * sent with the transaction. So, not only does the transaction get a priority bump based
        * on the `inclusion_fee`, but we also amplify the impact of tips applied to `Operational`
