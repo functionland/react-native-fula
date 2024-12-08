@@ -2,6 +2,7 @@
   "name": "@functionland/react-native-fula",
   "version": "1.54.35",
   "description": "This package is a bridge to use the Fula libp2p protocols in the react-native which is using wnfs",
+  "type": "module",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -38,8 +39,8 @@
     "bootstrap": "yarn example && yarn install && yarn example pods",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build",
     "build:polkadot": "yarn generate:defs && yarn generate:meta",
-    "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --package fula-polkadotjs-typegen/interfaces --input ./src/interfaces --endpoint ./edgeware.json",
-    "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package fula-polkadotjs-typegen/interfaces --endpoint ./edgeware.json --output ./src/interfaces"
+    "generate:defs": "node --loader ts-node/esm node_modules/.bin/polkadot-types-from-defs --package fula-polkadotjs-typegen/interfaces --input ./src/interfaces --endpoint ./edgeware.json",
+    "generate:meta": "node --loader ts-node/esm node_modules/.bin/polkadot-types-from-chain --package fula-polkadotjs-typegen/interfaces --endpoint ./edgeware.json --output ./src/interfaces"
   },
   "keywords": [
     "react-native",
