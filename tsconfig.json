@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "noEmit": true,  // Required when using allowImportingTsExtensions
     "baseUrl": "./",
     "paths": {
       "react-native-fula": ["./src/index"]
