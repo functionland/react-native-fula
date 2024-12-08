@@ -9,6 +9,7 @@ import type { ApiTypes, AugmentedQuery, QueryableStorageEntry } from '@polkadot/
 import type { Bytes, Option, U8aFixed, Vec, WrapperOpaque, bool, u128, u32, u64 } from '@polkadot/types-codec';
 import type { AnyNumber, ITuple } from '@polkadot/types-codec/types';
 import type { AccountId32, Call, H256 } from '@polkadot/types/interfaces/runtime';
+import type { FrameSupportDispatchPerDispatchClassWeight, FrameSystemAccountInfo, FrameSystemEventRecord, FrameSystemLastRuntimeUpgradeInfo, FrameSystemPhase, FulaPoolPool, FulaPoolPoolRequest, FulaPoolUser, FunctionlandFulaChallenge, FunctionlandFulaClaimData, FunctionlandFulaManifest, FunctionlandFulaManifestStorageData, PalletBalancesAccountData, PalletBalancesBalanceLock, PalletBalancesIdAmount, PalletBalancesReserveData, PalletCollectiveVotes, PalletGrandpaStoredPendingChange, PalletGrandpaStoredState, PalletImOnlineBoundedOpaqueNetworkState, PalletImOnlineSr25519AppSr25519Public, PalletSchedulerScheduled, PalletTransactionPaymentReleases, SpCoreCryptoKeyTypeId, SpRuntimeDigest, SugarfungeAssetAsset, SugarfungeAssetClass, SugarfungeBagBag, SugarfungeBagBagClass, SugarfungeBundleBundle, SugarfungeMarketAssetRate, SugarfungeMarketMarket, SugarfungeRuntimeOpaqueSessionKeys } from '@polkadot/types/lookup';
 import type { Observable } from '@polkadot/types/types';
 
 export type __AugmentedQuery<ApiType extends ApiTypes> = AugmentedQuery<ApiType, () => unknown>;

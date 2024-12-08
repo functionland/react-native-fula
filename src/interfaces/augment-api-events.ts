@@ -9,6 +9,7 @@ import type { ApiTypes, AugmentedEvent } from '@polkadot/api-base/types';
 import type { Bytes, Null, Option, Result, U8aFixed, Vec, bool, i32, u128, u16, u32, u64 } from '@polkadot/types-codec';
 import type { ITuple } from '@polkadot/types-codec/types';
 import type { AccountId32, H256 } from '@polkadot/types/interfaces/runtime';
+import type { FrameSupportDispatchDispatchInfo, FrameSupportTokensMiscBalanceStatus, FunctionlandFulaChallengeState, FunctionlandFulaManifestAvailable, FunctionlandFulaManifestWithPoolId, FunctionlandFulaStorerData, PalletImOnlineSr25519AppSr25519Public, SpConsensusGrandpaAppPublic, SpRuntimeDispatchError, SugarfungeMarketRateBalance } from '@polkadot/types/lookup';
 
 export type __AugmentedEvent<ApiType extends ApiTypes> = AugmentedEvent<ApiType>;
 
