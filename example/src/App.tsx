@@ -11,7 +11,7 @@ import {
 const App = () => {
   const inprogress = false;
   const [newRootCid, setNewRootCid] = React.useState<string>('');
-  const root_cid = '';
+  const root_cid = 'bafyr4iejulnh5nbino7yygwpoezkbxldu7jxuzjmafpndzzl5vbixe6zoq';
   const seed =
     '0xb82cc245d889913ee01f48ad161ba8473cac9e516026488493ed20296721a2a5';
 
@@ -51,7 +51,7 @@ const App = () => {
         console.log(err.message, err.code);
       });
   };
-  //Key for peerId: 12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx
+  //Key for peerId: 12D3KooWFi2PK36Rzi4Bmosj1np2t6i9v3QnbBiNY9hQWuJajnmZ
   const privateKey = [
     183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27, 27,
     17, 17, 167, 100, 89, 157, 218, 73, 200, 183, 145, 104, 151, 204, 142, 241,
@@ -76,7 +76,7 @@ const App = () => {
   const initFula = async () => {
     try {
       return fula.init(
-        privateKey_tower.toString(),
+        privateKey.toString(),
         '',
         bloxAddr,
         '',
