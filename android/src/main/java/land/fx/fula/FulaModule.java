@@ -4,7 +4,12 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import android.os.Handler;
+import android.os.Looper;
+
+
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -15,6 +20,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 
 import org.apache.commons.io.FileUtils;
@@ -63,6 +69,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
 
   public static final String NAME = "FulaModule";
+  private final ReactApplicationContext reactContext;
   fulamobile.Client fula;
 
   Client client;
@@ -117,6 +124,7 @@ public class FulaModule extends ReactContextBaseJavaModule {
 
   public FulaModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    this.reactContext = reactContext;
     appName = reactContext.getPackageName();
     appDir = reactContext.getFilesDir().toString();
     fulaStorePath = appDir + "/fula";
@@ -1864,5 +1872,120 @@ public class FulaModule extends ReactContextBaseJavaModule {
       }
     });
   }
+
+  // AI
+  @ReactMethod
+  public void chatWithAI(String aiModel, String userMessage, Promise promise) {
+      ThreadUtils.runOnExecutor(() -> {
+          Log.d("ReactNative", "chatWithAI: aiModel = " + aiModel + ", userMessage = " + userMessage);
+          try {
+              // Call the Go Mobile method, which returns a byte[]
+              byte[] streamIDBytes = this.fula.chatWithAI(aiModel, userMessage);
+
+              // Convert byte[] to String (assuming UTF-8 encoding)
+              String streamID = new String(streamIDBytes, "UTF-8");
+
+              // Resolve the promise with the stream ID
+              promise.resolve(streamID);
+          } catch (Exception e) {
+              Log.d("ReactNative", "ERROR in chatWithAI: " + e.getMessage());
+              promise.reject(e); // Reject the promise with the error
+          }
+      });
+  }
+
+  @ReactMethod
+  public void getChatChunk(String streamID, Promise promise) {
+      ThreadUtils.runOnExecutor(() -> {
+          Log.d("ReactNative", "getChatChunk: streamID = " + streamID);
+          try {
+              // Call the Go Mobile method, which returns a String
+              String chunk = this.fula.getChatChunk(streamID);
+
+              // Handle null or empty response
+              if (chunk == null || chunk.isEmpty()) {
+                  Log.d("ReactNative", "getChatChunk: No data received for streamID = " + streamID);
+                  promise.resolve(""); // Resolve with an empty string
+                  return;
+              }
+
+              // Resolve the promise with the chunk of data
+              Log.d("ReactNative", "getChatChunk: Successfully received chunk for streamID = " + streamID);
+              promise.resolve(chunk);
+          } catch (Exception e) {
+              // Log and reject the promise with the error
+              Log.d("ReactNative", "ERROR in getChatChunk: " + e.getMessage());
+              promise.reject(e);
+          }
+      });
+  }
+
+  @ReactMethod
+public void streamChunks(String streamID, Promise promise) {
+    if (streamID == null || streamID.trim().isEmpty()) {
+        promise.reject("INVALID_ARGUMENT", "streamID cannot be null or empty");
+        return;
+    }
+
+    ThreadUtils.runOnExecutor(() -> {
+        try {
+            fulamobile.StreamIterator iterator = this.fula.getStreamIterator(streamID);
+            
+            if (iterator == null) {
+                promise.reject("STREAM_ITERATOR_ERROR", "Failed to create StreamIterator");
+                return;
+            }
+
+            // Start listening for chunks
+            new Handler(Looper.getMainLooper()).post(() -> 
+                pollIterator(iterator, promise)
+            );
+        } catch (Exception e) {
+            promise.reject("STREAM_ERROR", e.getMessage(), e);
+        }
+    });
+}
+
+private void pollIterator(fulamobile.StreamIterator iterator, Promise promise) {
+  try {
+      String chunk = iterator.next();
+      if (chunk != null && !chunk.trim().isEmpty()) {
+          emitEvent("onChunkReceived", chunk);
+      }
+
+      if (iterator.isComplete()) {
+          emitEvent("onStreamingCompleted", null);
+          promise.resolve(null);
+      } else {
+          new Handler(Looper.getMainLooper()).postDelayed(() -> 
+              pollIterator(iterator, promise)
+          , 50); // Reduced delay for better responsiveness
+      }
+  } catch (Exception e) {
+      if (e.getMessage() != null && e.getMessage().contains("EOF")) {
+          emitEvent("onStreamingCompleted", null);
+          promise.resolve(null);
+      } else if (e.getMessage() != null && e.getMessage().contains("timeout")) {
+          // Retry on timeout
+          new Handler(Looper.getMainLooper()).post(() -> 
+              pollIterator(iterator, promise)
+          );
+      } else {
+          emitEvent("onStreamError", e.getMessage());
+          promise.reject("STREAM_ERROR", e.getMessage(), e);
+      }
+  }
+}
+  
+  private void emitEvent(String eventName, String data) {
+      try {
+          getReactApplicationContext()
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .emit(eventName, data);
+      } catch (Exception e) {
+          Log.e("ReactNative", "Error emitting event: " + eventName, e);
+      }
+  }
+
 
 }

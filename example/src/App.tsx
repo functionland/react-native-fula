@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, ScrollView, View, Button } from 'react-native';
-import { updatePlugin, installPlugin, listPlugins, getInstallOutput, getInstallStatus } from '../../src/protocols/fxblox';
 
 import {
   fula,
   blockchain,
   chainApi,
   fxblox,
+  fxAi,
 } from '@functionland/react-native-fula';
 const App = () => {
   const inprogress = false;
@@ -65,13 +65,13 @@ const App = () => {
     153, 106, 217, 201, 106, 9, 66, 33, 214, 195, 255, 234, 178, 244, 203, 112,
     62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
   ];
-  // const bloxPeerId = '12D3KooWACVcVsQh18jM9UudRQzeYEjxCJQJgFUaAgs41tayjxC4'; //tower
-  const bloxPeerId = '12D3KooWDaT8gS2zGMLGBKmW1mKhQSHxYeEX3Fr3VSjuPzmjyfZC'; //laptop
+  const bloxPeerId = '12D3KooWRadeHPBedP633MMVZjbVni5XDxzhGDXXMpDgC29vuhLB'; //tower
+  // const bloxPeerId = '12D3KooWDaT8gS2zGMLGBKmW1mKhQSHxYeEX3Fr3VSjuPzmjyfZC'; //laptop
   // const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
   //const bloxPeerId = '12D3KooWAN5FaAnC4d1GhAvoYxyUXdrkCGqux1NB6Pr4cZXn813E'; //test aws server
 
   const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
-  // const bloxAddr = '/ip4/192.168.2.14/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
+  //const bloxAddr = '/ip4/192.168.2.139/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
   //const bloxAddr = '/dns4/1.pools.test.fula.network/tcp/40001/p2p/12D3KooWHb38UxY8akVGWZBuFtS3NJ7rJUwd36t3cfkoY7EbgNt9';
   const initFula = async () => {
     try {
@@ -1266,6 +1266,48 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
+
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Getting...' : 'Test Chat with AI'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                // Step 1: Check connection to Blox
+                const isConnected = await fula.checkConnection();
+                console.log('Connection check:', isConnected);
+
+                if (isConnected) {
+                  console.log('Initialization is completed. Starting ChatWithAI...');
+
+                  // Step 2: Start Chat with AI
+                  try {
+                    const streamID = await fxAi.chatWithAI('deepseek-chart', 'Hello AI!');
+                    console.log('ChatWithAI started, Stream ID:', streamID);
+
+                    // Step 3: Fetch streamed responses using iterator
+                    const fullResponse = await fxAi.fetchChunksUsingIterator(streamID);
+
+                    console.log('Full Response:', fullResponse); // Log the full response after all chunks are received
+                    console.log('All chunks received.');
+                  } catch (startError) {
+                    console.error('Error starting ChatWithAI:', startError);
+                  }
+                } else {
+                  console.log('Connection to Blox failed. Please check your connection.');
+                }
+              } else {
+                console.log('Wait for initialization to complete.');
+              }
+            } catch (e) {
+              console.error('Unexpected error:', e);
+            }
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+
+
     </ScrollView>
   );
 };

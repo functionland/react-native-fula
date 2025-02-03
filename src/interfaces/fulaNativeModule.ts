@@ -146,6 +146,13 @@ interface FulaNativeModule {
   getInstallStatus: (pluginName: string) => Promise<string>;
   updatePlugin: (pluginName: string) => Promise<string>;
   deleteDsLock: () => Promise<void>;
+
+  //AI
+  chatWithAI: (aiModel: string, userMessage: string) => Promise<string>;
+  getChatChunk: (streamID: string) => Promise<string>;
+  streamChunks: (streamID: string) => Promise<void>;
+
+  
 }
 
 const LINKING_ERROR =
