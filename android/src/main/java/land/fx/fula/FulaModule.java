@@ -1962,7 +1962,10 @@ private void pollIterator(fulamobile.StreamIterator iterator, Promise promise) {
           , 50); // Reduced delay for better responsiveness
       }
   } catch (Exception e) {
-      if (e.getMessage().contains("timeout")) {
+      if (e.getMessage() != null && e.getMessage().contains("EOF")) {
+          emitEvent("onStreamingCompleted", null);
+          promise.resolve(null);
+      } else if (e.getMessage() != null && e.getMessage().contains("timeout")) {
           // Retry on timeout
           new Handler(Looper.getMainLooper()).post(() -> 
               pollIterator(iterator, promise)

@@ -80,8 +80,15 @@ import { DeviceEventEmitter } from 'react-native';
   
       const errorHandler = (error: string) => {
         if (active) {
-          cleanup();
-          reject(new Error(error || 'Stream error occurred'));
+            cleanup();
+            if (error.includes('EOF')) {
+                // Treat EOF as successful completion
+                console.log('Stream completed with EOF');
+                resolve(fullResponse);
+            } else {
+                console.error('Stream error:', error);
+                reject(new Error(error || 'Unknown stream error'));
+            }
         }
       };
   
@@ -90,11 +97,15 @@ import { DeviceEventEmitter } from 'react-native';
       DeviceEventEmitter.addListener('onStreamError', errorHandler);
   
       Fula.streamChunks(streamID)
-        .catch(error => {
-          if (active) {
+      .catch(error => {
+        if (active) {
             cleanup();
-            reject(error);
-          }
-        });
+            if (error.message.includes('EOF')) {
+                resolve(fullResponse);
+            } else {
+                reject(error);
+            }
+        }
+      });
     });
   };
