@@ -1307,6 +1307,61 @@ const App = () => {
         />
       </View>
 
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Getting...' : 'Test Stream Chunks'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                // Step 1: Check connection to Blox
+                const isConnected = await fula.checkConnection();
+                console.log('Connection check:', isConnected);
+
+                if (isConnected) {
+                  console.log('Initialization is completed. Starting ChatWithAI...');
+
+                  // Step 2: Start Chat with AI
+                  try {
+                    const streamID = await fxAi.chatWithAI('deepseek-chart', 'Hello AI!');
+                    console.log('ChatWithAI started, Stream ID:', streamID);
+
+                    // Step 3: Use streamChunks to receive responses in real-time
+                    let fullResponse = '';
+                    const cleanup = fxAi.streamChunks(streamID, {
+                      onChunk: (chunk) => {
+                        console.log('Received chunk:', chunk);
+                        fullResponse += chunk;
+                      },
+                      onComplete: () => {
+                        console.log('Stream completed. Full response:', fullResponse);
+                      },
+                      onError: (error) => {
+                        console.error('Stream error:', error);
+                      },
+                    });
+
+                    // Optional: Clean up after some time (e.g., if you want to stop receiving chunks)
+                    setTimeout(() => {
+                      cleanup();
+                      console.log('Cleaned up stream listeners');
+                    }, 30000); // Cleanup after 30 seconds
+
+                  } catch (startError) {
+                    console.error('Error starting ChatWithAI:', startError);
+                  }
+                } else {
+                  console.log('Connection to Blox failed. Please check your connection.');
+                }
+              } else {
+                console.log('Wait for initialization to complete.');
+              }
+            } catch (e) {
+              console.error('Unexpected error:', e);
+            }
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
 
     </ScrollView>
   );

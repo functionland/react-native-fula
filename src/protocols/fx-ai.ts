@@ -109,3 +109,74 @@ import { DeviceEventEmitter } from 'react-native';
       });
     });
   };
+
+  export interface StreamCallbacks {
+    onChunk?: (chunk: string) => void;
+    onComplete?: () => void;
+    onError?: (error: Error) => void;
+  }
+
+  export const streamChunks = (streamID: string, callbacks: StreamCallbacks): () => void => {
+    let active = true;
+
+    const cleanup = () => {
+      active = false;
+      DeviceEventEmitter.removeAllListeners('onChunkReceived');
+      DeviceEventEmitter.removeAllListeners('onStreamingCompleted');
+      DeviceEventEmitter.removeAllListeners('onStreamError');
+    };
+
+    const chunkHandler = (chunk: string) => {
+      if (active && callbacks.onChunk) {
+        callbacks.onChunk(chunk);
+      }
+    };
+
+    const completionHandler = () => {
+      if (active) {
+        cleanup();
+        if (callbacks.onComplete) {
+          callbacks.onComplete();
+        }
+      }
+    };
+
+    const errorHandler = (error: string) => {
+      if (active) {
+        cleanup();
+        if (error.includes('EOF')) {
+          // Treat EOF as successful completion
+          console.log('Stream completed with EOF');
+          if (callbacks.onComplete) {
+            callbacks.onComplete();
+          }
+        } else {
+          console.error('Stream error:', error);
+          if (callbacks.onError) {
+            callbacks.onError(new Error(error || 'Unknown stream error'));
+          }
+        }
+      }
+    };
+
+    DeviceEventEmitter.addListener('onChunkReceived', chunkHandler);
+    DeviceEventEmitter.addListener('onStreamingCompleted', completionHandler);
+    DeviceEventEmitter.addListener('onStreamError', errorHandler);
+
+    Fula.streamChunks(streamID)
+      .catch(error => {
+        if (active) {
+          cleanup();
+          if (error.message.includes('EOF')) {
+            if (callbacks.onComplete) {
+              callbacks.onComplete();
+            }
+          } else if (callbacks.onError) {
+            callbacks.onError(error);
+          }
+        }
+      });
+
+    // Return a cleanup function that the caller can use to stop listening
+    return cleanup;
+  };
