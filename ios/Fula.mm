@@ -240,6 +240,20 @@ RCT_EXTERN_METHOD(replicateInPool:(NSArray *)cidArray
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+// AI-related method declarations
+RCT_EXTERN_METHOD(chatWithAI:(NSString *)aiModel
+                  withUserMessage:(NSString *)userMessage
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(getChatChunk:(NSString *)streamID
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(streamChunks:(NSString *)streamID
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 + (BOOL)requiresMainQueueSetup
 {
     return NO;

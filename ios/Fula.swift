@@ -2058,6 +2058,149 @@ func replicateInPool(cidArray: [String], account: String, poolID: String, resolv
     }
 }
 
+// AI Chat methods
+
+@objc(chatWithAI:withUserMessage:withResolver:withRejecter:)
+func chatWithAI(aiModel: String, userMessage: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+    NSLog("ReactNative chatWithAI: aiModel = \(aiModel), userMessage = \(userMessage)")
+    DispatchQueue.global(qos: .default).async {
+        do {
+            guard let fula = self.fula else {
+                throw MyError.runtimeError("ReactNative Fula client is not initialized")
+            }
+
+            // Call the Go Mobile method, which returns Data
+            let streamIDData = try fula.chatWithAI(aiModel, userMessage: userMessage)
+
+            // Convert Data to String (assuming UTF-8 encoding)
+            guard let streamID = String(data: streamIDData, encoding: .utf8) else {
+                throw MyError.runtimeError("Failed to convert stream ID to string")
+            }
+
+            // Resolve the promise with the stream ID
+            DispatchQueue.main.async {
+                resolve(streamID)
+            }
+        } catch let error {
+            NSLog("ReactNative ERROR in chatWithAI: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                reject("ERR_CHAT_WITH_AI", "Chat with AI failed", error)
+            }
+        }
+    }
+}
+
+@objc(getChatChunk:withResolver:withRejecter:)
+func getChatChunk(streamID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+    NSLog("ReactNative getChatChunk: streamID = \(streamID)")
+    DispatchQueue.global(qos: .default).async {
+        do {
+            guard let fula = self.fula else {
+                throw MyError.runtimeError("ReactNative Fula client is not initialized")
+            }
+
+            // Call the Go Mobile method, which returns a String
+            let chunk = try fula.getChatChunk(streamID)
+
+            // Handle null or empty response
+            if chunk.isEmpty {
+                NSLog("ReactNative getChatChunk: No data received for streamID = \(streamID)")
+                DispatchQueue.main.async {
+                    resolve("") // Resolve with an empty string
+                }
+                return
+            }
+
+            // Resolve the promise with the chunk of data
+            NSLog("ReactNative getChatChunk: Successfully received chunk for streamID = \(streamID)")
+            DispatchQueue.main.async {
+                resolve(chunk)
+            }
+        } catch let error {
+            // Log and reject the promise with the error
+            NSLog("ReactNative ERROR in getChatChunk: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                reject("ERR_GET_CHAT_CHUNK", "Get chat chunk failed", error)
+            }
+        }
+    }
+}
+
+@objc(streamChunks:withResolver:withRejecter:)
+func streamChunks(streamID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+    if streamID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        reject("INVALID_ARGUMENT", "streamID cannot be null or empty", nil)
+        return
+    }
+
+    DispatchQueue.global(qos: .default).async {
+        do {
+            guard let fula = self.fula else {
+                throw MyError.runtimeError("ReactNative Fula client is not initialized")
+            }
+
+            guard let iterator = try fula.getStreamIterator(streamID) else {
+                throw MyError.runtimeError("Failed to create StreamIterator")
+            }
+
+            // Start listening for chunks on the main thread
+            DispatchQueue.main.async {
+                self.pollIterator(iterator: iterator, resolve: resolve, reject: reject)
+            }
+        } catch let error {
+            NSLog("ReactNative ERROR in streamChunks: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                reject("STREAM_ERROR", "Stream error", error)
+            }
+        }
+    }
+}
+
+private func pollIterator(iterator: FulamobileStreamIterator, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    do {
+        let chunk = try iterator.next()
+        if !chunk.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.emitEvent(eventName: "onChunkReceived", data: chunk)
+        }
+
+        if iterator.isComplete() {
+            self.emitEvent(eventName: "onStreamingCompleted", data: nil)
+            resolve(nil)
+        } else {
+            // Schedule another poll with a short delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { // 50ms delay for better responsiveness
+                self.pollIterator(iterator: iterator, resolve: resolve, reject: reject)
+            }
+        }
+    } catch let error {
+        let errorMessage = error.localizedDescription
+        if errorMessage.contains("EOF") {
+            self.emitEvent(eventName: "onStreamingCompleted", data: nil)
+            resolve(nil)
+        } else if errorMessage.contains("timeout") {
+            // Retry on timeout
+            DispatchQueue.main.async {
+                self.pollIterator(iterator: iterator, resolve: resolve, reject: reject)
+            }
+        } else {
+            self.emitEvent(eventName: "onStreamError", data: errorMessage)
+            reject("STREAM_ERROR", errorMessage, error)
+        }
+    }
+}
+
+private func emitEvent(eventName: String, data: String?) {
+    do {
+        guard let eventEmitter = RCTBridge.current()?.eventDispatcher() else {
+            NSLog("ReactNative ERROR: Could not get event dispatcher")
+            return
+        }
+
+        eventEmitter.sendAppEvent(withName: eventName, body: data)
+    } catch {
+        NSLog("ReactNative Error emitting event: \(eventName), \(error.localizedDescription)")
+    }
+}
 
 }
 
