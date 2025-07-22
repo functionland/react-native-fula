@@ -182,6 +182,78 @@ export const leavePool = (poolID: number): Promise<BType.PoolLeaveResponse> => {
   return res1;
 };
 
+/*
+joinPoolWithChain: This function takes two arguments: poolID and chainName. The poolID is the ID of the pool to join, and the chainName specifies the blockchain network to use for the operation. The function returns a promise of an object that contains the account and poolID.
+*/
+export const joinPoolWithChain = (poolID: number, chainName: string): Promise<BType.PoolJoinResponse> => {
+  console.log('joinPoolWithChain in react-native started', poolID, chainName);
+
+  // Validate inputs
+  if (typeof poolID !== 'number' || poolID <= 0) {
+    return Promise.reject(new Error('Pool ID must be a positive number'));
+  }
+
+  if (typeof chainName !== 'string' || chainName.trim().length === 0) {
+    return Promise.reject(new Error('Chain name must be a non-empty string'));
+  }
+
+  let res1 = Fula.joinPoolWithChain(poolID.toString(), chainName.trim())
+    .then((res) => {
+      try {
+        let jsonRes: BType.PoolJoinResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          console.error('Error parsing res in joining pool with chain:', e);
+          return res; // Return raw response if parsing fails
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error joining pool with chain:', err);
+      throw err; // Rethrow the error to maintain the rejection state
+    });
+  return res1;
+};
+
+/*
+leavePoolWithChain: This function takes two arguments: poolID and chainName. The poolID is the ID of the pool to leave, and the chainName specifies the blockchain network to use for the operation. The function returns a promise of an object that contains the account and poolID.
+*/
+export const leavePoolWithChain = (poolID: number, chainName: string): Promise<BType.PoolLeaveResponse> => {
+  console.log('leavePoolWithChain in react-native started', poolID, chainName);
+
+  // Validate inputs
+  if (typeof poolID !== 'number' || poolID <= 0) {
+    return Promise.reject(new Error('Pool ID must be a positive number'));
+  }
+
+  if (typeof chainName !== 'string' || chainName.trim().length === 0) {
+    return Promise.reject(new Error('Chain name must be a non-empty string'));
+  }
+
+  let res1 = Fula.leavePoolWithChain(poolID.toString(), chainName.trim())
+    .then((res) => {
+      try {
+        let jsonRes: BType.PoolLeaveResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          console.error('Error parsing res in leaving pool with chain:', e);
+          return res; // Return raw response if parsing fails
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error leaving pool with chain:', err);
+      throw err; // Rethrow the error to maintain the rejection state
+    });
+  return res1;
+};
+
 export const cancelPoolJoin = (
   poolID: number
 ): Promise<BType.PoolCancelJoinResponse> => {

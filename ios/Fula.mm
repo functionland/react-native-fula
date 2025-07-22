@@ -154,6 +154,16 @@ RCT_EXTERN_METHOD(leavePool:(NSString *)poolID
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(joinPoolWithChain:(NSString *)poolID
+                  withChainName:(NSString *)chainName
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(leavePoolWithChain:(NSString *)poolID
+                  withChainName:(NSString *)chainName
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 
 RCT_EXTERN_METHOD(listAvailableReplicationRequests:(NSString *)poolIDStr
                   withResolver:(RCTPromiseResolveBlock)resolve

@@ -1404,6 +1404,72 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void joinPoolWithChain(String poolID, String chainName, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "joinPoolWithChain: poolID = " + poolID + ", chainName = " + chainName);
+      try {
+        // Validate inputs
+        if (poolID == null || poolID.trim().isEmpty()) {
+          promise.reject("INVALID_POOL_ID", "Pool ID cannot be null or empty");
+          return;
+        }
+        if (chainName == null || chainName.trim().isEmpty()) {
+          promise.reject("INVALID_CHAIN_NAME", "Chain name cannot be null or empty");
+          return;
+        }
+        if (this.fula == null) {
+          promise.reject("FULA_NOT_INITIALIZED", "Fula client is not initialized");
+          return;
+        }
+
+        long poolIdLong = Long.parseLong(poolID);
+        byte[] result = this.fula.poolJoinWithChain(poolIdLong, chainName);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (NumberFormatException e) {
+        Log.d("ReactNative", "ERROR: Invalid poolID format: " + e.getMessage());
+        promise.reject("INVALID_POOL_ID_FORMAT", "Pool ID must be a valid number: " + poolID, e);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject("JOIN_POOL_WITH_CHAIN_ERROR", "Failed to join pool with chain: " + e.getMessage(), e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void leavePoolWithChain(String poolID, String chainName, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "leavePoolWithChain: poolID = " + poolID + ", chainName = " + chainName);
+      try {
+        // Validate inputs
+        if (poolID == null || poolID.trim().isEmpty()) {
+          promise.reject("INVALID_POOL_ID", "Pool ID cannot be null or empty");
+          return;
+        }
+        if (chainName == null || chainName.trim().isEmpty()) {
+          promise.reject("INVALID_CHAIN_NAME", "Chain name cannot be null or empty");
+          return;
+        }
+        if (this.fula == null) {
+          promise.reject("FULA_NOT_INITIALIZED", "Fula client is not initialized");
+          return;
+        }
+
+        long poolIdLong = Long.parseLong(poolID);
+        byte[] result = this.fula.poolLeaveWithChain(poolIdLong, chainName);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (NumberFormatException e) {
+        Log.d("ReactNative", "ERROR: Invalid poolID format: " + e.getMessage());
+        promise.reject("INVALID_POOL_ID_FORMAT", "Pool ID must be a valid number: " + poolID, e);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject("LEAVE_POOL_WITH_CHAIN_ERROR", "Failed to leave pool with chain: " + e.getMessage(), e);
+      }
+    });
+  }
+
+  @ReactMethod
   public void listAvailableReplicationRequests(String poolIDStr, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "listAvailableReplicationRequests: poolID = " + poolIDStr);
@@ -1930,14 +1996,14 @@ public void streamChunks(String streamID, Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
         try {
             fulamobile.StreamIterator iterator = this.fula.getStreamIterator(streamID);
-            
+
             if (iterator == null) {
                 promise.reject("STREAM_ITERATOR_ERROR", "Failed to create StreamIterator");
                 return;
             }
 
             // Start listening for chunks
-            new Handler(Looper.getMainLooper()).post(() -> 
+            new Handler(Looper.getMainLooper()).post(() ->
                 pollIterator(iterator, promise)
             );
         } catch (Exception e) {
@@ -1957,7 +2023,7 @@ private void pollIterator(fulamobile.StreamIterator iterator, Promise promise) {
           emitEvent("onStreamingCompleted", null);
           promise.resolve(null);
       } else {
-          new Handler(Looper.getMainLooper()).postDelayed(() -> 
+          new Handler(Looper.getMainLooper()).postDelayed(() ->
               pollIterator(iterator, promise)
           , 50); // Reduced delay for better responsiveness
       }
@@ -1967,7 +2033,7 @@ private void pollIterator(fulamobile.StreamIterator iterator, Promise promise) {
           promise.resolve(null);
       } else if (e.getMessage() != null && e.getMessage().contains("timeout")) {
           // Retry on timeout
-          new Handler(Looper.getMainLooper()).post(() -> 
+          new Handler(Looper.getMainLooper()).post(() ->
               pollIterator(iterator, promise)
           );
       } else {
@@ -1976,7 +2042,7 @@ private void pollIterator(fulamobile.StreamIterator iterator, Promise promise) {
       }
   }
 }
-  
+
   private void emitEvent(String eventName, String data) {
       try {
           getReactApplicationContext()

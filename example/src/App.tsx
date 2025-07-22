@@ -533,6 +533,72 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
+          title={inprogress ? 'Processing...' : 'Join Pool With Chain'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log('initialization is completed.');
+                    blockchain
+                      .joinPoolWithChain(1, 'mainnet')
+                      .then((res: any) => {
+                        console.log('joined pool with chain successfully');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('join pool with chain failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {
+              console.log('Error in join pool with chain:', e);
+            }
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Leave Pool With Chain'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  console.log('connection check');
+                  console.log(r);
+                  if (r) {
+                    console.log('initialization is completed.');
+                    blockchain
+                      .leavePoolWithChain(1, 'mainnet')
+                      .then((res: any) => {
+                        console.log('left pool with chain successfully');
+                        console.log(res);
+                      })
+                      .catch((e: any) => {
+                        console.log('leave pool with chain failed');
+                        console.log(e);
+                      });
+                  }
+                });
+              } else {
+                console.log('wait for init to complete');
+              }
+            } catch (e) {
+              console.log('Error in leave pool with chain:', e);
+            }
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
           title={inprogress ? 'Putting & Getting...' : 'Check Account Balance'}
           onPress={async () => {
             try {

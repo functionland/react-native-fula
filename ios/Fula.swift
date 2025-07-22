@@ -1478,6 +1478,80 @@ class FulaModule: NSObject {
       }
   }
 
+  @objc(joinPoolWithChain:withChainName:withResolver:withRejecter:)
+  func joinPoolWithChain(poolID: String, chainName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      print("ReactNative", "joinPoolWithChain: poolID = ", poolID, ", chainName = ", chainName)
+      do {
+          // Validate inputs
+          guard !poolID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+              let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Pool ID cannot be null or empty"])
+              reject("INVALID_POOL_ID", "Pool ID cannot be null or empty", error)
+              return
+          }
+
+          guard !chainName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+              let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Chain name cannot be null or empty"])
+              reject("INVALID_CHAIN_NAME", "Chain name cannot be null or empty", error)
+              return
+          }
+
+          guard let fula = self.fula else {
+              let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Fula client is not initialized"])
+              reject("FULA_NOT_INITIALIZED", "Fula client is not initialized", error)
+              return
+          }
+
+          guard let poolIdInt = Int(poolID) else {
+              let error = NSError(domain: "FULAErrorDomain", code: 1004, userInfo: [NSLocalizedDescriptionKey: "Pool ID must be a valid number: \(poolID)"])
+              reject("INVALID_POOL_ID_FORMAT", "Pool ID must be a valid number: \(poolID)", error)
+              return
+          }
+
+          let result = try fula.poolJoinWithChain(poolIdInt, chainName: chainName)
+          let resultString = String(data: result, encoding: .utf8)
+          resolve(resultString)
+      } catch let error {
+          reject("ERR_FULA", "joinPoolWithChain: \(error.localizedDescription)", error)
+      }
+  }
+
+  @objc(leavePoolWithChain:withChainName:withResolver:withRejecter:)
+  func leavePoolWithChain(poolID: String, chainName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      print("ReactNative", "leavePoolWithChain: poolID = ", poolID, ", chainName = ", chainName)
+      do {
+          // Validate inputs
+          guard !poolID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+              let error = NSError(domain: "FULAErrorDomain", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Pool ID cannot be null or empty"])
+              reject("INVALID_POOL_ID", "Pool ID cannot be null or empty", error)
+              return
+          }
+
+          guard !chainName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+              let error = NSError(domain: "FULAErrorDomain", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Chain name cannot be null or empty"])
+              reject("INVALID_CHAIN_NAME", "Chain name cannot be null or empty", error)
+              return
+          }
+
+          guard let fula = self.fula else {
+              let error = NSError(domain: "FULAErrorDomain", code: 1003, userInfo: [NSLocalizedDescriptionKey: "Fula client is not initialized"])
+              reject("FULA_NOT_INITIALIZED", "Fula client is not initialized", error)
+              return
+          }
+
+          guard let poolIdInt = Int(poolID) else {
+              let error = NSError(domain: "FULAErrorDomain", code: 1004, userInfo: [NSLocalizedDescriptionKey: "Pool ID must be a valid number: \(poolID)"])
+              reject("INVALID_POOL_ID_FORMAT", "Pool ID must be a valid number: \(poolID)", error)
+              return
+          }
+
+          let result = try fula.poolLeaveWithChain(poolIdInt, chainName: chainName)
+          let resultString = String(data: result, encoding: .utf8)
+          resolve(resultString)
+      } catch let error {
+          reject("ERR_FULA", "leavePoolWithChain: \(error.localizedDescription)", error)
+      }
+  }
+
 
   @objc(eraseBlData:withRejecter:)
   func eraseBlData(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {

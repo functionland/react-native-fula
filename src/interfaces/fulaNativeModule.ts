@@ -62,6 +62,8 @@ interface FulaNativeModule {
   listPools: () => Promise<string>;
   joinPool: (poolID: string) => Promise<string>;
   leavePool: (poolID: string) => Promise<string>;
+  joinPoolWithChain: (poolID: string, chainName: string) => Promise<string>;
+  leavePoolWithChain: (poolID: string, chainName: string) => Promise<string>;
   cancelPoolJoin: (poolID: string) => Promise<string>;
   listPoolJoinRequests: (poolID: string) => Promise<string>;
   votePoolJoinRequest: (
@@ -152,7 +154,7 @@ interface FulaNativeModule {
   getChatChunk: (streamID: string) => Promise<string>;
   streamChunks: (streamID: string) => Promise<void>;
 
-  
+
 }
 
 const LINKING_ERROR =
