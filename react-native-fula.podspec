@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
     s.dependency "ReactCommon/turbomodule/core"
    end
   end
-  s.dependency 'Fula','~> 1.55.2'
+  s.dependency 'Fula','~> 1.55.15'
   s.dependency "Wnfs",  "1.1.1"
   s.dependency 'CryptoSwift', '~> 1.7.1'
   s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
