@@ -1508,7 +1508,7 @@ class FulaModule: RCTEventEmitter {
               return
           }
 
-          let result = try fula.poolJoinWithChain(poolIdInt, chainName: chainName)
+          let result = try fula.poolJoin(withChain: poolIdInt, chainName: chainName)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -1545,7 +1545,7 @@ class FulaModule: RCTEventEmitter {
               return
           }
 
-          let result = try fula.poolLeaveWithChain(poolIdInt, chainName: chainName)
+          let result = try fula.poolLeave(withChain: poolIdInt, chainName: chainName)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -2145,7 +2145,7 @@ func chatWithAI(aiModel: String, userMessage: String, resolve: @escaping RCTProm
             }
 
             // Call the Go Mobile method, which returns Data
-            let streamIDData = try fula.chatWithAI(aiModel, userMessage: userMessage)
+            let streamIDData = try fula.chat(withAI: aiModel, userMessage: userMessage)
 
             // Convert Data to String (assuming UTF-8 encoding)
             guard let streamID = String(data: streamIDData, encoding: .utf8) else {
@@ -2175,7 +2175,12 @@ func getChatChunk(streamID: String, resolve: @escaping RCTPromiseResolveBlock, r
             }
 
             // Call the Go Mobile method, which returns a String
-            let chunk = fula.getChatChunk(streamID)
+            var error: NSError?
+            let chunk = fula.getChatChunk(streamID, error: &error)
+            
+            if let error = error {
+                throw error
+            }
 
             // Handle null or empty response
             if chunk.isEmpty {
@@ -2215,9 +2220,7 @@ func streamChunks(streamID: String, resolve: @escaping RCTPromiseResolveBlock, r
             }
 
             let iterator = fula.getStreamIterator(streamID)
-            guard iterator != nil else {
-                throw MyError.runtimeError("Failed to create StreamIterator")
-            }
+            // Iterator is now non-optional, no need for nil check
 
             // Start listening for chunks on the main thread
             DispatchQueue.main.async {
@@ -2234,8 +2237,13 @@ func streamChunks(streamID: String, resolve: @escaping RCTPromiseResolveBlock, r
 
 private func pollIterator(iterator: FulamobileStreamIterator, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     do {
-        let chunk = iterator.next()
-        if !chunk.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        var error: NSError?
+        let chunk = iterator.next(&error)
+        
+        if let error = error {
+            throw error
+        }
+        if !chunk.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty {
             self.emitEvent(eventName: "onChunkReceived", data: chunk)
         }
 
