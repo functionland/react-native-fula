@@ -4,6 +4,7 @@ import CommonCrypto
 import Wnfs
 import Fula
 import os.log
+import React
 
 extension OSLog {
 
@@ -31,7 +32,7 @@ extension OSLog {
 
 
 @objc(FulaModule)
-class FulaModule: NSObject {
+class FulaModule: RCTEventEmitter {
     public let NAME: String = "FulaModule"
     var fula: FulamobileClient?
 
@@ -2091,7 +2092,7 @@ func replicateInPool(cidArray: [String], account: String, poolID: String, resolv
 
             let result: Data
             do {
-                if let replicationResult = try fula.replicate(inPool: cidsBytes, account: account, poolID: poolIDInt) {
+                if let replicationResult = fula.replicate(inPool: cidsBytes, account: account, poolID: poolIDInt) {
                     result = replicationResult
                 } else {
                     throw NSError(domain: "FULAErrorDomain", code: 1007, userInfo: [NSLocalizedDescriptionKey: "Replication result is nil"])
@@ -2174,7 +2175,7 @@ func getChatChunk(streamID: String, resolve: @escaping RCTPromiseResolveBlock, r
             }
 
             // Call the Go Mobile method, which returns a String
-            let chunk = try fula.getChatChunk(streamID)
+            let chunk = fula.getChatChunk(streamID)
 
             // Handle null or empty response
             if chunk.isEmpty {
@@ -2213,7 +2214,8 @@ func streamChunks(streamID: String, resolve: @escaping RCTPromiseResolveBlock, r
                 throw MyError.runtimeError("ReactNative Fula client is not initialized")
             }
 
-            guard let iterator = try fula.getStreamIterator(streamID) else {
+            let iterator = fula.getStreamIterator(streamID)
+            guard iterator != nil else {
                 throw MyError.runtimeError("Failed to create StreamIterator")
             }
 
@@ -2232,7 +2234,7 @@ func streamChunks(streamID: String, resolve: @escaping RCTPromiseResolveBlock, r
 
 private func pollIterator(iterator: FulamobileStreamIterator, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     do {
-        let chunk = try iterator.next()
+        let chunk = iterator.next()
         if !chunk.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             self.emitEvent(eventName: "onChunkReceived", data: chunk)
         }
@@ -2254,7 +2256,7 @@ private func pollIterator(iterator: FulamobileStreamIterator, resolve: @escaping
         } else if errorMessage.contains("timeout") {
             // Retry on timeout
             DispatchQueue.main.async {
-                self.pollIterator(iterator: iterator, resolve: resolve, reject: reject)
+                self.pollIterator(iterator: iterator!, resolve: resolve, reject: reject)
             }
         } else {
             self.emitEvent(eventName: "onStreamError", data: errorMessage)
@@ -2264,16 +2266,17 @@ private func pollIterator(iterator: FulamobileStreamIterator, resolve: @escaping
 }
 
 private func emitEvent(eventName: String, data: String?) {
-    do {
-        guard let eventEmitter = RCTBridge.current()?.eventDispatcher() else {
-            NSLog("ReactNative ERROR: Could not get event dispatcher")
-            return
-        }
+    self.sendEvent(withName: eventName, body: data)
+}
 
-        eventEmitter.sendAppEvent(withName: eventName, body: data)
-    } catch {
-        NSLog("ReactNative Error emitting event: \(eventName), \(error.localizedDescription)")
-    }
+// Required for RCTEventEmitter
+override func supportedEvents() -> [String]! {
+    return ["onChunkReceived", "onStreamingCompleted", "onStreamError"]
+}
+
+// Required for RCTEventEmitter to prevent warnings
+override static func requiresMainQueueSetup() -> Bool {
+    return false
 }
 
 }
