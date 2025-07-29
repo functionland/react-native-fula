@@ -1,6 +1,6 @@
 {
   "name": "@functionland/react-native-fula",
-  "version": "1.55.15",
+  "version": "1.55.16",
   "description": "This package is a bridge to use the Fula libp2p protocols in the react-native which is using wnfs",
   "type": "module",
   "main": "lib/commonjs/index",
@@ -170,6 +170,7 @@
     "@polkadot/typegen": "^15.0.1",
     "@polkadot/util": "^13.2.3",
     "@polkadot/util-crypto": "^13.2.3",
+    "@react-native/metro-config": "^0.80.2",
     "text-encoding": "^0.7.0",
     "yarn": "^1.22.21"
   }
