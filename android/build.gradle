@@ -77,7 +77,7 @@ android {
     sourceCompatibility JavaVersion.VERSION_17
     targetCompatibility JavaVersion.VERSION_17
   }
-  ndkVersion '26.2.11394342'
+  ndkVersion '27.1.12297006'
   buildFeatures {
     buildConfig true
   }
@@ -99,7 +99,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-android:+"
   implementation 'com.github.functionland:fula-build-aar:v1.55.15' // From jitpack.io
-  implementation 'com.github.functionland:wnfs-android:v1.8.2' // From jitpack.io
+  implementation 'com.github.functionland:wnfs-android:v1.8.8' // From jitpack.io
   implementation 'commons-io:commons-io:20030203.000550'
   implementation 'commons-codec:commons-codec:1.16.0'
   // implementation files('mobile.aar')
