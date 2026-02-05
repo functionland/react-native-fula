@@ -63,7 +63,7 @@
     "@evilmartians/lefthook": "^1.2.2",
     "@polkadot/typegen": "^15.0.1",
     "@react-native-community/eslint-config": "^3.0.2",
-    "@release-it/conventional-changelog": "^9.0.3",
+    "@release-it/conventional-changelog": "^10.0.4",
     "@types/jest": "^28.1.2",
     "@types/react": "~17.0.21",
     "@types/react-native": "0.73.0",
@@ -79,14 +79,18 @@
     "react": "18.2.0",
     "react-native": "0.73.11",
     "react-native-builder-bob": "^0.20.0",
-    "release-it": "^17.10.0",
+    "release-it": "^19.2.4",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.1",
     "turbo": "^1.10.7",
     "typescript": "^5.7.2"
   },
   "resolutions": {
-    "@types/react": "17.0.21"
+    "@types/react": "17.0.21",
+    "fast-xml-parser": "^5.3.4"
+  },
+  "overrides": {
+    "fast-xml-parser": "^5.3.4"
   },
   "peerDependencies": {
     "@babel/core": "^7.0.0-0",
