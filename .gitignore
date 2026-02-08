@@ -69,3 +69,4 @@ android/keystores/debug.keystore
 lib/
 example/yarn.lock
 yarn.lock
+example/ios/.xcode.env.local
