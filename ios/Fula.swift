@@ -2219,7 +2219,7 @@ func streamChunks(streamID: String, resolve: @escaping RCTPromiseResolveBlock, r
                 throw MyError.runtimeError("ReactNative Fula client is not initialized")
             }
 
-            let iterator = fula.getStreamIterator(streamID)
+            let iterator = try fula.getStreamIterator(streamID)
             // Iterator is now non-optional, no need for nil check
 
             // Start listening for chunks on the main thread
@@ -2264,7 +2264,7 @@ private func pollIterator(iterator: FulamobileStreamIterator, resolve: @escaping
         } else if errorMessage.contains("timeout") {
             // Retry on timeout
             DispatchQueue.main.async {
-                self.pollIterator(iterator: iterator!, resolve: resolve, reject: reject)
+                self.pollIterator(iterator: iterator, resolve: resolve, reject: reject)
             }
         } else {
             self.emitEvent(eventName: "onStreamError", data: errorMessage)
