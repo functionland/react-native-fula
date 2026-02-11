@@ -160,18 +160,6 @@ const cancel = fxAi.streamChunks(streamID, {
 const chunk = await fxAi.getChatChunk(streamID);
 ```
 
-## Polkadot type creation
-
-You can follow the documentation here: https://polkadot.js.org/docs/api/examples/promise/typegen
-
-Alternatively you do the below on a Linux or WSL inside the react-native-fula folder:
-
-```bash
-curl -H "Content-Type: application/json" -d "{\"id\":\"1\", \"jsonrpc\":\"2.0\", \"method\": \"state_getMetadata\", \"params\":[]}" https://node3.functionyard.fula.network > edgeware.json
-
-yarn build:polkadot
-```
-
 ## Testing
 
 Open a cmd or terminal as admin (sudo)
