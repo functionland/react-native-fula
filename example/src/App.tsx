@@ -4,7 +4,6 @@ import { StyleSheet, ScrollView, View, Button } from 'react-native';
 import {
   fula,
   blockchain,
-  chainApi,
   fxblox,
   fxAi,
 } from '@functionland/react-native-fula';
@@ -111,62 +110,6 @@ const App = () => {
       </View>
 
       {/* --- Account --- */}
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Processing...' : 'Get Local Account'}
-          onPress={async () => {
-            try {
-              let seedHex = await chainApi.createHexSeedFromString(seed);
-              console.log('seedHex is the polkadot acceptable seed:' + seedHex);
-              let res = chainApi.getLocalAccount(seedHex);
-              console.log('account is:' + res.account);
-            } catch (e) {
-              console.log(e);
-            }
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Processing...' : 'Account Fund'}
-          onPress={async () => {
-            try {
-              let seedHex = await chainApi.createHexSeedFromString(seed);
-              let res = chainApi.getLocalAccount(seedHex);
-              console.log('account is:' + res.account);
-              let res2 = await blockchain.accountFund(res.account);
-              console.log(res2);
-            } catch (e) {
-              console.log(e);
-            }
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Processing...' : 'Check Account Balance'}
-          onPress={async () => {
-            try {
-              chainApi.init().then(async (api: any) => {
-                console.log('api created');
-                let accountId = await chainApi.getAccountIdFromSeed(seed);
-                console.log('account ID is ' + accountId);
-                chainApi
-                  .checkAccountBalance(api, accountId)
-                  .then((res: any) => {
-                    console.log('account balance:', res);
-                  })
-                  .catch((e: any) => {
-                    console.log('account balance failed:', e);
-                  });
-              });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
       <View style={styles.section}>
         <Button
           title={inprogress ? 'Processing...' : 'Get Blox Account + Balance'}
@@ -296,80 +239,6 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Processing...' : 'Check Join Request Status'}
-          onPress={async () => {
-            try {
-              chainApi.init().then(async (api: any) => {
-                let accountId = await chainApi.getAccountIdFromSeed(seed);
-                console.log('account ID is ' + accountId);
-                chainApi
-                  .checkJoinRequest(
-                    api,
-                    1,
-                    '5DD9qAHKNUqcYaKf5qgYra9y8s9BtbfLanJrTr3hQsK5XGGP'
-                  )
-                  .then((res: any) => {
-                    console.log('join request status:', res);
-                  })
-                  .catch((e: any) => {
-                    console.log('join request status failed:', e);
-                  });
-              });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Processing...' : 'Get User Pool'}
-          onPress={async () => {
-            try {
-              chainApi.init().then(async (api: any) => {
-                let accountId = await chainApi.getAccountIdFromSeed(seed);
-                console.log('account ID is ' + accountId);
-                chainApi
-                  .getUserPool(
-                    api,
-                    '5CcHZucP2u1FXQW9wuyC11vAVxB3c48pUhc5cc9b3oxbKPL2'
-                  )
-                  .then((res: any) => {
-                    console.log('GetUserPool:', res);
-                  })
-                  .catch((e: any) => {
-                    console.log('GetUserPool failed:', e);
-                  });
-              });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Processing...' : 'List Pools'}
-          onPress={async () => {
-            try {
-              chainApi.init().then((api: any) => {
-                if (api) {
-                  chainApi
-                    .listPools(api, 1, 25)
-                    .then((res: any) => {
-                      console.log('list pools:', res);
-                    })
-                    .catch((e: any) => {
-                      console.log('list pools failed:', e);
-                    });
-                }
-              });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-
       {/* --- Blox Hardware / Device --- */}
       <View style={styles.section}>
         <Button

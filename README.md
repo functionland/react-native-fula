@@ -10,10 +10,10 @@ npm install react-native-fula
 
 ## Usage
 
-The library exports five modules:
+The library exports four modules:
 
 ```js
-import { fula, blockchain, chainApi, fxblox, fxAi } from 'react-native-fula';
+import { fula, blockchain, fxblox, fxAi } from 'react-native-fula';
 ```
 
 ### fula — Client Lifecycle
@@ -76,7 +76,7 @@ const requests = await blockchain.listPoolJoinRequests(poolID);
 const vote = await blockchain.votePoolJoinRequest(seed, poolID, account, accept);
 
 // Storage & replication
-const uploaded = await blockchain.batchUploadManifest(api, seed, cids, poolId, replicationFactor);
+const uploaded = await blockchain.batchUploadManifest(cids, poolId, replicationFactor);
 const replicated = await blockchain.replicateInPool(cids, account, poolId);
 const stored = await blockchain.newStoreRequest(seed, poolID, uploader, cid);
 const available = await blockchain.listAvailableReplicationRequests(poolID);
@@ -86,27 +86,6 @@ const replicationRemoved = await blockchain.removeStoredReplication(seed, upload
 
 // Blox info
 const space = await blockchain.bloxFreeSpace();
-```
-
-### chainApi — Direct Chain API (via Polkadot.js)
-
-These functions connect directly to the Fula blockchain node via WebSocket, without going through a blox.
-
-```js
-const api = await chainApi.init(wsAddress); // default: 'wss://node3.functionyard.fula.network'
-await chainApi.disconnectApi(api);
-
-const hexSeed = await chainApi.createHexSeedFromString(seed);
-const { account } = chainApi.getLocalAccount(seed);
-const accountId = await chainApi.getAccountIdFromSeed(seed);
-const balance = await chainApi.checkAccountBalance(api, accountId);
-
-const pools = await chainApi.listPools(api, start, length);
-const request = await chainApi.checkJoinRequest(api, poolId, accountId);
-const userPool = await chainApi.getUserPool(api, accountId);
-
-const { hash } = await chainApi.batchUploadManifest(api, seed, cids, poolId, replicationFactor);
-const newCids = await chainApi.manifestNewBatch(api, poolId, uploader, cids);
 ```
 
 ### fxblox — Device & Plugin Management

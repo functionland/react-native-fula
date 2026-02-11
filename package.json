@@ -37,10 +37,7 @@
     "build:android": "cd example/android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
     "build:ios": "cd example/ios && xcodebuild -workspace FulaExample.xcworkspace -scheme FulaExample -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO",
     "bootstrap": "yarn example && yarn install && yarn example pods",
-    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build",
-    "build:polkadot": "yarn generate:defs && yarn generate:meta",
-    "generate:defs": "node --loader ts-node/esm node_modules/.bin/polkadot-types-from-defs --package fula-polkadotjs-typegen/interfaces --input ./src/interfaces --endpoint ./edgeware.json",
-    "generate:meta": "node --loader ts-node/esm node_modules/.bin/polkadot-types-from-chain --package fula-polkadotjs-typegen/interfaces --endpoint ./edgeware.json --output ./src/interfaces"
+    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build"
   },
   "keywords": [
     "react-native",
@@ -61,7 +58,6 @@
     "@babel/plugin-proposal-export-namespace-from": "^7.16.7",
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
-    "@polkadot/typegen": "^15.0.1",
     "@react-native-community/eslint-config": "^3.0.2",
     "@release-it/conventional-changelog": "^10.0.4",
     "@types/jest": "^28.1.2",
@@ -169,11 +165,6 @@
     ]
   },
   "dependencies": {
-    "@polkadot/api": "^15.0.1",
-    "@polkadot/keyring": "^13.2.3",
-    "@polkadot/typegen": "^15.0.1",
-    "@polkadot/util": "^13.2.3",
-    "@polkadot/util-crypto": "^13.2.3",
     "@react-native/metro-config": "^0.80.2",
     "text-encoding": "^0.7.0",
     "yarn": "^1.22.21"

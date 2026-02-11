@@ -4,11 +4,7 @@
     "noEmit": true,  // Required when using allowImportingTsExtensions
     "baseUrl": "./",
     "paths": {
-      "react-native-fula": ["./src/index"],
-      "fula-polkadotjs-typegen/*": ["./src/*"],
-      "@polkadot/types/lookup": ["./src/interfaces/types-lookup.ts"],
-      "@polkadot/api/augment": ["./src/interfaces/augment-api.ts"],
-      "@polkadot/types/augment": ["./src/interfaces/augment-types.ts"]
+      "react-native-fula": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
