@@ -438,6 +438,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "getAccount called ");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.getAccount();
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -453,6 +457,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "accountFund: accountString = " + accountString);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.accountFund(accountString);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -470,6 +478,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "assetsBalance called ");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.assetsBalance(account, assetIdLong, classIdLong);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -485,6 +497,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "transferToFula called ");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.transferToFula(amount, wallet, chain);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -500,6 +516,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "checkAccountExists: accountString = " + accountString);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.accountExists(accountString);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -515,6 +535,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "listPools");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.poolList();
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -531,6 +555,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       long poolIdLong = Long.parseLong(poolID);
       Log.d("ReactNative", "joinPool: poolID = " + poolIdLong);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.poolJoin(poolIdLong);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -547,6 +575,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       long poolIdLong = Long.parseLong(poolID);
       Log.d("ReactNative", "cancelPoolJoin: poolID = " + poolIdLong);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.poolCancelJoin(poolIdLong);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -562,6 +594,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "listPoolJoinRequests: poolID = " + poolIDStr);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         long poolID = Long.parseLong(poolIDStr);
         byte[] result = this.fula.poolRequests(poolID);
         String resultString = toString(result);
@@ -579,6 +615,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       long poolIdLong = Long.parseLong(poolID);
       Log.d("ReactNative", "leavePool: poolID = " + poolIdLong);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.poolLeave(poolIdLong);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -660,6 +700,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "listAvailableReplicationRequests: poolID = " + poolIDStr);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         long poolID = Long.parseLong(poolIDStr);
         byte[] result = this.fula.manifestAvailable(poolID);
         String resultString = toString(result);
@@ -736,6 +780,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "bloxFreeSpace");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.bloxFreeSpace();
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
@@ -752,6 +800,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "wifiRemoveall");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.wifiRemoveall();
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
@@ -768,6 +820,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "fetchContainerLogs");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.fetchContainerLogs(containerName, tailCount);
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
@@ -784,6 +840,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "findBestAndTargetInLogs");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.findBestAndTargetInLogs(containerName, tailCount);
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
@@ -800,6 +860,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "getFolderSize");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.getFolderSize(folderPath);
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
@@ -816,6 +880,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "getDatastoreSize");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.getDatastoreSize();
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
@@ -832,6 +900,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "reboot");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.reboot();
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
@@ -848,6 +920,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "partition");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.partition();
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
@@ -864,6 +940,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "eraseBlData");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.eraseBlData();
         String resultString = toString(result);
         Log.d("ReactNative", "result string="+resultString);
@@ -881,6 +961,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "listPlugins");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.listPlugins();
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -896,6 +980,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "listActivePlugins");
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.listActivePlugins();
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -911,6 +999,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "installPlugin: pluginName = " + pluginName + ", params = " + params);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.installPlugin(pluginName, params);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -926,6 +1018,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "uninstallPlugin: pluginName = " + pluginName);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.uninstallPlugin(pluginName);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -941,6 +1037,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "showPluginStatus: pluginName = " + pluginName + ", lines = " + lines);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.showPluginStatus(pluginName, lines);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -956,6 +1056,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "getInstallOutput: pluginName = " + pluginName + ", params = " + params);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.getInstallOutput(pluginName, params);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -971,6 +1075,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "getInstallStatus: pluginName = " + pluginName);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.getInstallStatus(pluginName);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -986,6 +1094,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "updatePlugin: pluginName = " + pluginName);
       try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
         byte[] result = this.fula.updatePlugin(pluginName);
         String resultString = toString(result);
         promise.resolve(resultString);
@@ -1002,6 +1114,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       ThreadUtils.runOnExecutor(() -> {
           Log.d("ReactNative", "chatWithAI: aiModel = " + aiModel + ", userMessage = " + userMessage);
           try {
+              if (this.fula == null) {
+                  promise.reject("ERR_FULA", "Fula is not initialized");
+                  return;
+              }
               // Call the Go Mobile method, which returns a byte[]
               byte[] streamIDBytes = this.fula.chatWithAI(aiModel, userMessage);
 
@@ -1022,6 +1138,10 @@ public class FulaModule extends ReactContextBaseJavaModule {
       ThreadUtils.runOnExecutor(() -> {
           Log.d("ReactNative", "getChatChunk: streamID = " + streamID);
           try {
+              if (this.fula == null) {
+                  promise.reject("ERR_FULA", "Fula is not initialized");
+                  return;
+              }
               // Call the Go Mobile method, which returns a String
               String chunk = this.fula.getChatChunk(streamID);
 
@@ -1052,6 +1172,10 @@ public void streamChunks(String streamID, Promise promise) {
 
     ThreadUtils.runOnExecutor(() -> {
         try {
+            if (this.fula == null) {
+                promise.reject("ERR_FULA", "Fula is not initialized");
+                return;
+            }
             fulamobile.StreamIterator iterator = this.fula.getStreamIterator(streamID);
 
             if (iterator == null) {

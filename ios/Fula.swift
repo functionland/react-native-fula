@@ -478,8 +478,12 @@ class FulaModule: RCTEventEmitter {
     @objc(checkAccountExists:withResolver:withRejecter:)
     func checkAccountExists(accountString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
         print("ReactNative", "checkAccountExists: accountString = ", accountString)
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
         do {
-            let result = try self.fula!.accountExists(accountString)
+            let result = try fula.accountExists(accountString)
             let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
@@ -492,8 +496,12 @@ class FulaModule: RCTEventEmitter {
     @objc(accountFund:withResolver:withRejecter:)
     func accountFund(accountString: String,  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
         print("ReactNative", "accountFund: accountString = ", accountString)
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
         do {
-            let result = try self.fula!.accountFund(accountString)
+            let result = try fula.accountFund(accountString)
             let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
@@ -506,8 +514,12 @@ class FulaModule: RCTEventEmitter {
     @objc(listPools:withRejecter:)
     func listPools( resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock)  -> Void {
         print("ReactNative", "listPools")
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
         do {
-            let result = try self.fula!.poolList()
+            let result = try fula.poolList()
             let resultString = result.toUTF8String()!
             resolve(resultString)
         } catch let error {
@@ -520,10 +532,14 @@ class FulaModule: RCTEventEmitter {
     @objc(listPoolJoinRequests:withResolver:withRejecter:)
     func listPoolJoinRequests(poolIDStr: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         print("ReactNative", "listPoolJoinRequests: poolIDStr = ", poolIDStr)
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
         do {
             if let poolID = Int64(poolIDStr), let intPoolID = Int(exactly: poolID) {
                 // Conversion to Int successful - use intPoolID
-                let result = try self.fula!.poolRequests(intPoolID)
+                let result = try fula.poolRequests(intPoolID)
                 let resultString = result.toUTF8String()!
                 resolve(resultString)
             } else {
@@ -543,6 +559,10 @@ class FulaModule: RCTEventEmitter {
     @objc(listAvailableReplicationRequests:withResolver:withRejecter:)
     func listAvailableReplicationRequests(poolIDStr: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         print("ReactNative", "listAvailableReplicationRequests: poolIDStr = ", poolIDStr)
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
         do {
             guard let poolID = Int64(poolIDStr), let intPoolID = Int(exactly: poolID) else {
                 let error = NSError(domain: "FULAErrorDomain",
@@ -551,7 +571,7 @@ class FulaModule: RCTEventEmitter {
                 reject("ERR_FULA", "Invalid poolID - not a valid number: \(poolIDStr)", error)
                 return
             }
-            let result = try self.fula!.manifestAvailable(intPoolID)
+            let result = try fula.manifestAvailable(intPoolID)
             guard let resultString = result.toUTF8String() else {
                 let error = NSError(domain: "FULAErrorDomain",
                                     code: 1005, // Use appropriate error code
@@ -594,9 +614,13 @@ class FulaModule: RCTEventEmitter {
     @objc(transferToFula:wallet:chain:withResolver:withRejecter:)
     func transferToFula(amount: String, wallet: String, chain: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.global(qos: .default).async {
+            guard let fula = self.fula else {
+                reject("ERR_FULA", "Fula is not initialized", nil)
+                return
+            }
             do {
                 print("ReactNative", "transferToFula called")
-                let result = try self.fula!.transfer(toFula: amount, walletAccount: wallet, chain: chain)
+                let result = try fula.transfer(toFula: amount, walletAccount: wallet, chain: chain)
                 let resultString = String(data: result, encoding: .utf8)
                 resolve(resultString)
             } catch let error {
@@ -635,8 +659,12 @@ class FulaModule: RCTEventEmitter {
             return
         }
 
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
         do {
-            let balance = try self.fula!.assetsBalance(account, assetId: assetIdInt, classId: classIdInt)
+            let balance = try fula.assetsBalance(account, assetId: assetIdInt, classId: classIdInt)
             let balanceString = String(data: balance, encoding: .utf8)
             resolve(balanceString)
         } catch let error {
@@ -647,11 +675,15 @@ class FulaModule: RCTEventEmitter {
   @objc(joinPool:withResolver:withRejecter:)
   func joinPool(poolID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
       print("ReactNative", "joinPool: poolID = ", poolID)
+      guard let fula = self.fula else {
+          reject("ERR_FULA", "Fula is not initialized", nil)
+          return
+      }
       do {
           guard let poolIdInt = Int(poolID) else {
               throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
           }
-          let result = try self.fula!.poolJoin(poolIdInt)
+          let result = try fula.poolJoin(poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -661,11 +693,15 @@ class FulaModule: RCTEventEmitter {
 
   @objc(cancelPoolJoin:withResolver:withRejecter:)
   func cancelPoolJoin(poolID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      guard let fula = self.fula else {
+          reject("ERR_FULA", "Fula is not initialized", nil)
+          return
+      }
       do {
           guard let poolIdInt = Int(poolID) else {
               throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
           }
-          let result = try self.fula!.poolCancelJoin(poolIdInt)
+          let result = try fula.poolCancelJoin(poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -676,11 +712,15 @@ class FulaModule: RCTEventEmitter {
   @objc(leavePool:withResolver:withRejecter:)
   func leavePool(poolID: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
       print("ReactNative", "leavePool: poolID = ", poolID)
+      guard let fula = self.fula else {
+          reject("ERR_FULA", "Fula is not initialized", nil)
+          return
+      }
       do {
           guard let poolIdInt = Int(poolID) else {
               throw NSError(domain: "Invalid poolID", code: 0, userInfo: nil)
           }
-          let result = try self.fula!.poolLeave(poolIdInt)
+          let result = try fula.poolLeave(poolIdInt)
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -765,8 +805,12 @@ class FulaModule: RCTEventEmitter {
 
   @objc(eraseBlData:withRejecter:)
   func eraseBlData(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+      guard let fula = self.fula else {
+          reject("ERR_FULA", "Fula is not initialized", nil)
+          return
+      }
       do {
-          let result = try self.fula!.eraseBlData()
+          let result = try fula.eraseBlData()
           let resultString = String(data: result, encoding: .utf8)
           resolve(resultString)
       } catch let error {
@@ -776,8 +820,12 @@ class FulaModule: RCTEventEmitter {
 
   @objc(reboot:withRejecter:)
   func reboot(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      guard let fula = self.fula else {
+          reject("ERR_FULA", "Fula is not initialized", nil)
+          return
+      }
       do {
-          let result = try self.fula!.reboot()
+          let result = try fula.reboot()
           let resultString = result.toUTF8String()!
           resolve(resultString)
       } catch let error {
@@ -788,8 +836,12 @@ class FulaModule: RCTEventEmitter {
 
   @objc(partition:withRejecter:)
   func partition(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      guard let fula = self.fula else {
+          reject("ERR_FULA", "Fula is not initialized", nil)
+          return
+      }
       do {
-          let result = try self.fula!.partition()
+          let result = try fula.partition()
           let resultString = result.toUTF8String()!
           resolve(resultString)
       } catch let error {
@@ -800,8 +852,12 @@ class FulaModule: RCTEventEmitter {
 
   @objc(wifiRemoveall:withRejecter:)
   func wifiRemoveall(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) -> Void {
+      guard let fula = self.fula else {
+          reject("ERR_FULA", "Fula is not initialized", nil)
+          return
+      }
       do {
-          let result = try self.fula!.wifiRemoveall()
+          let result = try fula.wifiRemoveall()
           let resultString = result.toUTF8String()!
           resolve(resultString)
       } catch let error {
@@ -812,9 +868,13 @@ class FulaModule: RCTEventEmitter {
 
     @objc(fetchContainerLogs:withTailCount:withResolver:withRejecter:)
     func fetchContainerLogs(containerName: String, tailCount: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
         do {
             // Since fetchContainerLogs expects a String for tailCount, pass it directly
-            let result = try self.fula!.fetchContainerLogs(containerName, tailCount: tailCount)
+            let result = try fula.fetchContainerLogs(containerName, tailCount: tailCount)
             guard let resultString = result.toUTF8String() else {
                 // Handle the case where result.toUTF8String() returns nil
                 let error = NSError(domain: "FULAErrorDomain",
@@ -831,9 +891,13 @@ class FulaModule: RCTEventEmitter {
     }
     @objc(findBestAndTargetInLogs:withTailCount:withResolver:withRejecter:)
     func findBestAndTargetInLogs(containerName: String, tailCount: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
         do {
             // Since fetchContainerLogs expects a String for tailCount, pass it directly
-            let result = try self.fula!.findBestAndTarget(inLogs: containerName, tailCount: tailCount)
+            let result = try fula.findBestAndTarget(inLogs: containerName, tailCount: tailCount)
             guard let resultString = result.toUTF8String() else {
                 // Handle the case where result.toUTF8String() returns nil
                 let error = NSError(domain: "FULAErrorDomain",
