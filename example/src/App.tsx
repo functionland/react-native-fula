@@ -640,6 +640,7 @@ const styles = StyleSheet.create({
     height: 1000,
     backgroundColor: 'white',
     padding: 0,
+    paddingTop: 60,
   },
   section: {
     position: 'relative',
