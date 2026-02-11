@@ -1,6 +1,6 @@
 # react-native-fula
 
-This package is a React Native bridge to use the [Fula protocols](https://github.com/functionland/go-fula) for blockchain operations, device management, plugin management, and AI interactions via go-fula/mobile.
+React Native bridge for the [Fula protocols](https://github.com/functionland/go-fula), providing blockchain operations, blox device management, plugin management, and AI interactions via go-fula/mobile.
 
 ## Installation
 
@@ -10,87 +10,154 @@ npm install react-native-fula
 
 ## Usage
 
-```js
-import { fula } from 'react-native-fula'; // Until the library becomes stable, we suggest importing from github directly
-```
+The library exports five modules:
 
 ```js
-// Creates a new client. It is better to call this instead of directly calling init
-const peerId //returns peerId as string
-=  newClient(
-  identity: string, //privateKey of did identity
-  storePath: string, // leave empty to use the default temp one
-  bloxAddr: string, //leave empty for testing without a backend node
-  exchange: 'noop'|'', //add noop for testing without a backend
-  autoFlush: boolean, //Default to false. Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
-  useRelay: boolean, //default to true. If true it forces the connection through relay
-  refresh: boolean? //forces the fula object to be recreated. default is false
-)
+import { fula, blockchain, chainApi, fxblox, fxAi } from 'react-native-fula';
 ```
 
-```js
-//Initialize the fula client, which creates the libp2p connection if newClient is not called before.
-// Note that input is not an object e.g. init('','','','noop', false)
-{
-    peerId, //returns peerId of the created libp2p instance in form of a string
-    rootCid, //always empty string (kept for backward compatibility)
-}
-=
-await fula.init(
-    identity: string, //bytes of the privateKey of did identity in string format
-    storePath: string, // leave empty to use the default temp one
-    bloxAddr: string, //leave empty for testing without a backend node
-    exchange: 'noop'|'', //add noop for testing without a backend
-    autoFlush: boolean, //Default to false. Always set to false unless you know what you are doing. explicitly write data to disk after each operation if set to true
-    useRelay: boolean, //default to true. If true it forces the connection through relay
-    refresh: boolean? //forces the fula object to be recreated. default is false
-);
-```
+### fula — Client Lifecycle
 
 ```js
-//checks if fula is ready (initialized through newClient or init)
-const result //returns true if initialized and false otherwise
-=
-await fula.isReady(
-    filesystemCheck: boolean //Ignored. Kept for backward compatibility.
+// Creates a new client and connects to the blox node
+const peerId = await fula.newClient(
+  identity,    // string — privateKey of DID identity
+  storePath,   // string — leave empty for default temp path
+  bloxAddr,    // string — blox multiaddr, leave empty for testing without backend
+  exchange,    // string — 'noop' for testing without backend, '' for production
+  autoFlush,   // boolean — default false, write to disk after each operation
+  useRelay,    // boolean — default true, force connection through relay
+  refresh      // boolean — default false, force recreate the fula object
 );
 
+// init() is a backward-compatibility alias for newClient.
+// It calls newClient internally and returns { peerId, rootCid } where rootCid is always "".
 ```
 
 ```js
-//checks if client can reach server
-const result //returns true if it can, and false if it cannot
-=
-await fula.checkConnection(
-    timeout: number? //default to 20. Maximum time in seconds that checkConnection waits before throwing an error
-);
+// Check if fula is initialized
+const ready = await fula.isReady(filesystemCheck); // boolean
 
-```
+// Check if client can reach the blox
+const connected = await fula.checkConnection(timeout); // timeout in seconds, default 20
 
-```js
-//pings the blox peer and returns latency information
-const result //returns JSON with success, successes, avg_rtt_ms, errors
-=
-await fula.ping(
-    timeout: number? //default to 20. Maximum time in seconds
-);
+// Ping blox peer, returns latency info (tries direct -> relay -> DHT)
+const result = await fula.ping(timeout); // { success, successes, avg_rtt_ms, errors }
 
-```
-
-```js
-//shuts down the fula libp2p and datastore
+// Shut down libp2p and datastore
 await fula.shutdown();
+
+// Shut down, clear local data
+const success = await fula.logout(identity, storePath);
 ```
 
-```js
-//shuts down and clears the fula client
-const result //returns true if successful and false if fails
-=
-await fula.logout(
-    identity: string, //bytes of the privateKey of did identity in string format
-    storePath: string, // leave empty to use the default temp one
-);
+### blockchain — On-Chain Operations (via Blox)
 
+These functions communicate with the blockchain through the connected blox node.
+
+```js
+// Account management
+const { seed, account } = await blockchain.createAccount(seed);
+const { account, exists } = await blockchain.checkAccountExists(account);
+const funded = await blockchain.accountFund(account);
+const accountInfo = await blockchain.getAccount();
+const balance = await blockchain.assetsBalance(account, assetId, classId);
+const transfer = await blockchain.transferToFula(amount, wallet, chain);
+
+// Pool management
+const pool = await blockchain.createPool(seed, poolName);
+const pools = await blockchain.listPools();
+const joined = await blockchain.joinPool(poolID);
+const left = await blockchain.leavePool(poolID);
+const joinedChain = await blockchain.joinPoolWithChain(poolID, chainName);
+const leftChain = await blockchain.leavePoolWithChain(poolID, chainName);
+const cancelled = await blockchain.cancelPoolJoin(poolID);
+const requests = await blockchain.listPoolJoinRequests(poolID);
+const vote = await blockchain.votePoolJoinRequest(seed, poolID, account, accept);
+
+// Storage & replication
+const uploaded = await blockchain.batchUploadManifest(api, seed, cids, poolId, replicationFactor);
+const replicated = await blockchain.replicateInPool(cids, account, poolId);
+const stored = await blockchain.newStoreRequest(seed, poolID, uploader, cid);
+const available = await blockchain.listAvailableReplicationRequests(poolID);
+const removed = await blockchain.removeReplicationRequest(seed, poolID, cid);
+const storerRemoved = await blockchain.removeStorer(seed, storer, poolID, cid);
+const replicationRemoved = await blockchain.removeStoredReplication(seed, uploader, poolID, cid);
+
+// Blox info
+const space = await blockchain.bloxFreeSpace();
+```
+
+### chainApi — Direct Chain API (via Polkadot.js)
+
+These functions connect directly to the Fula blockchain node via WebSocket, without going through a blox.
+
+```js
+const api = await chainApi.init(wsAddress); // default: 'wss://node3.functionyard.fula.network'
+await chainApi.disconnectApi(api);
+
+const hexSeed = await chainApi.createHexSeedFromString(seed);
+const { account } = chainApi.getLocalAccount(seed);
+const accountId = await chainApi.getAccountIdFromSeed(seed);
+const balance = await chainApi.checkAccountBalance(api, accountId);
+
+const pools = await chainApi.listPools(api, start, length);
+const request = await chainApi.checkJoinRequest(api, poolId, accountId);
+const userPool = await chainApi.getUserPool(api, accountId);
+
+const { hash } = await chainApi.batchUploadManifest(api, seed, cids, poolId, replicationFactor);
+const newCids = await chainApi.manifestNewBatch(api, poolId, uploader, cids);
+```
+
+### fxblox — Device & Plugin Management
+
+Hardware commands and plugin management for blox devices. These are sent over libp2p to the connected blox.
+
+```js
+// Hardware commands
+const wifiResult = await fxblox.wifiRemoveall();
+const rebootResult = await fxblox.reboot();
+const partitionResult = await fxblox.partition();
+const eraseResult = await fxblox.eraseBlData();
+
+// Diagnostics
+const logs = await fxblox.fetchContainerLogs(containerName, tailCount);
+const bestTarget = await fxblox.findBestAndTargetInLogs(containerName, tailCount);
+const folderSize = await fxblox.getFolderSize(folderPath);
+const datastoreSize = await fxblox.getDatastoreSize();
+
+// Plugin management
+const plugins = await fxblox.listPlugins();
+const activePlugins = await fxblox.listActivePlugins();
+const installed = await fxblox.installPlugin(pluginName, params);
+const uninstalled = await fxblox.uninstallPlugin(pluginName);
+const updated = await fxblox.updatePlugin(pluginName);
+const status = await fxblox.showPluginStatus(pluginName, lines);
+const installStatus = await fxblox.getInstallStatus(pluginName);
+const installOutput = await fxblox.getInstallOutput(pluginName, params);
+```
+
+### fxAi — AI Chat
+
+Interact with AI models running on the blox device. Responses are streamed.
+
+```js
+// Start a chat session — returns a stream ID
+const streamID = await fxAi.chatWithAI(aiModel, userMessage);
+
+// Option 1: Collect all chunks into a single response
+const fullResponse = await fxAi.fetchChunksUsingIterator(streamID);
+
+// Option 2: Stream chunks with callbacks
+const cancel = fxAi.streamChunks(streamID, {
+  onChunk: (chunk) => console.log(chunk),
+  onComplete: () => console.log('done'),
+  onError: (err) => console.error(err),
+});
+// Call cancel() to stop streaming
+
+// Option 3: Get chunks manually one at a time
+const chunk = await fxAi.getChatChunk(streamID);
 ```
 
 ## Polkadot type creation
