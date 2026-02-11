@@ -10,8 +10,6 @@ import {
 } from '@functionland/react-native-fula';
 const App = () => {
   const inprogress = false;
-  const [newRootCid, setNewRootCid] = React.useState<string>('');
-  const root_cid = 'bafyr4iejulnh5nbino7yygwpoezkbxldu7jxuzjmafpndzzl5vbixe6zoq';
   const seed =
     '0xb82cc245d889913ee01f48ad161ba8473cac9e516026488493ed20296721a2a5';
 
@@ -20,7 +18,6 @@ const App = () => {
   useEffect(() => {
     if (!__DEV__) {
       console.log = () => null;
-      //console.error = () => null
     }
     if(fula.registerLifecycleListener) {
       fula
@@ -31,26 +28,6 @@ const App = () => {
     }
   }, []);
 
-  let RNFS = require('react-native-fs');
-  const readFile = () => {
-    RNFS.readDir(RNFS.DocumentDirectoryPath)
-      .then((result: { path: any }[]) => {
-        console.log('GOT RESULT', result);
-        return Promise.all([RNFS.stat(result[0].path), result[0].path]);
-      })
-      .then((statResult: any[]) => {
-        if (statResult[0].isFile()) {
-          return RNFS.readFile(statResult[1], 'utf8');
-        }
-        return 'no file';
-      })
-      .then((contents: any) => {
-        console.log(contents);
-      })
-      .catch((err: { message: any; code: any }) => {
-        console.log(err.message, err.code);
-      });
-  };
   //Key for peerId: 12D3KooWFi2PK36Rzi4Bmosj1np2t6i9v3QnbBiNY9hQWuJajnmZ
   const privateKey = [
     183, 7, 117, 9, 159, 132, 170, 235, 215, 34, 145, 181, 60, 207, 4, 27, 27,
@@ -59,82 +36,19 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
 
-  const privateKey_tower = [
-    136, 140, 244, 206, 112, 88, 174, 215, 168, 255, 187, 101, 60, 246, 164,
-    180, 36, 243, 231, 82, 182, 24, 99, 79, 114, 144, 196, 186, 92, 27, 109, 89,
-    153, 106, 217, 201, 106, 9, 66, 33, 214, 195, 255, 234, 178, 244, 203, 112,
-    62, 91, 140, 55, 179, 10, 208, 210, 177, 111, 61, 46, 73, 148, 14, 62,
-  ];
   // const bloxPeerId = '12D3KooWRadeHPBedP633MMVZjbVni5XDxzhGDXXMpDgC29vuhLB'; //tower
   const bloxPeerId = '12D3KooWDaT8gS2zGMLGBKmW1mKhQSHxYeEX3Fr3VSjuPzmjyfZC'; //laptop
   // const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
-  //const bloxPeerId = '12D3KooWAN5FaAnC4d1GhAvoYxyUXdrkCGqux1NB6Pr4cZXn813E'; //test aws server
 
   const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
-  //const bloxAddr = '/ip4/192.168.2.139/tcp/40001/p2p/' + bloxPeerId; // /ip4/192.168.2.14/tcp/40001/p2p/12D3KooWRTzN7HfmjoUBHokyRZuKdyohVVSGqKBMF24ZC3tGK78Q
-  //const bloxAddr = '/dns4/1.pools.test.fula.network/tcp/40001/p2p/12D3KooWHb38UxY8akVGWZBuFtS3NJ7rJUwd36t3cfkoY7EbgNt9';
-  const initFula = async () => {
-    try {
-      return fula.init(
-        privateKey.toString(),
-        '',
-        bloxAddr,
-        '',
-        true,
-        root_cid
-      );
-    } catch (e) {
-      console.log(e);
-      return Promise.reject(e);
-    }
-  };
-  React.useEffect(() => {
-    /*chainApi.init().then((api) => {
-      chainApi.listPools(api).then((pools) => {
-        console.log('pools', pools);
-      }).catch((e) => {
-        console.log('error', e);
-      });
-
-      chainApi.checkJoinRequest(api, 1, "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty").then((poolReq) => {
-        console.log('poolReq', poolReq);
-      }).catch((err) => {
-        console.log('error', err);
-      });
-    });*/
-    //fula.logout(privateKey.toString(),'').then((a) => {
-    /*initFula()
-      .then((res) => {
-        console.log('OK', res);
-        setInitComplete(res);
-        readFile();
-        console.log('readFile local comlete');
-        fula.mkdir('root/test1').then((res1) => {
-          console.log('root created');
-          console.log(res1);
-          fula
-            .ls('root')
-            .then((res2) => {
-              console.log('ls complete');
-              console.log(res2);
-              fula.shutdown();
-            })
-            .catch((e) => {
-              console.log('error', e);
-            });
-        });
-      })
-      .catch((e) => {
-        console.log('error', e);
-      });*/
-    //});
-  }, []);
+  //const bloxAddr = '/ip4/192.168.2.139/tcp/40001/p2p/' + bloxPeerId;
 
   return (
     <ScrollView style={styles.container}>
+      {/* --- Initialization --- */}
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'newclient'}
+          title={inprogress ? 'Processing...' : 'New Client'}
           onPress={async () => {
             try {
               await fula.shutdown();
@@ -153,76 +67,53 @@ const App = () => {
               } else {
                 console.log('wait for newClient to complete');
               }
-            } catch (e) {}
+            } catch (e) {
+              console.log('newClient error:', e);
+            }
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+
+      {/* --- Connection --- */}
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Check Connection'}
+          onPress={async () => {
+            try {
+              const r = await fula.checkConnection();
+              console.log('checkConnection result:', r);
+            } catch (e) {
+              console.log('checkConnection error:', e);
+            }
           }}
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Init'}
+          title={inprogress ? 'Processing...' : 'Ping'}
           onPress={async () => {
             try {
-              let resinit = await initFula();
-              if (resinit) {
-                console.log('init complete');
-                console.log(resinit);
-                setNewRootCid(resinit.rootCid);
+              const result = await fula.ping();
+              console.log('Ping result:', JSON.stringify(result));
+              if (result.success) {
+                console.log(`Ping OK: ${result.successes}/3 succeeded, avg RTT: ${result.avg_rtt_ms}ms`);
               } else {
-                console.log('wait for init to complete');
+                console.log('Ping FAILED:', result.errors);
               }
-            } catch (e) {}
+            } catch (e) {
+              console.log('Ping error:', e);
+            }
           }}
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
+
+      {/* --- Account --- */}
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Test'}
-          onPress={async () => {
-            try {
-              fula
-                .testData(privateKey.toString(), bloxAddr)
-                .then((res: any) => {
-                  console.log('tested');
-                  console.log(res);
-                })
-                .catch((e: any) => {
-                  console.log('test failed');
-                  console.log(e);
-                });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          //12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx
-          title={inprogress ? 'Putting & Getting...' : 'set auth'}
-          onPress={async () => {
-            try {
-              fula
-                .setAuth(
-                  '12D3KooWMMt4C3FKui14ai4r1VWwznRw6DoP5DcgTfzx2D5VZoWx',
-                  true
-                )
-                .then((res: any) => {
-                  console.log('tested');
-                  console.log(res);
-                })
-                .catch((e: any) => {
-                  console.log('test failed');
-                  console.log(e);
-                });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Get Local Account'}
+          title={inprogress ? 'Processing...' : 'Get Local Account'}
           onPress={async () => {
             try {
               let seedHex = await chainApi.createHexSeedFromString(seed);
@@ -238,11 +129,10 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Account Fund'}
+          title={inprogress ? 'Processing...' : 'Account Fund'}
           onPress={async () => {
             try {
               let seedHex = await chainApi.createHexSeedFromString(seed);
-              console.log('seedHex is the polkadot acceptable seed:' + seedHex);
               let res = chainApi.getLocalAccount(seedHex);
               console.log('account is:' + res.account);
               let res2 = await blockchain.accountFund(res.account);
@@ -256,214 +146,22 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={
-            inprogress
-              ? 'Putting & Getting...'
-              : 'Test List Failed links for a one'
-          }
+          title={inprogress ? 'Processing...' : 'Check Account Balance'}
           onPress={async () => {
             try {
-              console.log('checking: ' + newRootCid);
-              fula
-                .listFailedActions([newRootCid])
-                .then((res: any) => {
-                  console.log('tested');
-                  console.log(res);
-                })
-                .catch((e: any) => {
-                  console.log('test failed');
-                  console.log(e);
-                });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={
-            inprogress
-              ? 'Putting & Getting...'
-              : 'Test List Failed links for all'
-          }
-          onPress={async () => {
-            try {
-              fula
-                .listFailedActions()
-                .then((res: any) => {
-                  console.log('tested');
-                  console.log(res);
-                })
-                .catch((e: any) => {
-                  console.log('test failed');
-                  console.log(e);
-                });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Write WNFS'}
-          onPress={async () => {
-            const unixTimestamp: number = Math.floor(Date.now() / 1000);
-            try {
-              if (initComplete) {
-                console.log('initialization is completed. putting key/value');
-                var path = RNFS.DocumentDirectoryPath + '/test.txt';
-                RNFS.writeFile(path, 'test ' + unixTimestamp, 'utf8')
-                  .then((success: any) => {
-                    console.log(
-                      'FILE WRITTEN in ' +
-                        RNFS.DocumentDirectoryPath +
-                        '/test.txt with ' +
-                        unixTimestamp
-                    );
-                    console.log(success);
-                    fula
-                      .writeFile(
-                        'root/test_' + unixTimestamp + '.txt',
-                        RNFS.DocumentDirectoryPath + '/test.txt'
-                      )
-                      .then((res: any) => {
-                        console.log('upload completed');
-                        console.log(res);
-                        fula
-                          .readFile(
-                            'root/test_' + unixTimestamp + '.txt',
-                            RNFS.DocumentDirectoryPath +
-                              '/test_' +
-                              unixTimestamp +
-                              '.txt'
-                          )
-                          .then((res2: any) => {
-                            console.log('read completed ' + res2);
-                            readFile();
-                          });
-                      });
-                  })
-                  .catch((err: { message: any }) => {
-                    console.log(err.message);
-                  });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'List' : 'List'}
-          onPress={async () => {
-            try {
-              fula
-                .ls('root')
-                .then((res: any) => {
-                  console.log('tested');
-                  console.log(res);
-                })
-                .catch((e: any) => {
-                  console.log('test failed');
-                  console.log(e);
-                });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Check Failes'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                console.log('initialization is completed. retry');
-                var path = RNFS.DocumentDirectoryPath + '/test_r.txt';
-                RNFS.writeFile(path, 'test_r', 'utf8')
-                  .then((success: any) => {
-                    console.log(
-                      'FILE WRITTEN in ' +
-                        RNFS.DocumentDirectoryPath +
-                        '/test_r.txt'
-                    );
-                    console.log(success);
-                    fula
-                      .writeFile(
-                        'root/test_r.txt',
-                        RNFS.DocumentDirectoryPath + '/test_r.txt'
-                      )
-                      .then((res: any) => {
-                        console.log('upload completed');
-                        console.log(res);
-                        fula
-                          .readFile(
-                            'root/test_r.txt',
-                            RNFS.DocumentDirectoryPath + '/test_r2.txt'
-                          )
-                          .then((res2: any) => {
-                            console.log('read completed ' + res2);
-                            readFile();
-                            fula
-                              .checkFailedActions()
-                              .then((f: any) => {
-                                console.log('failed actions');
-                                console.log(f);
-                              })
-                              .catch((e: any) => {
-                                console.log(e);
-                              });
-                          });
-                      });
-                  })
-                  .catch((err: { message: any }) => {
-                    console.log(err.message);
-                  });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Retry'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                console.log(
-                  'initialization is completed. retrying... first checking connection:'
-                );
-                fula
-                  .checkConnection()
-                  .then((r: any) => {
-                    console.log('connection cehck passed');
-                    console.log(r);
-                    if (r) {
-                      console.log('check connection is completed. retry');
-                      fula
-                        .checkFailedActions(true)
-                        .then((res: any) => {
-                          console.log('retried');
-                          console.log(res);
-                        })
-                        .catch((e: any) => {
-                          console.log('retry failed');
-                          console.log(e);
-                        });
-                    }
+              chainApi.init().then(async (api: any) => {
+                console.log('api created');
+                let accountId = await chainApi.getAccountIdFromSeed(seed);
+                console.log('account ID is ' + accountId);
+                chainApi
+                  .checkAccountBalance(api, accountId)
+                  .then((res: any) => {
+                    console.log('account balance:', res);
                   })
                   .catch((e: any) => {
-                    console.log('connection cehck failed');
-                    console.log(e);
+                    console.log('account balance failed:', e);
                   });
-              } else {
-                console.log('wait for init to complete');
-              }
+              });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
@@ -471,29 +169,55 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Join Pool'}
+          title={inprogress ? 'Processing...' : 'Get Blox Account + Balance'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection cehck');
-                  console.log(r);
                   if (r) {
-                    console.log('initialization is completed.');
+                    blockchain
+                      .getAccount()
+                      .then((res: any) => {
+                        console.log('account received:', res);
+                        if (res) {
+                          blockchain
+                            .assetsBalance(res.account, 110, 100)
+                            .then((r2: any) => {
+                              console.log('balance:', r2);
+                            });
+                        }
+                      })
+                      .catch((e: any) => {
+                        console.log('getAccount failed:', e);
+                      });
+                  }
+                });
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+
+      {/* --- Pool Operations --- */}
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Join Pool'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  if (r) {
                     blockchain
                       .joinPool(1)
                       .then((res: any) => {
-                        console.log('joined');
-                        console.log(res);
+                        console.log('joined:', res);
                       })
                       .catch((e: any) => {
-                        console.log('join failed');
-                        console.log(e);
+                        console.log('join failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
             } catch (e) {}
           }}
@@ -502,29 +226,22 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Cancel join Pool'}
+          title={inprogress ? 'Processing...' : 'Cancel Join Pool'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection cehck');
-                  console.log(r);
                   if (r) {
-                    console.log('initialization is completed.');
                     blockchain
                       .cancelPoolJoin(1)
                       .then((res: any) => {
-                        console.log('cancel joined');
-                        console.log(res);
+                        console.log('cancel joined:', res);
                       })
                       .catch((e: any) => {
-                        console.log('cancel join failed');
-                        console.log(e);
+                        console.log('cancel join failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
             } catch (e) {}
           }}
@@ -538,28 +255,19 @@ const App = () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
                   if (r) {
-                    console.log('initialization is completed.');
                     blockchain
                       .joinPoolWithChain(1, 'mainnet')
                       .then((res: any) => {
-                        console.log('joined pool with chain successfully');
-                        console.log(res);
+                        console.log('joined pool with chain:', res);
                       })
                       .catch((e: any) => {
-                        console.log('join pool with chain failed');
-                        console.log(e);
+                        console.log('join pool with chain failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
-            } catch (e) {
-              console.log('Error in join pool with chain:', e);
-            }
+            } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
         />
@@ -571,53 +279,18 @@ const App = () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
                   if (r) {
-                    console.log('initialization is completed.');
                     blockchain
                       .leavePoolWithChain(1, 'mainnet')
                       .then((res: any) => {
-                        console.log('left pool with chain successfully');
-                        console.log(res);
+                        console.log('left pool with chain:', res);
                       })
                       .catch((e: any) => {
-                        console.log('leave pool with chain failed');
-                        console.log(e);
+                        console.log('leave pool with chain failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
-            } catch (e) {
-              console.log('Error in leave pool with chain:', e);
-            }
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Check Account Balance'}
-          onPress={async () => {
-            try {
-              chainApi.init().then(async (api: any) => {
-                console.log('api created');
-                console.log('check account balance');
-                let accountId = await chainApi.getAccountIdFromSeed(seed);
-                console.log('account ID is ' + accountId);
-                chainApi
-                  .checkAccountBalance(api, accountId)
-                  .then((res: any) => {
-                    console.log('account balance created');
-                    console.log(res);
-                  })
-                  .catch((e: any) => {
-                    console.log('account balance creation failed');
-                    console.log(e);
-                  });
-              });
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
@@ -625,13 +298,10 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={
-            inprogress ? 'Putting & Getting...' : 'Check Join Request Status'
-          }
+          title={inprogress ? 'Processing...' : 'Check Join Request Status'}
           onPress={async () => {
             try {
               chainApi.init().then(async (api: any) => {
-                console.log('api created');
                 let accountId = await chainApi.getAccountIdFromSeed(seed);
                 console.log('account ID is ' + accountId);
                 chainApi
@@ -641,12 +311,10 @@ const App = () => {
                     '5DD9qAHKNUqcYaKf5qgYra9y8s9BtbfLanJrTr3hQsK5XGGP'
                   )
                   .then((res: any) => {
-                    console.log('join request status created');
-                    console.log(res);
+                    console.log('join request status:', res);
                   })
                   .catch((e: any) => {
-                    console.log('join request status failed');
-                    console.log(e);
+                    console.log('join request status failed:', e);
                   });
               });
             } catch (e) {}
@@ -656,11 +324,10 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Get User Pool'}
+          title={inprogress ? 'Processing...' : 'Get User Pool'}
           onPress={async () => {
             try {
               chainApi.init().then(async (api: any) => {
-                console.log('api created');
                 let accountId = await chainApi.getAccountIdFromSeed(seed);
                 console.log('account ID is ' + accountId);
                 chainApi
@@ -669,12 +336,10 @@ const App = () => {
                     '5CcHZucP2u1FXQW9wuyC11vAVxB3c48pUhc5cc9b3oxbKPL2'
                   )
                   .then((res: any) => {
-                    console.log('GetUserPool created');
-                    console.log(res);
+                    console.log('GetUserPool:', res);
                   })
                   .catch((e: any) => {
-                    console.log('GetUserPool failed');
-                    console.log(e);
+                    console.log('GetUserPool failed:', e);
                   });
               });
             } catch (e) {}
@@ -684,254 +349,18 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Getting...' : 'Get Blox Free Space'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log(
-                      'initialization is completed. get blox free space'
-                    );
-                    blockchain
-                      .bloxFreeSpace()
-                      .then((res: any) => {
-                        console.log('bloxFreeSpace received');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('bloxFreeSpace fetch failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Getting...' : 'Remove all Wifis'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log(
-                      'initialization is completed. send remove wifis command'
-                    );
-                    fxblox
-                      .wifiRemoveall()
-                      .then((res: any) => {
-                        console.log('wifiRemoveall received');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('wifiRemoveall failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Getting...' : 'Get Datastoresize'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log(
-                      'initialization is completed. send Datastoresize command'
-                    );
-                    fxblox
-                      .getDatastoreSize()
-                      .then((res: any) => {
-                        console.log('Datastoresize received');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('Datastoresize failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Getting...' : 'Get Folder Size'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log(
-                      'initialization is completed. send Foldersize command'
-                    );
-                    fxblox
-                      .getFolderSize('/uniondrive/chain')
-                      .then((res: any) => {
-                        console.log('Foldersize received');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('Foldersize failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Getting...' : 'Get Node Logs'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log(
-                      'initialization is completed. send logs command'
-                    );
-                    fxblox
-                      .fetchContainerLogs('fula_node', '30')
-                      .then((res: any) => {
-                        console.log('fetchContainerLogs received');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('fetchContainerLogs failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Getting...' : 'Reboot'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log(
-                      'initialization is completed. send reboot command'
-                    );
-                    fxblox
-                      .reboot()
-                      .then((res: any) => {
-                        console.log('reboot received');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('reboot failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Getting...' : 'Partition'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
-                  if (r) {
-                    console.log(
-                      'initialization is completed. send partition command'
-                    );
-                    fxblox
-                      .partition()
-                      .then((res: any) => {
-                        console.log('partition received');
-                        console.log(res);
-                      })
-                      .catch((e: any) => {
-                        console.log('partition failed');
-                        console.log(e);
-                      });
-                  }
-                });
-              } else {
-                console.log('wait for init to complete');
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'List Pools'}
+          title={inprogress ? 'Processing...' : 'List Pools'}
           onPress={async () => {
             try {
               chainApi.init().then((api: any) => {
-                console.log('api created');
-                console.log(api.rpc);
                 if (api) {
-                  console.log('getting pools');
                   chainApi
                     .listPools(api, 1, 25)
                     .then((res: any) => {
-                      console.log('list pool res received');
-                      console.log(res);
+                      console.log('list pools:', res);
                     })
                     .catch((e: any) => {
-                      console.log('res failed');
-                      console.log(e);
+                      console.log('list pools failed:', e);
                     });
                 }
               });
@@ -940,126 +369,26 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
+
+      {/* --- Blox Hardware / Device --- */}
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Upload Manifest'}
-          onPress={async () => {
-            try {
-              chainApi.init().then((api: any) => {
-                console.log('api created');
-                if (api) {
-                  console.log('uploading manifests');
-                  chainApi
-                    .batchUploadManifest(api, seed, ['Cid6'], 1)
-                    .then((res: any) => {
-                      console.log('res received');
-                      console.log(res);
-                    })
-                    .catch((e: any) => {
-                      console.log('res failed');
-                      console.log(e);
-                    });
-                }
-              });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Test Recent CIDs'}
-          onPress={async () => {
-            try {
-              chainApi.init().then((api: any) => {
-                console.log('api created');
-                if (api && initComplete) {
-                  console.log('get the list of cids');
-                  fula
-                    .listRecentCidsAsStringWithChildren()
-                    .then((res: any) => {
-                      console.log('res received');
-                      console.log(res);
-                      if (res) {
-                        fula
-                          .clearCidsFromRecent(res)
-                          .then((res2: any) => {
-                            console.log('clear done');
-                            console.log(res2);
-                          })
-                          .catch((e: any) => {
-                            console.log('clear failed');
-                            console.log(e);
-                          });
-                      }
-                    })
-                    .catch((e: any) => {
-                      console.log('res failed');
-                      console.log(e);
-                    });
-                }
-              });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Test Replicate'}
-          onPress={async () => {
-            try {
-              if (initComplete) {
-                console.log('replicate');
-                fula
-                  .replicateRecentCidsBlox(undefined, '', 1, 6)
-                  .then((res: any) => {
-                    console.log('res received');
-                    console.log(res);
-                  })
-                  .catch((e: any) => {
-                    console.log('res failed');
-                    console.log(e);
-                  });
-              }
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Getting...' : 'Check Balance'}
+          title={inprogress ? 'Processing...' : 'Get Blox Free Space'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
                   if (r) {
-                    console.log('initialization is completed. get account');
                     blockchain
-                      .getAccount()
+                      .bloxFreeSpace()
                       .then((res: any) => {
-                        console.log('account received');
-                        console.log(res);
-                        if (res) {
-                          blockchain
-                            .assetsBalance(res.account, 110, 100)
-                            .then((r2: any) => {
-                              console.log('amount received');
-                              console.log(r2);
-                            });
-                        }
+                        console.log('bloxFreeSpace:', res);
                       })
                       .catch((e: any) => {
-                        console.log('bloxFreeSpace fetch failed');
-                        console.log(e);
+                        console.log('bloxFreeSpace failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
             } catch (e) {}
           }}
@@ -1068,96 +397,168 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Putting & Getting...' : 'Replicate In Pool'}
-          onPress={async () => {
-            try {
-              chainApi.init().then(async (api: any) => {
-                console.log('api created');
-                if (api) {
-                  let accountId = await chainApi.getAccountIdFromSeed(seed);
-                  console.log('uploading manifests: ' + accountId);
-                  fula
-                    .replicateRecentCids(api, seed, 1, 6)
-                    .then((res: any) => {
-                      console.log('res received');
-                      console.log(res);
-                      blockchain
-                        .replicateInPool(res.cids, accountId, 1)
-                        .then((res2) => {
-                          console.log('res2 received');
-                          console.log(res2);
-                        });
-                    })
-                    .catch((e: any) => {
-                      console.log('res failed');
-                      console.log(e);
-                    });
-                }
-              });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Putting & Getting...' : 'Test Replicate In Pool'}
-          onPress={async () => {
-            try {
-              chainApi.init().then(async (api: any) => {
-                console.log('api created');
-                if (api) {
-                  let accountId = await chainApi.getAccountIdFromSeed(seed);
-                  console.log('uploading manifests: ' + accountId);
-                  blockchain
-                    .replicateInPool(
-                      [
-                        'bafyr4iciwfqaspaehqress5xs4yrk26pzz7l5recheeo6bryafmy5vjbdi',
-                        'bafyr4iaozpubahy4yh5si4runr3temnp4ndysqspqxrjbmybqn3gv2pzli',
-                      ],
-                      accountId,
-                      1
-                    )
-                    .then((res2) => {
-                      console.log('res2 received');
-                      console.log(res2);
-                    });
-                }
-              });
-            } catch (e) {}
-          }}
-          color={inprogress ? 'green' : 'blue'}
-        />
-      </View>
-
-      <View style={styles.section}>
-        <Button
-          title={inprogress ? 'Getting...' : 'Test List Active Plugins'}
+          title={inprogress ? 'Processing...' : 'Get Datastore Size'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
                   if (r) {
-                    console.log(
-                      'initialization is completed. send list plugin'
-                    );
+                    fxblox
+                      .getDatastoreSize()
+                      .then((res: any) => {
+                        console.log('Datastoresize:', res);
+                      })
+                      .catch((e: any) => {
+                        console.log('Datastoresize failed:', e);
+                      });
+                  }
+                });
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Get Folder Size'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  if (r) {
+                    fxblox
+                      .getFolderSize('/uniondrive/chain')
+                      .then((res: any) => {
+                        console.log('Foldersize:', res);
+                      })
+                      .catch((e: any) => {
+                        console.log('Foldersize failed:', e);
+                      });
+                  }
+                });
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Get Node Logs'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  if (r) {
+                    fxblox
+                      .fetchContainerLogs('fula_node', '30')
+                      .then((res: any) => {
+                        console.log('fetchContainerLogs:', res);
+                      })
+                      .catch((e: any) => {
+                        console.log('fetchContainerLogs failed:', e);
+                      });
+                  }
+                });
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Remove All Wifis'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  if (r) {
+                    fxblox
+                      .wifiRemoveall()
+                      .then((res: any) => {
+                        console.log('wifiRemoveall:', res);
+                      })
+                      .catch((e: any) => {
+                        console.log('wifiRemoveall failed:', e);
+                      });
+                  }
+                });
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Reboot'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  if (r) {
+                    fxblox
+                      .reboot()
+                      .then((res: any) => {
+                        console.log('reboot:', res);
+                      })
+                      .catch((e: any) => {
+                        console.log('reboot failed:', e);
+                      });
+                  }
+                });
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Partition'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  if (r) {
+                    fxblox
+                      .partition()
+                      .then((res: any) => {
+                        console.log('partition:', res);
+                      })
+                      .catch((e: any) => {
+                        console.log('partition failed:', e);
+                      });
+                  }
+                });
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+
+      {/* --- Plugins --- */}
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'List Active Plugins'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  if (r) {
                     fxblox
                       .listActivePlugins()
                       .then((res: any) => {
-                        console.log('list active plugins received');
-                        console.log(res);
+                        console.log('list active plugins:', res);
                       })
                       .catch((e: any) => {
-                        console.log('list plugins failed');
-                        console.log(e);
+                        console.log('list plugins failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
             } catch (e) {}
           }}
@@ -1166,31 +567,22 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Getting...' : 'Test Install Plugins'}
+          title={inprogress ? 'Processing...' : 'Install Plugin'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
                   if (r) {
-                    console.log(
-                      'initialization is completed. send install plugin'
-                    );
                     fxblox
                       .installPlugin('streamr-node', 'contractAddress====test')
                       .then((res: any) => {
-                        console.log('install plugins received');
-                        console.log(res);
+                        console.log('install plugin:', res);
                       })
                       .catch((e: any) => {
-                        console.log('install plugins failed');
-                        console.log(e);
+                        console.log('install plugin failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
             } catch (e) {}
           }}
@@ -1199,133 +591,94 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Getting...' : 'Test Uninstall Plugins'}
+          title={inprogress ? 'Processing...' : 'Uninstall Plugin'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
                   if (r) {
-                    console.log(
-                      'initialization is completed. send uninstall plugin'
-                    );
                     fxblox
                       .uninstallPlugin('streamr-node')
                       .then((res: any) => {
-                        console.log('uninstall plugins received');
-                        console.log(res);
+                        console.log('uninstall plugin:', res);
                       })
                       .catch((e: any) => {
-                        console.log('uninstall plugins failed');
-                        console.log(e);
+                        console.log('uninstall plugin failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
-
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Getting...' : 'Test Get Output Plugins'}
+          title={inprogress ? 'Processing...' : 'Get Install Output'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
                   if (r) {
-                    console.log(
-                      'initialization is completed. send getInstallOutput plugin'
-                    );
                     fxblox
                       .getInstallOutput('streamr-node', 'contractAddress')
                       .then((res: any) => {
-                        console.log('getInstallOutput plugins received');
-                        console.log(res);
+                        console.log('getInstallOutput:', res);
                       })
                       .catch((e: any) => {
-                        console.log('getInstallOutput plugins failed');
-                        console.log(e);
+                        console.log('getInstallOutput failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
-
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Getting...' : 'Test Get Install Status Plugins'}
+          title={inprogress ? 'Processing...' : 'Get Install Status'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
                   if (r) {
-                    console.log(
-                      'initialization is completed. send getInstallStatus plugin'
-                    );
                     fxblox
                       .getInstallStatus('streamr-node')
                       .then((res: any) => {
-                        console.log('getInstallStatus plugins received');
-                        console.log(res);
+                        console.log('getInstallStatus:', res);
                       })
                       .catch((e: any) => {
-                        console.log('getInstallStatus plugins failed');
-                        console.log(e);
+                        console.log('getInstallStatus failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
             } catch (e) {}
           }}
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
-
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Getting...' : 'Test Update Plugin'}
+          title={inprogress ? 'Processing...' : 'Update Plugin'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
-                  console.log('connection check');
-                  console.log(r);
                   if (r) {
-                    console.log(
-                      'initialization is completed. send updatePlugin'
-                    );
                     fxblox
                       .updatePlugin('streamr-node')
                       .then((res: any) => {
-                        console.log('updatePlugin received');
-                        console.log(res);
+                        console.log('updatePlugin:', res);
                       })
                       .catch((e: any) => {
-                        console.log('updatePlugin failed');
-                        console.log(e);
+                        console.log('updatePlugin failed:', e);
                       });
                   }
                 });
-              } else {
-                console.log('wait for init to complete');
               }
             } catch (e) {}
           }}
@@ -1333,37 +686,27 @@ const App = () => {
         />
       </View>
 
+      {/* --- AI --- */}
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Getting...' : 'Test Chat with AI'}
+          title={inprogress ? 'Processing...' : 'Chat with AI'}
           onPress={async () => {
             try {
               if (initComplete) {
-                // Step 1: Check connection to Blox
                 const isConnected = await fula.checkConnection();
                 console.log('Connection check:', isConnected);
 
                 if (isConnected) {
-                  console.log('Initialization is completed. Starting ChatWithAI...');
-
-                  // Step 2: Start Chat with AI
                   try {
                     const streamID = await fxAi.chatWithAI('deepseek-chart', 'Hello AI!');
                     console.log('ChatWithAI started, Stream ID:', streamID);
 
-                    // Step 3: Fetch streamed responses using iterator
                     const fullResponse = await fxAi.fetchChunksUsingIterator(streamID);
-
-                    console.log('Full Response:', fullResponse); // Log the full response after all chunks are received
-                    console.log('All chunks received.');
+                    console.log('Full Response:', fullResponse);
                   } catch (startError) {
                     console.error('Error starting ChatWithAI:', startError);
                   }
-                } else {
-                  console.log('Connection to Blox failed. Please check your connection.');
                 }
-              } else {
-                console.log('Wait for initialization to complete.');
               }
             } catch (e) {
               console.error('Unexpected error:', e);
@@ -1372,26 +715,20 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
-
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Getting...' : 'Test Stream Chunks'}
+          title={inprogress ? 'Processing...' : 'Stream AI Chunks'}
           onPress={async () => {
             try {
               if (initComplete) {
-                // Step 1: Check connection to Blox
                 const isConnected = await fula.checkConnection();
                 console.log('Connection check:', isConnected);
 
                 if (isConnected) {
-                  console.log('Initialization is completed. Starting ChatWithAI...');
-
-                  // Step 2: Start Chat with AI
                   try {
                     const streamID = await fxAi.chatWithAI('deepseek-chart', 'Hello AI!');
                     console.log('ChatWithAI started, Stream ID:', streamID);
 
-                    // Step 3: Use streamChunks to receive responses in real-time
                     let fullResponse = '';
                     const cleanup = fxAi.streamChunks(streamID, {
                       onChunk: (chunk) => {
@@ -1406,20 +743,15 @@ const App = () => {
                       },
                     });
 
-                    // Optional: Clean up after some time (e.g., if you want to stop receiving chunks)
                     setTimeout(() => {
                       cleanup();
                       console.log('Cleaned up stream listeners');
-                    }, 30000); // Cleanup after 30 seconds
+                    }, 30000);
 
                   } catch (startError) {
                     console.error('Error starting ChatWithAI:', startError);
                   }
-                } else {
-                  console.log('Connection to Blox failed. Please check your connection.');
                 }
-              } else {
-                console.log('Wait for initialization to complete.');
               }
             } catch (e) {
               console.error('Unexpected error:', e);
@@ -1434,27 +766,6 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  imageShow: {
-    width: 100,
-    height: 200,
-    padding: 0,
-  },
-  sectionContainer: {
-    marginTop: 0,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 0,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
   container: {
     position: 'relative',
     height: 1000,

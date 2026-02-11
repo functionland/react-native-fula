@@ -1,13 +1,4 @@
 import Fula from '../interfaces/fulaNativeModule';
-import {
-  init as chainApiInit,
-  checkAccountBalance,
-  getAccountIdFromSeed,
-  batchUploadManifest,
-  manifestNewBatch,
-} from './chain-api';
-import { batchUploadManifest as batchUploadManifestBlox } from './blockchain';
-import { ApiPromise } from '@polkadot/api';
 
 /**
  * Register the app's lifecycle listeners to handle foreground, background, and termination states.
@@ -18,14 +9,19 @@ export const registerLifecycleListener = (): Promise<void> => {
 };
 
 /**
- * Get gets the value corresponding to the given key from the local datastore.
-// The key must be a valid ipld.Link.
- * @param config
- * @returns boolean
+ * Initializes the Fula client and connects to a blox node.
+ * @param identity - privateKey of did identity
+ * @param storePath - local store path (can be empty)
+ * @param bloxAddr - Blox multiaddr
+ * @param exchange - exchange protocol (set to 'noope' for testing)
+ * @param autoFlush - write actions to disk after each write
+ * @param rootCid - latest rootCid if available
+ * @param useRelay - force the use of relay
+ * @param refresh - force refresh of the fula object
+ * @returns peerId and rootCid
  */
-
 export const init = (
-  identity: string, //privateKey of did identity
+  identity: string,
   storePath: string,
   bloxAddr: string,
   exchange: string,
@@ -56,14 +52,18 @@ export const init = (
 };
 
 /**
- * Get gets the value corresponding to the given key from the local datastore.
-// The key must be a valid ipld.Link.
- * @param config
- * @returns boolean
+ * Creates a new Fula client without initializing the filesystem.
+ * @param identity - privateKey of did identity
+ * @param storePath - local store path (can be empty)
+ * @param bloxAddr - Blox multiaddr
+ * @param exchange - exchange protocol (set to 'noope' for testing)
+ * @param autoFlush - write actions to disk after each write
+ * @param useRelay - force the use of relay
+ * @param refresh - force refresh of the fula object
+ * @returns peerId as string
  */
-
 export const newClient = (
-  identity: string, //privateKey of did identity
+  identity: string,
   storePath: string,
   bloxAddr: string,
   exchange: string,
@@ -93,9 +93,10 @@ export const newClient = (
 };
 
 /**
- * rm removes all data
- * @param path
- * @returns string: new cid of the root
+ * Logs out and removes all local data.
+ * @param identity - identity key
+ * @param storePath - local store path
+ * @returns boolean indicating success
  */
 export const logout = (
   identity: string,
@@ -105,415 +106,44 @@ export const logout = (
 };
 
 /**
- * Checks if there are any un-synced changes on the device
- */
-export const checkFailedActions = (
-  retry: boolean = false,
-  timeout: number = 20
-): Promise<boolean> => {
-  return Fula.checkFailedActions(retry, timeout);
-};
-
-/**
- * Lists the cids that failed to be sent to backend and are kept only locally
- */
-export const listFailedActions = (cids: string[] = []): Promise<string[]> => {
-  return Fula.listFailedActions(cids);
-};
-
-/**
- * Lists the cids that are recent
- */
-export const listRecentCidsAsString = (): Promise<string[]> => {
-  return Fula.listRecentCidsAsString();
-};
-
-export const listRecentCidsAsStringWithChildren = (): Promise<string[]> => {
-  return Fula.listRecentCidsAsStringWithChildren();
-};
-
-/**
- * Clears the cids that ar recent
- */
-export const clearCidsFromRecent = (cids: string[] = []): Promise<boolean> => {
-  return Fula.clearCidsFromRecent(cids);
-};
-
-/**
- * Checks if there are any un-synced changes on the device
+ * Checks the connection to the blox node.
+ * @param timeout - timeout in seconds (default 20)
+ * @returns boolean indicating connection status
  */
 export const checkConnection = (timeout: number = 20): Promise<boolean> => {
   return Fula.checkConnection(timeout);
 };
 
 /**
- * Get gets the value corresponding to the given key from the local datastore.
-// The key must be a valid ipld.Link.
- * @param key
- * @returns value
+ * Ping sends libp2p pings to the blox peer and returns results.
+ * Uses direct -> relay -> DHT fallback for connectivity.
+ * @param timeout - timeout in seconds (default 60)
+ * @returns {success, successes, avg_rtt_ms, errors}
  */
-export const get = (key: string): Promise<string> => {
-  return Fula.get(key);
-};
-
-/**
- * Has checks whether the value corresponding to the given key is present in the local datastore.
-// The key must be a valid ipld.Link.
- * @param key
- * @returns boolean
- */
-export const has = (key: Uint8Array): Promise<boolean> => {
-  return Fula.has(key);
-};
-
-/**
- * Push requests the given addr to download the root cid from this node.
-// The addr must be a valid multiaddr that includes peer ID.
-// this function.
- * @param addr
- * @returns null or error
- */
-export const push = (): Promise<string> => {
-  return Fula.push();
-};
-
-//This method sends some test data to backedn
-export const testData = (
-  identity: string,
-  bloxAddr: string
-): Promise<string> => {
-  return Fula.testData(identity, bloxAddr);
-};
-
-/**
- * Put stores the given key value onto the local datastore.
-// The key must be a valid ipld.Link and the value must be the valid encoded ipld.Node corresponding
-// to the given key.
- * @param key, value
- * @returns null or string
- */
-export const put = (value: string, codec: string): Promise<string> => {
-  return Fula.put(value, codec);
-};
-
-/**
- * mkdir creates a directory at the given path.
- * @param path
- * @returns string: new cid of the root
- */
-export const mkdir = (path: string): Promise<string> => {
-  return Fula.mkdir(path);
-};
-
-/**
- * writeFileContent writes content at a given path
- * @param path
- * @returns string: new cid of the root
- */
-export const writeFileContent = (
-  path: string,
-  content: string
-): Promise<string> => {
-  return Fula.writeFileContent(path, content);
-};
-
-/*
-    // reads content of the file form localFilename (should include full absolute path to local file with read permission
-    // writes content to the specified location by fulaTargetFilename in Fula filesystem
-    // It keeps the original file modiifcation date
-    // fulaTargetFilename: a string including full path and filename of target file on Fula (e.g. root/pictures/cat.jpg)
-    // localFilename: a string containing full path and filename of local file on hte device (e.g /usr/bin/cat.jpg)
-    // Returns: new cid of the root after this file is placed in the tree
-     */
-export const writeFile = (
-  fulaTargetFilename: string,
-  localFilename: string
-): Promise<string> => {
-  return Fula.writeFile(fulaTargetFilename, localFilename);
-};
-
-/**
- * ls lists the name of files and folders at a given path
- * @param path
- * @returns string: list of items
- * TODO: Findout how is the string and convert to array
- */
-export const ls = (path: string): Promise<void | JSON> => {
-  return Fula.ls(path)
-    .then((res) => {
-      let lsResult = [];
-      let lsRows = res.split('!!!');
-      for (const element of lsRows) {
-        let rowItems = element.split('???');
-        if (rowItems && rowItems[0]) {
-          let item = {
-            name: '',
-            created: '',
-            modified: '',
-          };
-          item.name = rowItems[0];
-          if (rowItems[1]) {
-            item.created = rowItems[1];
-          }
-          if (rowItems[2]) {
-            item.modified = rowItems[2];
-          }
-          lsResult.push(item);
-        }
-      }
-      let jsonRes = JSON.parse(JSON.stringify(lsResult));
-      return jsonRes;
-    })
-    .catch((e) => {
-      return e;
-    });
-};
-
-/**
- * rm removes all files and folders at a given path
- * @param path
- * @returns string: new cid of the root
- */
-export const rm = (path: string): Promise<string> => {
-  return Fula.rm(path);
-};
-
-/**
- * cp copies the file or folder at the sourcePath to targetPath. targetPath is a folder that must exist already
- * @param sourcePath, targetPath
- * @returns string: new cid of the root
- */
-export const cp = (sourcePath: string, targetPath: string): Promise<string> => {
-  return Fula.cp(sourcePath, targetPath);
-};
-
-/**
- * mv moves the file or folder at the sourcePath to targetPath. targetPath is a folder that must exist already
- * @param sourcePath, targetPath
- * @returns string: new cid of the root
- */
-export const mv = (sourcePath: string, targetPath: string): Promise<string> => {
-  return Fula.mv(sourcePath, targetPath);
-};
-
-/*
-    // reads content of the file form localFilename (should include full absolute path to local file with read permission
-    // writes content to the specified location by fulaTargetFilename in Fula filesystem
-    // fulaTargetFilename: a string including full path and filename of target file on Fula (e.g. root/pictures/cat.jpg)
-    // localFilename: a string containing full path and filename of local file on hte device (e.g /usr/bin/cat.jpg)
-    // Returns: new cid of the root after this file is placed in the tree
-     */
-export const readFile = (
-  fulaTargetFilename: string,
-  localFilename: string
-): Promise<string> => {
-  return Fula.readFile(fulaTargetFilename, localFilename);
-};
-
-/**
- * readFile reads content of a given path
- * @param path
- * @returns string: cotent
- */
-export const readFileContent = (path: string): Promise<string> => {
-  return Fula.readFileContent(path);
+export const ping = (
+  timeout: number = 60
+): Promise<{
+  success: boolean;
+  successes: number;
+  avg_rtt_ms: number;
+  errors: string[];
+}> => {
+  return Fula.ping(timeout).then((res: string) => JSON.parse(res));
 };
 
 /**
  * Shutdown closes all resources used by Client.
-// After calling this function Client must be discarded.
- * @param
- * @returns
+ * After calling this function Client must be discarded.
  */
 export const shutdown = (): Promise<void> => {
   return Fula.shutdown();
 };
 
 /**
- * setAuth adds or removes a peer from the list of peers that are allowed to push to this node.
- * This can only be called on a peer that is added as an owner of blox by --authorizer parameter
- * @param peerId, allow
- * @returns boolean: true if successful or false if not
- */
-export const setAuth = (peerId: string, allow: boolean): Promise<boolean> => {
-  return Fula.setAuth(peerId, allow);
-};
-
-/**
  * isReady checks if the connection is ready to be used.
- * @param filesystemCheck: also check if the wnfs is ready
- * @returns boolean: true if ready or false if not
+ * @param filesystemCheck - also check if the filesystem is ready
+ * @returns boolean indicating readiness
  */
 export const isReady = (filesystemCheck: boolean = true): Promise<boolean> => {
   return Fula.isReady(filesystemCheck);
-};
-
-export const deleteDsLock = (): Promise<void> => {
-  return Fula.deleteDsLock();
-}
-
-/**
- * replicate replicates data on the nework
- */
-export const replicateRecentCids = async (
-  api: ApiPromise,
-  seed: string,
-  poolId: number,
-  replicationNo: number = 4
-): Promise<{
-  status: boolean;
-  msg: string;
-  cids: string[];
-  allCids: string[];
-}> => {
-  let status = true;
-  let msg = '';
-  let recentCids: string[] = [];
-  let newCids: string[] = [];
-  if (!api) {
-    api = await chainApiInit();
-  }
-  if (api) {
-    console.log('uploading manifests');
-    try {
-      let account = await getAccountIdFromSeed(seed);
-      console.log('account: ' + account);
-      const accountBal = await checkAccountBalance(api, account);
-      console.log('account balance: ' + accountBal);
-      if (accountBal !== '0') {
-        recentCids = await listRecentCidsAsStringWithChildren();
-        console.log(recentCids);
-        if (recentCids) {
-          console.log({
-            api,
-            seed,
-            recentCids,
-            poolId,
-            replicationNo,
-          });
-          newCids = await manifestNewBatch(api, poolId, account, recentCids);
-          const res = await batchUploadManifest(
-            api,
-            seed,
-            newCids,
-            poolId,
-            replicationNo
-          );
-          console.log('batchUploadManifest res received');
-          console.log(res);
-          if (res?.hash) {
-            const signedBlock = await api.rpc.chain.getBlock(res.hash);
-            if (signedBlock?.block?.extrinsics?.length) {
-              await clearCidsFromRecent(recentCids);
-              msg = res.hash;
-            } else {
-              status = false;
-              msg = 'block data is not found';
-            }
-          } else {
-            status = false;
-            msg = 'hash is not returned';
-          }
-        } else {
-          status = false;
-          msg = 'No recent Cids found';
-        }
-      } else {
-        status = false;
-        msg = 'Account balance is not enough or account does not exists';
-      }
-    } catch (e: any) {
-      console.log('res failed');
-      console.log(e);
-      let errorMessage = '';
-
-      if (e instanceof Error) {
-        // If it's an Error instance, use the message property
-        errorMessage = e.message;
-      } else {
-        // If it's not an Error instance, convert it to string
-        errorMessage = e.toString();
-      }
-      status = false;
-      msg = errorMessage;
-    }
-  }
-
-  // Return a value (true/false) depending on the outcome of the function
-  // For example:
-  return { status: status, msg: msg, cids: newCids, allCids: recentCids }; // or false, depending on your logic
-};
-
-/**
- * replicate replicates data on the nework
- */
-export const replicateRecentCidsBlox = async (
-  api: ApiPromise | undefined,
-  seed: string,
-  poolId: number,
-  replicationNo: number = 6
-): Promise<{ status: boolean; msg: string }> => {
-  let status = true;
-  let msg = '';
-  console.log('uploading manifests');
-  try {
-    //TODO: Implement getting SUGAR balance of blox
-    //const accountBal = await getAccountBalanceBlox();
-    const accountBal = '1';
-    console.log('account balance: ' + accountBal);
-    const recentCids = await listRecentCidsAsStringWithChildren();
-    console.log(recentCids);
-    if (recentCids) {
-      console.log({
-        api,
-        seed,
-        recentCids,
-        poolId,
-        replicationNo,
-      });
-      const res = await batchUploadManifestBlox(
-        api,
-        seed,
-        recentCids,
-        poolId,
-        replicationNo
-      );
-      console.log('batchUploadManifest res received');
-      console.log(res);
-      if (res) {
-        if (typeof res === 'object' && 'pool_id' in res) {
-          msg = res.storer;
-        } else {
-          status = false;
-          msg =
-            'Unexpected response from batchUploadManifestBlox: ' +
-            JSON.stringify(res);
-        }
-      } else {
-        status = false;
-        msg = 'hash is not returned';
-      }
-    } else {
-      status = false;
-      msg = 'No recent Cids found';
-    }
-  } catch (e: any) {
-    console.log('res failed');
-    console.log(e);
-    let errorMessage = '';
-
-    if (e instanceof Error) {
-      // If it's an Error instance, use the message property
-      errorMessage = e.message;
-    } else {
-      // If it's not an Error instance, convert it to string
-      errorMessage = e.toString();
-    }
-    status = false;
-    msg = errorMessage;
-  }
-
-  // Return a value (true/false) depending on the outcome of the function
-  // For example:
-  return { status: status, msg: msg }; // or false, depending on your logic
 };

@@ -23,36 +23,10 @@ interface FulaNativeModule {
   ) => Promise<string>;
   isReady: (filesystemCheck: boolean) => Promise<boolean>;
   logout: (identity: string, storePath: string) => Promise<boolean>;
-  checkFailedActions: (retry: boolean, timeout: number) => Promise<boolean>;
-  listFailedActions: (cids: string[]) => Promise<string[]>;
-  listRecentCidsAsString: () => Promise<string[]>;
-  listRecentCidsAsStringWithChildren: () => Promise<string[]>;
-  clearCidsFromRecent: (cids: string[]) => Promise<boolean>;
   checkConnection: (timeout: number) => Promise<boolean>;
-  get: (key: string) => Promise<string>;
-  has: (key: Uint8Array) => Promise<boolean>;
-  push: () => Promise<string>;
-  put: (content: string, codec: string) => Promise<string>;
-  mkdir: (path: string) => Promise<string>;
-  writeFileContent: (path: string, content: string) => Promise<string>;
-  writeFile: (
-    fulaTargetFilename: string,
-    localFilename: string
-  ) => Promise<string>;
-  ls: (path: string) => Promise<string>;
-  rm: (path: string) => Promise<string>;
-  cp: (sourcePath: string, targetPath: string) => Promise<string>;
-  mv: (sourcePath: string, targetPath: string) => Promise<string>;
-  readFile: (
-    fulaTargetFilename: string,
-    localFilename: string
-  ) => Promise<string>;
-  readFileContent: (path: string) => Promise<string>;
-  setAuth: (peerId: string, allow: boolean) => Promise<boolean>;
+  ping: (timeout: number) => Promise<string>;
 
   shutdown: () => Promise<void>;
-
-  testData: (identity: string, bloxAddr: string) => Promise<string>;
 
   //Blockchain related functions
   createAccount: (seed: string) => Promise<string>;
@@ -147,14 +121,11 @@ interface FulaNativeModule {
   getInstallOutput: (pluginName: string, params: string) => Promise<string>;
   getInstallStatus: (pluginName: string) => Promise<string>;
   updatePlugin: (pluginName: string) => Promise<string>;
-  deleteDsLock: () => Promise<void>;
 
   //AI
   chatWithAI: (aiModel: string, userMessage: string) => Promise<string>;
   getChatChunk: (streamID: string) => Promise<string>;
   streamChunks: (streamID: string) => Promise<void>;
-
-
 }
 
 const LINKING_ERROR =

@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		060162ED2A84149500A6E464 /* Cryptography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060162EC2A84149500A6E464 /* Cryptography.swift */; };
-		060162EF2A8414AD00A6E464 /* UserDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060162EE2A8414AD00A6E464 /* UserDataHelper.swift */; };
+		060162EF2A8414AD00A6E464 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060162EE2A8414AD00A6E464 /* Extensions.swift */; };
 		F4FF95D7245B92E800C19C63 /* Fula.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* Fula.swift */; };
 /* End PBXBuildFile section */
 
@@ -25,8 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		060162EC2A84149500A6E464 /* Cryptography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cryptography.swift; sourceTree = "<group>"; };
-		060162EE2A8414AD00A6E464 /* UserDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataHelper.swift; sourceTree = "<group>"; };
+		060162EE2A8414AD00A6E464 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libFula.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFula.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3E7B5891CC2AC0600A0062D /* Fula.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Fula.mm; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* Fula-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Fula-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -55,8 +53,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				060162EE2A8414AD00A6E464 /* UserDataHelper.swift */,
-				060162EC2A84149500A6E464 /* Cryptography.swift */,
+				060162EE2A8414AD00A6E464 /* Extensions.swift */,
 				F4FF95D6245B92E800C19C63 /* Fula.swift */,
 				B3E7B5891CC2AC0600A0062D /* Fula.mm */,
 				F4FF95D5245B92E700C19C63 /* Fula-Bridging-Header.h */,
@@ -121,8 +118,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				060162EF2A8414AD00A6E464 /* UserDataHelper.swift in Sources */,
-				060162ED2A84149500A6E464 /* Cryptography.swift in Sources */,
+				060162EF2A8414AD00A6E464 /* Extensions.swift in Sources */,
 				F4FF95D7245B92E800C19C63 /* Fula.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

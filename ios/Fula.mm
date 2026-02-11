@@ -9,6 +9,10 @@ RCT_EXTERN_METHOD(checkConnection: (nonnull NSNumber *) timeout
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(ping: (nonnull NSNumber *) timeout
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(newClient:(NSString *)IdentityString
                   withStorePath: (NSString *)storePath
                   withBloxAddr: (NSString *)bloxAddr
@@ -37,84 +41,6 @@ RCT_EXTERN_METHOD(initFula:(NSString *)IdentityString
 RCT_EXTERN_METHOD(logout:(NSString *)IdentityString
                   withStorePath: (NSString *)storePath
                   withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(checkFailedActions:(BOOL)retry
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(mkdir:(NSString *)path
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(writeFile:(NSString *)fulaTargetFilename
-                  withLocalFilename: (NSString *) localFilename
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(writeFileContent:(NSString *)path
-                  withContentString:(NSString *) contentString
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(ls:(NSString *)path
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(rm:(NSString *)path
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(cp:(NSString *)sourcePath
-                  withTargetPath:(NSString *) targetPath
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-
-RCT_EXTERN_METHOD(mv:(NSString *)sourcePath
-                  withTargetPath:(NSString *) targetPath
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(readFile:(NSString *)fulaTargetFilename
-                  withLocalFilename:(NSString *) localFilename
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(readFileContent:(NSString *)path
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(get:(NSString *)keyString
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-
-RCT_EXTERN_METHOD(has:(NSString *)keyString
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(push:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(put:(NSString *)valueString
-                  withCodecString:(NSString *) codecString
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(setAuth:(NSString *)peerIdString
-                  withAllow:(BOOL) allow
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(clearCidsFromRecent:(NSArray *)cidArray
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(listRecentCidsAsString:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(listRecentCidsAsStringWithChildren:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(batchUploadManifest:(NSArray *)cidArray
@@ -239,9 +165,6 @@ RCT_EXTERN_METHOD(getInstallStatus:(NSString *)pluginName
 
 RCT_EXTERN_METHOD(updatePlugin:(NSString *)pluginName
                   withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-
-RCT_EXTERN_METHOD(deleteDsLock:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(replicateInPool:(NSArray *)cidArray
