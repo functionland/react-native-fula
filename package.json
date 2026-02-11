@@ -1,6 +1,6 @@
 {
   "name": "@functionland/react-native-fula",
-  "version": "1.56.2",
+  "version": "1.57.0",
   "description": "React Native bridge for Fula protocols - blockchain operations, device management, plugin management, and AI interactions via go-fula/mobile",
   "type": "module",
   "main": "lib/commonjs/index",

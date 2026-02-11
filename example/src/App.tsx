@@ -36,8 +36,8 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
 
-  // const bloxPeerId = '12D3KooWRadeHPBedP633MMVZjbVni5XDxzhGDXXMpDgC29vuhLB'; //tower
-  const bloxPeerId = '12D3KooWDaT8gS2zGMLGBKmW1mKhQSHxYeEX3Fr3VSjuPzmjyfZC'; //laptop
+  const bloxPeerId = '12D3KooWGCQEZMQhJ6VVybcS7j1yDqmpzVWkNUZzgtWL1fv6UbFP'; //tower
+// const bloxPeerId = '12D3KooWDaT8gS2zGMLGBKmW1mKhQSHxYeEX3Fr3VSjuPzmjyfZC'; //laptop
   // const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
 
   const bloxAddr = '/dns/relay.dev.fx.land/tcp/4001/p2p/12D3KooWDRrBaAfPwsGJivBoUw5fE7ZpDiyfUjqgiURq2DEcL835/p2p-circuit/p2p/' + bloxPeerId;
@@ -445,14 +445,14 @@ const App = () => {
       </View>
       <View style={styles.section}>
         <Button
-          title={inprogress ? 'Processing...' : 'Get Node Logs'}
+          title={inprogress ? 'Processing...' : 'Get Go-Fula Logs'}
           onPress={async () => {
             try {
               if (initComplete) {
                 fula.checkConnection().then((r: any) => {
                   if (r) {
                     fxblox
-                      .fetchContainerLogs('fula_node', '30')
+                      .fetchContainerLogs('fula_go', '30')
                       .then((res: any) => {
                         console.log('fetchContainerLogs:', res);
                       })
