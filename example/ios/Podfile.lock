@@ -376,7 +376,7 @@ PODS:
   - React-jsinspector (0.72.3)
   - React-logger (0.72.3):
     - glog
-  - react-native-fula (1.57.1):
+  - react-native-fula (1.57.2):
     - Fula (~> 1.57.1)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
