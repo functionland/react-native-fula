@@ -684,7 +684,7 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   FlipperKit: 2efad7007d6745a3f95e4034d547be637f89d3f6
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  Fula: d98515aff38f71bc01002cb928acc9d22da0dab8
+  Fula: 811349af31bf0bc0140448c9740442d880432970
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: 10fbd3f62405c41ea07e71973ea61e1878d07322
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
@@ -704,7 +704,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: e83bf420225769a6358d6970fd821c8be31a76f1
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: 65faa8b52440199d5e8c5df976457c8f27b109d9
-  react-native-fula: 72a940232d53cefdfe5316be59ca0ae0bf361604
+  react-native-fula: 9107f252e904375c3f8496c78c2f5848ce3bf49b
   React-NativeModulesApple: 8bfc990f4c9c05901bc4f9fecfc87d10a3012296
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
