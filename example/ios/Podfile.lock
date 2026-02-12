@@ -69,7 +69,7 @@ PODS:
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
-  - Fula (1.57.0)
+  - Fula (1.57.1)
   - glog (0.3.5)
   - hermes-engine (0.72.3):
     - hermes-engine/Pre-built (= 0.72.3)
@@ -376,8 +376,8 @@ PODS:
   - React-jsinspector (0.72.3)
   - React-logger (0.72.3):
     - glog
-  - react-native-fula (1.57.0):
-    - Fula (~> 1.57.0)
+  - react-native-fula (1.57.1):
+    - Fula (~> 1.57.1)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - React-NativeModulesApple (0.72.3):
