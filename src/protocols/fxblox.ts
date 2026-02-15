@@ -198,6 +198,52 @@ export const getDatastoreSize = (): Promise<BType.GetDatastoreSizeResponse> => {
   return res;
 };
 
+export const getDockerImageBuildDates = (): Promise<BType.GetDockerImageBuildDatesResponse> => {
+  console.log('getDockerImageBuildDates in react-native started');
+  let res = Fula.getDockerImageBuildDates()
+    .then((res1) => {
+      try {
+        let jsonRes: BType.GetDockerImageBuildDatesResponse = JSON.parse(res1);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in getDockerImageBuildDates:', e1);
+          throw e1;
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error getDockerImageBuildDates:', err);
+      throw err;
+    });
+  return res;
+};
+
+export const getClusterInfo = (): Promise<BType.GetClusterInfoResponse> => {
+  console.log('getClusterInfo in react-native started');
+  let res = Fula.getClusterInfo()
+    .then((res1) => {
+      try {
+        let jsonRes: BType.GetClusterInfoResponse = JSON.parse(res1);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res1);
+        } catch (e1) {
+          console.error('Error parsing res in getClusterInfo:', e1);
+          throw e1;
+        }
+      }
+    })
+    .catch((err) => {
+      console.error('Error getClusterInfo:', err);
+      throw err;
+    });
+  return res;
+};
+
 export const listPlugins = (): Promise<BType.ListPluginsResponse> => {
   console.log('listPlugins in react-native started');
   let res = Fula.listPlugins()

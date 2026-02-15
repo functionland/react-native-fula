@@ -408,6 +408,54 @@ const App = () => {
           color={inprogress ? 'green' : 'blue'}
         />
       </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Get Docker Image Build Dates'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  if (r) {
+                    fxblox
+                      .getDockerImageBuildDates()
+                      .then((res: any) => {
+                        console.log('getDockerImageBuildDates:', JSON.stringify(res));
+                      })
+                      .catch((e: any) => {
+                        console.log('getDockerImageBuildDates failed:', e);
+                      });
+                  }
+                });
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
+      <View style={styles.section}>
+        <Button
+          title={inprogress ? 'Processing...' : 'Get Cluster Info'}
+          onPress={async () => {
+            try {
+              if (initComplete) {
+                fula.checkConnection().then((r: any) => {
+                  if (r) {
+                    fxblox
+                      .getClusterInfo()
+                      .then((res: any) => {
+                        console.log('getClusterInfo:', JSON.stringify(res));
+                      })
+                      .catch((e: any) => {
+                        console.log('getClusterInfo failed:', e);
+                      });
+                  }
+                });
+              }
+            } catch (e) {}
+          }}
+          color={inprogress ? 'green' : 'blue'}
+        />
+      </View>
 
       {/* --- Plugins --- */}
       <View style={styles.section}>

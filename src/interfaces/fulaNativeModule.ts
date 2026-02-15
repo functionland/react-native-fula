@@ -111,6 +111,8 @@ interface FulaNativeModule {
   wifiRemoveall: () => Promise<string>;
   reboot: () => Promise<string>;
   partition: () => Promise<string>;
+  getDockerImageBuildDates: () => Promise<string>;
+  getClusterInfo: () => Promise<string>;
 
   // Plugin related functions
   listPlugins: () => Promise<string>;

@@ -119,3 +119,19 @@ export interface UpdatePluginResponse {
   status: boolean;
   msg: string;
 }
+
+export interface DockerImageBuildDate {
+  container_name: string;
+  image_name: string;
+  image_created: string;
+  image_digest: string;
+}
+
+export interface GetDockerImageBuildDatesResponse {
+  images: DockerImageBuildDate[];
+}
+
+export interface GetClusterInfoResponse {
+  cluster_peer_id: string;
+  cluster_peer_name: string;
+}

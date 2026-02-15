@@ -104,6 +104,10 @@ const logs = await fxblox.fetchContainerLogs(containerName, tailCount);
 const bestTarget = await fxblox.findBestAndTargetInLogs(containerName, tailCount);
 const folderSize = await fxblox.getFolderSize(folderPath);
 const datastoreSize = await fxblox.getDatastoreSize();
+const imageDates = await fxblox.getDockerImageBuildDates();
+// Returns: { images: [{ container_name, image_name, image_created, image_digest }] }
+const clusterInfo = await fxblox.getClusterInfo();
+// Returns: { cluster_peer_id, cluster_peer_name }
 
 // Plugin management
 const plugins = await fxblox.listPlugins();

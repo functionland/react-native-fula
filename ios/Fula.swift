@@ -972,6 +972,36 @@ class FulaModule: RCTEventEmitter {
         }
     }
 
+@objc(getDockerImageBuildDates:withRejecter:)
+func getDockerImageBuildDates(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    guard let fula = self.fula else {
+        reject("ERR_FULA", "Fula is not initialized", nil)
+        return
+    }
+    do {
+        let result = try fula.getDockerImageBuildDates()
+        let resultString = String(decoding: result, as: UTF8.self)
+        resolve(resultString)
+    } catch let error {
+        reject("ERR_FULA", "getDockerImageBuildDates: \(error.localizedDescription)", error)
+    }
+}
+
+@objc(getClusterInfo:withRejecter:)
+func getClusterInfo(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    guard let fula = self.fula else {
+        reject("ERR_FULA", "Fula is not initialized", nil)
+        return
+    }
+    do {
+        let result = try fula.getClusterInfo()
+        let resultString = String(decoding: result, as: UTF8.self)
+        resolve(resultString)
+    } catch let error {
+        reject("ERR_FULA", "getClusterInfo: \(error.localizedDescription)", error)
+    }
+}
+
 @objc(listPlugins:withRejecter:)
 func listPlugins(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.global(qos: .background).async {

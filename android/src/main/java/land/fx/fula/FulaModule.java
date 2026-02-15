@@ -896,6 +896,46 @@ public class FulaModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void getDockerImageBuildDates(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "getDockerImageBuildDates");
+      try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
+        byte[] result = this.fula.getDockerImageBuildDates();
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "an error happened="+e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getClusterInfo(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "getClusterInfo");
+      try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
+        byte[] result = this.fula.getClusterInfo();
+        String resultString = toString(result);
+        Log.d("ReactNative", "result string="+resultString);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "an error happened="+e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
   public void reboot(Promise promise) {
     ThreadUtils.runOnExecutor(() -> {
       Log.d("ReactNative", "reboot");
