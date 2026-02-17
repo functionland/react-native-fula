@@ -2,8 +2,6 @@
 
 React Native bridge for the [Fula protocols](https://github.com/functionland/go-fula), providing blockchain operations, blox device management, plugin management, and AI interactions via go-fula/mobile.
 
-> **TODO:** The Android native dependency (`fula-build-aar`) is currently at **v1.57.3** while the iOS native dependency (`Fula` pod from go-fula/mobile) is at **~> 1.57.2**. These versions need to be aligned in a future release.
-
 ## Architecture
 
 ```
@@ -263,8 +261,8 @@ The following methods still exist in the TypeScript layer (`src/protocols/blockc
 
 | Platform | Dependency | Version | Source |
 | --- | --- | --- | --- |
-| Android | `com.github.functionland:fula-build-aar` | v1.57.3 | [JitPack](https://jitpack.io/#functionland/fula-build-aar) |
-| iOS | `Fula` (go-fula/mobile) | ~> 1.57.2 | [CocoaPods](https://cocoapods.org/) |
+| Android | `com.github.functionland:fula-build-aar` | v1.57.4 | [JitPack](https://jitpack.io/#functionland/fula-build-aar) |
+| iOS | `Fula` (go-fula/mobile) | ~> 1.57.4 | [CocoaPods](https://cocoapods.org/) |
 
 ## Development
 
