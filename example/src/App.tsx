@@ -35,7 +35,7 @@ const App = () => {
     203, 243, 211, 78, 120, 114, 199, 1, 197, 134, 6, 91, 87, 152,
   ];
 
-  const bloxPeerId = '12D3KooWGCQEZMQhJ6VVybcS7j1yDqmpzVWkNUZzgtWL1fv6UbFP'; //tower
+  const bloxPeerId = '12D3KooWCnRuQFScUBTmCi9EMNB7HrWHb12RPUdUZTjJb4FaF1nw'; //tower
 // const bloxPeerId = '12D3KooWDaT8gS2zGMLGBKmW1mKhQSHxYeEX3Fr3VSjuPzmjyfZC'; //laptop
   // const bloxPeerId = '12D3KooWQZBdE5zNUVTE2Aayajyy9cJDmK4bJwMZG52ieHt2f6nb'; //laptop2
 
