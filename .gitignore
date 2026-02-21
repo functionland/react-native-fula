@@ -70,3 +70,4 @@ lib/
 example/yarn.lock
 yarn.lock
 example/ios/.xcode.env.local
+.claude/settings.local.json
