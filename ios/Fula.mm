@@ -193,6 +193,18 @@ RCT_EXTERN_METHOD(streamChunks:(NSString *)streamID
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(autoPinPair:(NSString *)token
+                  withEndpoint:(NSString *)endpoint
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(autoPinRefresh:(NSString *)token
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(autoPinUnpair:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 + (BOOL)requiresMainQueueSetup
 {
     return NO;

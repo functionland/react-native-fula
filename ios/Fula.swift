@@ -1576,6 +1576,58 @@ private func pollIterator(iterator: FulamobileStreamIterator, resolve: @escaping
     }
 }
 
+// Auto-pin
+    @objc(autoPinPair:withEndpoint:withResolver:withRejecter:)
+    func autoPinPair(token: String, endpoint: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+        print("ReactNative", "autoPinPair: token = ", token, ", endpoint = ", endpoint)
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
+        do {
+            let result = try fula.autoPinPair(token, endpoint: endpoint)
+            let resultString = result.toUTF8String()!
+            resolve(resultString)
+        } catch let error {
+            print("autoPinPair", error.localizedDescription)
+            reject("ERR_FULA", "autoPinPair", error)
+        }
+    }
+
+    @objc(autoPinRefresh:withResolver:withRejecter:)
+    func autoPinRefresh(token: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+        print("ReactNative", "autoPinRefresh: token = ", token)
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
+        do {
+            let result = try fula.autoPinRefresh(token)
+            let resultString = result.toUTF8String()!
+            resolve(resultString)
+        } catch let error {
+            print("autoPinRefresh", error.localizedDescription)
+            reject("ERR_FULA", "autoPinRefresh", error)
+        }
+    }
+
+    @objc(autoPinUnpair:withRejecter:)
+    func autoPinUnpair(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+        print("ReactNative", "autoPinUnpair")
+        guard let fula = self.fula else {
+            reject("ERR_FULA", "Fula is not initialized", nil)
+            return
+        }
+        do {
+            let result = try fula.autoPinUnpair()
+            let resultString = result.toUTF8String()!
+            resolve(resultString)
+        } catch let error {
+            print("autoPinUnpair", error.localizedDescription)
+            reject("ERR_FULA", "autoPinUnpair", error)
+        }
+    }
+
 private func emitEvent(eventName: String, data: String?) {
     self.sendEvent(withName: eventName, body: data)
 }

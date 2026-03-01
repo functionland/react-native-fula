@@ -124,3 +124,18 @@ export interface ManifestResponse {
   manifestMetadata: string;
   size_?: number | null; // The question mark indicates that this field is optional.
 }
+
+// Auto-pin
+export interface AutoPinPairResponse {
+  status: string;
+  pairing_secret: string;
+  hardware_id: string;
+}
+
+export interface AutoPinRefreshResponse {
+  status: string;
+}
+
+export interface AutoPinUnpairResponse {
+  status: string;
+}

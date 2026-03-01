@@ -709,3 +709,73 @@ export const transferToFula = (
     });
   return res;
 };
+
+// Auto-pin
+
+export const autoPinPair = (
+  token: string,
+  endpoint: string
+): Promise<BType.AutoPinPairResponse> => {
+  console.log('autoPinPair in react-native started', token, endpoint);
+  let res1 = Fula.autoPinPair(token, endpoint)
+    .then((res) => {
+      try {
+        let jsonRes: BType.AutoPinPairResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          return res;
+        }
+      }
+    })
+    .catch((err) => {
+      return err;
+    });
+  return res1;
+};
+
+export const autoPinRefresh = (
+  token: string
+): Promise<BType.AutoPinRefreshResponse> => {
+  console.log('autoPinRefresh in react-native started', token);
+  let res1 = Fula.autoPinRefresh(token)
+    .then((res) => {
+      try {
+        let jsonRes: BType.AutoPinRefreshResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          return res;
+        }
+      }
+    })
+    .catch((err) => {
+      return err;
+    });
+  return res1;
+};
+
+export const autoPinUnpair = (): Promise<BType.AutoPinUnpairResponse> => {
+  console.log('autoPinUnpair in react-native started');
+  let res1 = Fula.autoPinUnpair()
+    .then((res) => {
+      try {
+        let jsonRes: BType.AutoPinUnpairResponse = JSON.parse(res);
+        return jsonRes;
+      } catch (e) {
+        try {
+          return JSON.parse(res);
+        } catch (e2) {
+          return res;
+        }
+      }
+    })
+    .catch((err) => {
+      return err;
+    });
+  return res1;
+};

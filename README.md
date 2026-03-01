@@ -261,8 +261,8 @@ The following methods still exist in the TypeScript layer (`src/protocols/blockc
 
 | Platform | Dependency | Version | Source |
 | --- | --- | --- | --- |
-| Android | `com.github.functionland:fula-build-aar` | v1.57.7 | [JitPack](https://jitpack.io/#functionland/fula-build-aar) |
-| iOS | `Fula` (go-fula/mobile) | ~> 1.57.7 | [CocoaPods](https://cocoapods.org/) |
+| Android | `com.github.functionland:fula-build-aar` | v1.58.0 | [JitPack](https://jitpack.io/#functionland/fula-build-aar) |
+| iOS | `Fula` (go-fula/mobile) | ~> 1.58.0 | [CocoaPods](https://cocoapods.org/) |
 
 ## Development
 

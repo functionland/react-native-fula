@@ -1264,6 +1264,64 @@ private void pollIterator(fulamobile.StreamIterator iterator, Promise promise) {
   }
 }
 
+  // Auto-pin
+  @ReactMethod
+  public void autoPinPair(String token, String endpoint, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "autoPinPair: token = " + token + ", endpoint = " + endpoint);
+      try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
+        byte[] result = this.fula.autoPinPair(token, endpoint);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void autoPinRefresh(String token, Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "autoPinRefresh: token = " + token);
+      try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
+        byte[] result = this.fula.autoPinRefresh(token);
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void autoPinUnpair(Promise promise) {
+    ThreadUtils.runOnExecutor(() -> {
+      Log.d("ReactNative", "autoPinUnpair");
+      try {
+        if (this.fula == null) {
+          promise.reject("ERR_FULA", "Fula is not initialized");
+          return;
+        }
+        byte[] result = this.fula.autoPinUnpair();
+        String resultString = toString(result);
+        promise.resolve(resultString);
+      } catch (Exception e) {
+        Log.d("ReactNative", "ERROR:" + e.getMessage());
+        promise.reject(e);
+      }
+    });
+  }
+
   private void emitEvent(String eventName, String data) {
       try {
           getReactApplicationContext()

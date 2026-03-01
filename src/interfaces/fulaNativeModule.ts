@@ -128,6 +128,11 @@ interface FulaNativeModule {
   chatWithAI: (aiModel: string, userMessage: string) => Promise<string>;
   getChatChunk: (streamID: string) => Promise<string>;
   streamChunks: (streamID: string) => Promise<void>;
+
+  // Auto-pin
+  autoPinPair: (token: string, endpoint: string) => Promise<string>;
+  autoPinRefresh: (token: string) => Promise<string>;
+  autoPinUnpair: () => Promise<string>;
 }
 
 const LINKING_ERROR =
