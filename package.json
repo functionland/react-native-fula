@@ -44,7 +44,10 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/functionland/react-native-fula",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/functionland/react-native-fula.git"
+  },
   "author": "Ehsan Shariati <ehsan6sha@gmail.com> (https://github.com/ehsan6sha)",
   "license": "MIT",
   "bugs": {

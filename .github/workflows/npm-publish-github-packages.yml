@@ -1,5 +1,7 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+# Publishes @functionland/react-native-fula to npmjs.com via OIDC "trusted publishing".
+# No npm token is used: auth comes from GitHub's OIDC id-token, which npm verifies
+# against the Trusted Publisher configured at npmjs.com (Package > Settings).
+# Docs: https://docs.npmjs.com/trusted-publishers/
 
 name: Node.js Package
 
@@ -12,10 +14,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - run: npm ci
       - run: npm test
 
@@ -24,14 +26,19 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
+      id-token: write # REQUIRED: lets the job mint the OIDC token npm verifies
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org/
+          node-version: 22
+          # Deliberately NO registry-url: it makes setup-node write an empty
+          # _authToken into .npmrc that shadows OIDC (the classic 404/ENEEDAUTH).
+          # The publish registry is already pinned by publishConfig in package.json.
+      # Trusted publishing needs npm >= 11.5.1; Node 22 ships npm 10.x, so upgrade.
+      - run: npm install -g npm@latest
+      # Sanity check: this MUST print npm >= 11.5.1, or OIDC publishing won't work.
+      # ("packageManager: yarn@..." + Corepack could otherwise shadow the upgrade.)
+      - run: node -v && npm -v
       - run: npm ci
-      - run: npm publish --scope=@functionland --access=public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - run: npm publish --provenance --access public
